@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: nextjs-app
+    command: npm run dev
+    working_dir: /app
+    volumes:
+      # Mount your project source into the container
+      - .:/app
+      # Keep node_modules container-only (to avoid OS/node ABI mismatch)
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: development
