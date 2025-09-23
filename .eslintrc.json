@@ -1,0 +1,15 @@
+{
+  "root": true,
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    // your tweaks
+    "@typescript-eslint/no-unused-vars": "warn",
+    "react/jsx-curly-brace-presence": ["error", "never"]
+  }
+}
