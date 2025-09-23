@@ -18,8 +18,10 @@ services:
     environment:
       NODE_ENV: development
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/webdev
+      MONGO_URL: mongodb://root:example@mongo:27017/devdb?authSource=admin
     depends_on:
       - postgres
+      - mongo
 
   postgres:
     image: pgvector/pgvector:pg17-trixie # postgres with pg-vector - vector database
@@ -33,3 +35,15 @@ services:
       - '5432:5432'
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:8.0-noble
+    container_name: mongo-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./data/mongo:/data/db
