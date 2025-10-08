@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { ListGroupItem } from 'react-bootstrap'
+import { ListGroup, ListGroupItem } from 'react-bootstrap'
 
 export default function SearchResults() {
   const searchResults = []
@@ -13,5 +13,5 @@ export default function SearchResults() {
     )
   }
 
-  return <ListGroupItem>{...searchResults}</ListGroupItem>
+  return <ListGroup>{...searchResults}</ListGroup>
 }
