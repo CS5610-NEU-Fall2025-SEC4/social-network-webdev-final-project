@@ -1,15 +1,15 @@
-'use client'
-import { useParams } from 'next/navigation'
 import PostDetails from '../../post'
 import UserDetails from '../../user'
 import CommentDetails from '../../comment'
 
-export default function DetailsPage() {
-  const pathParamters = useParams<{ type: string; id: string }>()
+export default async function DetailsPage({
+  params,
+}: {
+  params: Promise<{ type: string; id: string }>
+}) {
+  const { type, id } = await params
   let template
-  console.log(pathParamters)
-  console.log(typeof pathParamters.type)
-  switch (pathParamters.type) {
+  switch (type) {
     case 'post': {
       template = (
         <PostDetails
