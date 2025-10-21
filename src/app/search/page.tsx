@@ -3,7 +3,9 @@ import SearchFilter from './components/search-filter'
 import SearchBar from './components/search-bar'
 import SearchResults from './components/search-results'
 import 'bootstrap/dist/css/bootstrap.min.css'
-export default function SearchPage() {
+import { HNApiService } from '../services/algoliaAPI'
+export default async function SearchPage() {
+  const stories = [await HNApiService.getItem(1)]
   return (
     <Container className="m-2 p-2">
       <Row>
@@ -14,9 +16,7 @@ export default function SearchPage() {
           <Row>
             <SearchBar />
           </Row>
-          <Row>
-            <SearchResults />
-          </Row>
+          <Row>{<SearchResults stories={stories} />}</Row>
         </Col>
       </Row>
     </Container>

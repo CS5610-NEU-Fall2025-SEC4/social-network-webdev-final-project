@@ -1,3 +1,5 @@
+'use client'
+import { useParams } from 'next/navigation'
 import PostDetails from '../../post'
 import UserDetails from '../../user'
 import CommentDetails from '../../comment'

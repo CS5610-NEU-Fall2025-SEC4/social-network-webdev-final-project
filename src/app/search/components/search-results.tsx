@@ -1,17 +1,18 @@
-import { randomUUID } from 'crypto'
+import { HNStory, StoryType } from '@/app/types/types'
+import { randomInt, randomUUID } from 'crypto'
 import { ListGroup, ListGroupItem } from 'react-bootstrap'
+import StoryComponent from './story-component'
+import { HNApiService } from '@/app/services/algoliaAPI'
+import { ReactNode } from 'react'
 
-export default function SearchResults() {
-  const searchResults = []
-  for (let i: number = 0; i < 100; i++) {
-    searchResults.push(
-      <ListGroupItem className="m-1 p-1" key={randomUUID()}>
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Neque itaque tenetur facere
-        sapiente nostrum officiis esse hic provident ad aspernatur nobis, minus fugit ea,
-        consectetur rerum laborum modi! Sapiente, qui!
-      </ListGroupItem>,
-    )
-  }
-
-  return <ListGroup>{...searchResults}</ListGroup>
+export default async function SearchResults({ stories }: { stories: HNStory[] }) {
+  return (
+    <ListGroup>
+      {stories.map((story) => (
+        <ListGroupItem className="m-1 p-0 border-0" key={story.created_at_i}>
+          <StoryComponent story={story} />
+        </ListGroupItem>
+      ))}
+    </ListGroup>
+  )
 }
