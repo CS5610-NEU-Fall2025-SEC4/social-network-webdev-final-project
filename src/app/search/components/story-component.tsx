@@ -24,11 +24,8 @@ export default function StoryComponent({ story }: { story: HNStory }) {
               <strong>{story.points}</strong> points
             </div>
             <div>by {story.author}</div>
-            <div>
-              {/* Add your relative date here */}
-              relative date
-            </div>
-            <div>{story.children.length} comments</div>
+            <div>relative date</div>
+            {(story.children || []).length > 0 && <div>{story.children.length} comments</div>}
           </Stack>
         </CardBody>
       </Card>
@@ -51,11 +48,31 @@ export default function StoryComponent({ story }: { story: HNStory }) {
               <strong>{story.points}</strong> points
             </div>
             <div>by {story.author}</div>
+            <div>relative date</div>
+            {(story.children || []).length > 0 && <div>{story.children.length} comments</div>}
+          </Stack>
+        </CardBody>
+      </Card>
+    )
+  } else if (story._tags?.includes('job')) {
+    template = (
+      <Card className="shadow-sm">
+        <CardBody>
+          <CardTitle className="mb-2">
+            {story.title}
+            {story.url && (
+              <Link className="ml-2 text-decoration-none" href={story.url}>
+                <small className="text-muted">| ({story.url})</small>
+              </Link>
+            )}
+          </CardTitle>
+
+          <Stack direction="horizontal" gap={3} className="text-muted small">
             <div>
-              {/* Add your relative date here */}
-              relative date
+              <strong>{story.points}</strong> points
             </div>
-            <div>{story.children.length} comments</div>
+            <div>by {story.author}</div>
+            <div>relative date</div>
           </Stack>
         </CardBody>
       </Card>
@@ -85,11 +102,8 @@ export default function StoryComponent({ story }: { story: HNStory }) {
               <strong>{story.points}</strong> points
             </div>
             <div>by {story.author}</div>
-            <div>
-              {/* Add your relative date here */}
-              relative date
-            </div>
-            <div>{story.children.length} comments</div>
+            <div>relative date</div>
+            {(story.children || []).length > 0 && <div>{story.children.length} comments</div>}
           </Stack>
         </CardBody>
       </Card>

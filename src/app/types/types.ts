@@ -37,7 +37,7 @@ export type HNSearchResponse = {
   processingTimeMS: number
 }
 
-export type SearchParams = {
+export class SearchParams {
   query?: string
   tags?: string
   page?: string
