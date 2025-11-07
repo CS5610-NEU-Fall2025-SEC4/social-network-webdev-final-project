@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 
-:root {
+/*ORiginal Global css, commented to add proj specific*/
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -23,4 +24,38 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+} */
+
+/*CSS for landing page*/
+/* .wd-hero-img {
+  width: 100%;
+  height: 80vh;
+  background-image: url('/images/landing-page-hero.jpg') !important;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+} */
+
+.wd-hero-img {
+  width: 100%;
+  height: 100vh;
+  background-image: url('/images/landing-page-hero.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  padding-top: 40vh;
+}
+
+.wd-cyan {
+  color: #22d3ee;
+}
+
+.wd-nav-bar-item {
+  text-decoration: none !important;
 }
