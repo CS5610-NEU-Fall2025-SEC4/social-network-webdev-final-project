@@ -1,16 +1,11 @@
-import { Button, Col, Form, Row } from 'react-bootstrap'
-import { BsPlus } from 'react-icons/bs'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 export default function SearchBar() {
   return (
-    <Form>
-      <div className="d-flex justify-content around">
-        <Form.Control type="text" placeholder="🔍 Search for Assignments" />
-        <Button variant="success" className="p-2 ms-2 rounded w-20">
-          {' '}
-          Search
-        </Button>
-      </div>
-    </Form>
+    <div className="flex w-full max-w-sm items-center space-x-2">
+      <Input type="text" placeholder="🔍 Search for Assignments" />
+      <Button type="submit">Search</Button>
+    </div>
   )
 }

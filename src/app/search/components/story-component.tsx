@@ -1,132 +1,69 @@
-import { HNStory, StoryType } from '@/app/types/types'
+import { HNStory } from '@/app/types/types'
 import Link from 'next/link'
-import { Card, CardBody, CardTitle, Stack } from 'react-bootstrap'
-import { BsArrowUpCircle, BsChatDots, BsLink45Deg } from 'react-icons/bs'
-import { CgLock } from 'react-icons/cg'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function StoryComponent({ story }: { story: HNStory }) {
-  let template
-  if (story._tags?.includes('ask_hn') && story._tags.includes('story')) {
-    template = (
-      <Card className="shadow-sm">
-        <CardBody>
-          <CardTitle className="mb-2">
-            {story.title}
-            {story.url && (
-              <Link className="ml-2 text-decoration-none" href={story.url}>
-                <small className="text-muted">| ({story.url})</small>
-              </Link>
-            )}
-          </CardTitle>
+  const isStory = story._tags?.includes('story') || story.type === 'story'
+  const isAskHN = story._tags?.includes('ask_hn')
+  const isShowHN = story._tags?.includes('show_hn')
+  const isJob = story._tags?.includes('job')
+  const isComment = story._tags?.includes('comment') || story.type === 'comment'
 
-          <Stack direction="horizontal" gap={3} className="text-muted small">
-            <div>
-              <strong>{story.points}</strong> points
-            </div>
-            <div>by {story.author}</div>
-            <div>relative date</div>
-            {(story.children || []).length > 0 && <div>{story.children.length} comments</div>}
-          </Stack>
-        </CardBody>
-      </Card>
-    )
-  } else if (story._tags?.includes('show_hn') && story._tags.includes('story')) {
-    template = (
-      <Card className="shadow-sm">
-        <CardBody>
-          <CardTitle className="mb-2">
-            {story.title}
-            {story.url && (
-              <Link className="ml-2 text-decoration-none" href={story.url}>
-                <small className="text-muted">| ({story.url})</small>
-              </Link>
-            )}
-          </CardTitle>
+  const getLinkText = () => {
+    if (isJob) {
+      return '(View Job Listing)'
+    }
+    if (isStory) {
+      return '(Visit the Post)'
+    }
+    return '(Visit the Link)'
+  }
 
-          <Stack direction="horizontal" gap={3} className="text-muted small">
-            <div>
-              <strong>{story.points}</strong> points
-            </div>
-            <div>by {story.author}</div>
-            <div>relative date</div>
-            {(story.children || []).length > 0 && <div>{story.children.length} comments</div>}
-          </Stack>
-        </CardBody>
-      </Card>
-    )
-  } else if (story._tags?.includes('job')) {
-    template = (
-      <Card className="shadow-sm">
-        <CardBody>
-          <CardTitle className="mb-2">
-            {story.title}
-            {story.url && (
-              <Link className="ml-2 text-decoration-none" href={story.url}>
-                <small className="text-muted">| ({story.url})</small>
-              </Link>
-            )}
-          </CardTitle>
-
-          <Stack direction="horizontal" gap={3} className="text-muted small">
-            <div>
-              <strong>{story.points}</strong> points
-            </div>
-            <div>by {story.author}</div>
-            <div>relative date</div>
-          </Stack>
-        </CardBody>
-      </Card>
-    )
-  } else if (story._tags?.includes('story') || story.type === 'story') {
-    template = (
-      <Card className="shadow-sm">
-        <CardBody>
-          <CardTitle className="mb-2">
+  return (
+    <Card className="shadow-sm mb-4 transition-transform transform hover:-translate-y-1 hover:shadow-md animate-fade-in">
+      <CardHeader>
+        <CardTitle className="mb-2 text-lg font-semibold">
+          {isComment ? (
+            <div
+              dangerouslySetInnerHTML={{ __html: story.comment_text ?? '' }}
+              className="text-gray-800"
+            />
+          ) : story.url ? (
             <Link
               href={story.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-decoration-none text-dark"
+              className="text-gray-800 hover:underline"
             >
               {story.title}
             </Link>
-            {story.url && (
-              <Link className="ml-2 text-decoration-none" href={story.url}>
-                <small className="text-muted">| ({story.url})</small>
-              </Link>
-            )}
-          </CardTitle>
-
-          <Stack direction="horizontal" gap={3} className="text-muted small">
-            <div>
-              <strong>{story.points}</strong> points
-            </div>
-            <div>by {story.author}</div>
-            <div>relative date</div>
-            {(story.children || []).length > 0 && <div>{story.children.length} comments</div>}
-          </Stack>
-        </CardBody>
-      </Card>
-    )
-  } else if (story._tags?.includes('comment') || story.type === 'comment') {
-    template = (
-      <Card className="shadow-sm">
-        <CardBody>
-          <CardTitle className="mb-2">{story.comment_text}</CardTitle>
-
-          <Stack direction="horizontal" gap={3} className="text-muted small">
-            <div>
-              <strong>{story.points}</strong> points
-            </div>
-            <div>by {story.author}</div>
-            <div>
-              {/* Add your relative date here */}
-              relative date
-            </div>
-          </Stack>
-        </CardBody>
-      </Card>
-    )
-  }
-  return template
+          ) : (
+            story.title
+          )}
+          {story.url && !isComment && (
+            <Link className="ml-2 text-gray-500 hover:underline" href={story.url}>
+              <small className="text-gray-500">{getLinkText()}</small>
+            </Link>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center space-x-4 text-sm text-gray-600">
+          <div>
+            <span className="font-bold">{story.points}</span> points
+          </div>
+          <span>•</span>
+          <div>by {story.author}</div>
+          <span>•</span>
+          <div>relative date</div>
+          {(isStory || isAskHN || isShowHN) && (story.children || []).length > 0 && (
+            <>
+              <span>•</span>
+              <div>{story.children.length} comments</div>
+            </>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
 }
