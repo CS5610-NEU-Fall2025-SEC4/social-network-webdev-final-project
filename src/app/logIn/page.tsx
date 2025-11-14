@@ -8,24 +8,20 @@ import { LuEyeClosed } from 'react-icons/lu'
 export default function LogIn() {
   const router = useRouter()
 
-  // form state
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   })
 
-  //state variables
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
-  //handle change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
     setErrorMessage('')
   }
 
-  //login
   const handleLogIn = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
@@ -40,11 +36,11 @@ export default function LogIn() {
 
       const data = await res.json()
       if (res.ok) {
+        localStorage.setItem('access_token', data.access_token)
         setErrorMessage('')
-        // alert(data.message || 'Log In successful!')
         router.push('/home')
+        window.location.href = '/home'
       } else {
-        // alert(data.message || 'Log In failed. Invalid Username or Password.')
         setErrorMessage(data.message || 'Invalid username or password.')
       }
     } catch (err) {
@@ -92,10 +88,10 @@ export default function LogIn() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)} // toggle button
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-[6px] rounded-md bg-gray-100 hover:bg-gray-200 text-sm"
               >
-                {showPassword ? <LuEyeClosed /> : <FaEye />}
+                {showPassword ? <FaEye /> : <LuEyeClosed />}
               </button>
             </div>
           </div>

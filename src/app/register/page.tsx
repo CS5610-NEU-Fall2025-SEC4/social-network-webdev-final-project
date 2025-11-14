@@ -9,7 +9,6 @@ import { LuEyeClosed } from 'react-icons/lu'
 export default function Register() {
   const router = useRouter()
 
-  // form state
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -19,15 +18,12 @@ export default function Register() {
     confirmPassword: '',
   })
 
-  // error / hint messages
   const [passwordError, setPasswordError] = useState<React.ReactNode>('')
   const [passwordValid, setPasswordValid] = useState(false)
 
-  // password visibility state
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  // handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
@@ -35,7 +31,7 @@ export default function Register() {
 
   //valdiate the passwords before submission
   // Regex explanation:
-  //   (?=.*[a-z]) → must include at least one lowercase letter
+  // (?=.*[a-z]) → must include at least one lowercase letter
   // (?=.*[A-Z]) → must include at least one uppercase letter
   // (?=.*\d) → must include at least one number
   // (?=.*[@_.]) → must include at least one special character among @, _, or .
@@ -45,7 +41,6 @@ export default function Register() {
     return regex.test(password)
   }
 
-  // handle password typing
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setFormData({ ...formData, password: value })
@@ -70,7 +65,6 @@ export default function Register() {
     }
   }
 
-  // ✅ Separate function to verify password match
   const passwordsMatch = (): boolean => {
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match!')
@@ -79,11 +73,9 @@ export default function Register() {
     return true
   }
 
-  // handle form submission
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // client-side validations
     if (!passwordValid) {
       alert('Please enter a valid password before proceeding.')
       return
@@ -209,16 +201,16 @@ export default function Register() {
 
               <div className="relative w-full sm:w-auto sm:min-w-[400px]">
                 <input
-                  type={showPassword ? 'text' : 'password'} // toggles visibility
+                  type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
-                  onChange={handlePasswordChange} // 👈 live validation
+                  onChange={handlePasswordChange}
                   placeholder="Password"
                   className="px-4 py-3 border border-gray-300 rounded-lg w-full pr-20"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)} // toggle button
+                  onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-[6px] rounded-md bg-gray-100 hover:bg-gray-200 text-sm"
                 >
                   {showPassword ? <LuEyeClosed /> : <FaEye />}
@@ -229,7 +221,6 @@ export default function Register() {
 
           <div className="mb-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-              {/* Password hint / error section */}
               {passwordError && (
                 <div className="text-red-600 mt-2 text-sm sm:ml-[10.2rem] ml-0 sm:w-[400px]">
                   {passwordError}
@@ -251,7 +242,7 @@ export default function Register() {
               </span>
               <div className="relative w-full sm:w-auto sm:min-w-[400px]">
                 <input
-                  type={showConfirmPassword ? 'text' : 'password'} // toggles visibility
+                  type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -261,7 +252,7 @@ export default function Register() {
                 />
                 <button
                   type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)} // toggle button
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-[6px] rounded-md bg-gray-100 hover:bg-gray-200 text-sm"
                 >
                   {showConfirmPassword ? <LuEyeClosed /> : <FaEye />}

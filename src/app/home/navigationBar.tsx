@@ -14,7 +14,12 @@ export default function Navigation({
   open?: boolean
   setOpen?: (val: boolean) => void
 }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !!localStorage.getItem('access_token')
+    }
+    return false
+  })
   const router = useRouter()
 
   useEffect(() => {
@@ -70,7 +75,6 @@ export default function Navigation({
         </Link>
 
         <div className="flex items-center space-x-8">
-          {/* ← PASS PROPS HERE */}
           <NavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
         </div>
       </nav>
@@ -93,12 +97,9 @@ export default function Navigation({
           </button>
         </div>
         <div className="flex flex-col p-4 space-y-4">
-          {/* ← PASS PROPS HERE */}
           <MobileNavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
         </div>
       </div>
-
-      {/* Overlay for mobile sidebar */}
       {open && (
         <div
           className="fixed inset-0 bg-black bg-opacity-25 md:hidden z-20"
@@ -110,7 +111,6 @@ export default function Navigation({
 }
 
 // Desktop horizontal nav links
-// ← ADD PROPS HERE
 function NavLinks({
   isAuthenticated,
   handleLogout,
@@ -120,7 +120,6 @@ function NavLinks({
 }) {
   return (
     <>
-      {/* Show Profile only when logged in */}
       {isAuthenticated && (
         <Link
           href="/profile"
@@ -147,7 +146,6 @@ function NavLinks({
         <span className="text-sm font-medium">Search</span>
       </Link>
 
-      {/* Show Login and Register only when NOT logged in */}
       {!isAuthenticated && (
         <>
           <Link
@@ -168,7 +166,6 @@ function NavLinks({
         </>
       )}
 
-      {/* Show Logout only when logged in */}
       {isAuthenticated && (
         <button
           onClick={handleLogout}
@@ -183,7 +180,6 @@ function NavLinks({
 }
 
 // Mobile vertical nav links
-// ← ADD PROPS HERE
 function MobileNavLinks({
   isAuthenticated,
   handleLogout,
@@ -193,7 +189,6 @@ function MobileNavLinks({
 }) {
   return (
     <>
-      {/* Show Profile only when logged in */}
       {isAuthenticated && (
         <Link
           href="/profile"
@@ -219,7 +214,6 @@ function MobileNavLinks({
         <span className="text-base">Search</span>
       </Link>
 
-      {/* Show Login and Register only when NOT logged in */}
       {!isAuthenticated && (
         <>
           <Link
@@ -240,7 +234,6 @@ function MobileNavLinks({
         </>
       )}
 
-      {/* Show Logout only when logged in */}
       {isAuthenticated && (
         <button
           onClick={handleLogout}
