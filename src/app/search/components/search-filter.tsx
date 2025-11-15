@@ -1,9 +1,17 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Button, Form, Row, Col, Accordion } from 'react-bootstrap'
 import { FormEvent, useState } from 'react'
-import { BsFilter } from 'react-icons/bs'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Search, Tags, ListFilter, Clock, List } from 'lucide-react'
 
 export default function SearchBarWithFilters() {
   const router = useRouter()
@@ -12,7 +20,7 @@ export default function SearchBarWithFilters() {
 
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams)
-    if (value && value !== '') {
+    if (value && value !== 'all') {
       params.set(key, value)
     } else {
       params.delete(key)
@@ -40,96 +48,114 @@ export default function SearchBarWithFilters() {
   }
 
   const hasFilters =
-    searchParams.get('category') ||
+    searchParams.get('tags') ||
     searchParams.get('sort') ||
     searchParams.get('time') ||
     searchParams.get('hitsPerPage')
 
   return (
-    <div className="mb-4">
-      <Form onSubmit={handleSubmit}>
-        <div className="d-flex mb-3">
-          <Form.Control
-            type="text"
-            placeholder="🔍 Search Hacker News stories, comments, and more..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            size="lg"
-          />
-          <Button type="submit" variant="primary" className="ms-2 px-4">
-            Search
+    <div className="mb-8 p-4 rounded-lg shadow-sm">
+      <form onSubmit={handleSubmit}>
+        <div className="flex w-full items-center space-x-2 mb-4">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search Hacker News stories, comments, and more..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="text-lg pl-10 py-6 rounded-full shadow-inner"
+            />
+          </div>
+          <Button type="submit" className="px-6 py-6 rounded-full">
+            <Search className="h-4 m-2" /> Search
           </Button>
         </div>
-        <Row className="g-2 mb-2">
-          <Col md={3} sm={6}>
-            <Form.Select
-              size="sm"
+        <div className="flex flex-wrap items-center gap-4 text-sm">
+          <div className="flex items-center space-x-2">
+            <Tags className="h-4 w-4 text-gray-500" />
+            <Select
               value={searchParams.get('tags') || 'story'}
-              onChange={(e) => updateFilter('tags', e.target.value)}
+              onValueChange={(value) => updateFilter('tags', value)}
             >
-              <option value="story">Stories</option>
-              <option value="ask_hn">Ask HN</option>
-              <option value="show_hn">Show HN</option>
-              <option value="comment">Comments</option>
-              <option value="job">Jobs</option>
-            </Form.Select>
-          </Col>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="story">Stories</SelectItem>
+                <SelectItem value="ask_hn">Ask HN</SelectItem>
+                <SelectItem value="show_hn">Show HN</SelectItem>
+                <SelectItem value="comment">Comments</SelectItem>
+                <SelectItem value="job">Jobs</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-          <Col md={3} sm={6}>
-            <Form.Select
-              size="sm"
-              // value={searchParams.get('sort') || 'search'}
-              defaultValue={''}
-              // onChange={(e) => updateFilter('sort', e.target.value)}
+          <div className="flex items-center space-x-2">
+            <ListFilter className="h-4 w-4 text-gray-500" />
+            <Select
+              value={searchParams.get('sort') || 'search'}
+              onValueChange={(value) => updateFilter('sort', value)}
             >
-              <option value="search">Most Relevant</option>
-              <option value="search_by_date">Most Recent</option>
-            </Form.Select>
-          </Col>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Most Relevant" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="search">Most Relevant</SelectItem>
+                <SelectItem value="search_by_date">Most Recent</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-          <Col md={3} sm={6}>
-            <Form.Select
-              size="sm"
-              // value={searchParams.get('time') || ''}
-              defaultValue={''}
-              // onChange={(e) => updateFilter('time', e.target.value)}
+          <div className="flex items-center space-x-2">
+            <Clock className="h-4 w-4 text-gray-500" />
+            <Select
+              value={searchParams.get('time') || 'all'}
+              onValueChange={(value) => updateFilter('time', value)}
             >
-              <option value="">All Time</option>
-              <option value="24h">Last 24 Hours</option>
-              <option value="week">Past Week</option>
-              <option value="month">Past Month</option>
-              <option value="year">Past Year</option>
-            </Form.Select>
-          </Col>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="All Time" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Time</SelectItem>
+                <SelectItem value="24h">Last 24 Hours</SelectItem>
+                <SelectItem value="week">Past Week</SelectItem>
+                <SelectItem value="month">Past Month</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-          <Col md={3} sm={6}>
-            <Form.Select
-              size="sm"
+          <div className="flex items-center space-x-2">
+            <List className="h-4 w-4 text-gray-500" />
+            <Select
               value={searchParams.get('hitsPerPage') || '30'}
-              onChange={(e) => updateFilter('hitsPerPage', e.target.value)}
+              onValueChange={(value) => updateFilter('hitsPerPage', value)}
             >
-              <option value="10">10 per page</option>
-              <option value="30">30 per page</option>
-              <option value="50">50 per page</option>
-              <option value="100">100 per page</option>
-            </Form.Select>
-          </Col>
-        </Row>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Results per page" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10 per page</SelectItem>
+                <SelectItem value="30">30 per page</SelectItem>
+                <SelectItem value="50">50 per page</SelectItem>
+                <SelectItem value="100">100 per page</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        {/* Clear Filters Button */}
-        {hasFilters && (
-          <div className="text-end">
+          {hasFilters && (
             <Button
-              variant="link"
+              variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className="text-decoration-none"
+              type="button"
+              className="text-gray-500 hover:text-gray-700"
             >
               Clear all filters
             </Button>
-          </div>
-        )}
-      </Form>
+          )}
+        </div>
+      </form>
     </div>
   )
 }

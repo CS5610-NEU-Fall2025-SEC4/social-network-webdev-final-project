@@ -26,7 +26,10 @@ class HNAPIService {
   async search(params: SearchParams): Promise<HNSearchResponse> {
     const search_params = new SearchParams()
     search_params.query =
-      params?.query !== '' && params?.query !== undefined && params?.query !== null
+      params?.query !== '' &&
+      params?.query !== undefined &&
+      params?.query !== null &&
+      params?.query !== 'all'
         ? params.query
         : ''
     search_params.hitsPerPage =
