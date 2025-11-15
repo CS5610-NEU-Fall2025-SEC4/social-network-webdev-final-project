@@ -19,10 +19,10 @@ export default function HckrNwsLayout({ children }: Readonly<{ children: ReactNo
       </div>
 
       <div className="flex flex-1 relative">
-        {/* Sidebar */}
+        {}
         <Navigation open={open} setOpen={setOpen} />
 
-        {/* Main content */}
+        {}
         <main className="flex-1 p-4 pt-6 pl-4 md:p-6 md:ml-32 ">{children}</main>
       </div>
     </div>

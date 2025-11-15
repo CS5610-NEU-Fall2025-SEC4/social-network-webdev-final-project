@@ -61,7 +61,7 @@ export default function Navigation({
 
   return (
     <>
-      {/* Desktop top navbar */}
+      {}
       <nav
         className="hidden md:flex fixed top-0 left-0 right-0 h-16 bg-blue-100 items-center justify-between px-8 shadow-md z-20"
         id="wd-hckrnws-navigation"
@@ -79,7 +79,7 @@ export default function Navigation({
         </div>
       </nav>
 
-      {/* Mobile sidebar */}
+      {}
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-blue-100 shadow-md transform transition-transform duration-300 z-30 md:hidden
         ${open ? 'translate-x-0' : '-translate-x-full'}`}
@@ -110,7 +110,8 @@ export default function Navigation({
   )
 }
 
-// Desktop horizontal nav links
+
+
 function NavLinks({
   isAuthenticated,
   handleLogout,
@@ -179,7 +180,8 @@ function NavLinks({
   )
 }
 
-// Mobile vertical nav links
+
+
 function MobileNavLinks({
   isAuthenticated,
   handleLogout,

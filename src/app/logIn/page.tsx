@@ -36,11 +36,24 @@ export default function LogIn() {
 
       const data = await res.json()
       if (res.ok) {
-        localStorage.setItem('access_token', data.access_token)
         setErrorMessage('')
+        // Persist access token (and user if provided) so nav/profile can recognize auth state
+        try {
+          const token = data?.access_token || data?.token
+          if (token) {
+            localStorage.setItem('access_token', token)
+          }
+          if (data?.user) {
+            localStorage.setItem('user', JSON.stringify(data.user))
+          }
+        } catch (err) {
+          console.warn('Failed to persist auth info:', err)
+        }
+
+        
         router.push('/home')
-        window.location.href = '/home'
       } else {
+        
         setErrorMessage(data.message || 'Invalid username or password.')
       }
     } catch (err) {
@@ -88,10 +101,10 @@ export default function LogIn() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={() => setShowPassword(!showPassword)} 
                 className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-[6px] rounded-md bg-gray-100 hover:bg-gray-200 text-sm"
               >
-                {showPassword ? <FaEye /> : <LuEyeClosed />}
+                {showPassword ? <LuEyeClosed /> : <FaEye />}
               </button>
             </div>
           </div>
