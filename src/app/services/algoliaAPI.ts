@@ -2,7 +2,9 @@ import { error } from 'console'
 import { HNSearchResponse, HNStory, SearchParams } from '../types/types'
 
 class HNAPIService {
-  private readonly baseURLAlgoliaAPI: string = 'https://hn.algolia.com/api/v1'
+  // Point to backend instead of external Algolia API
+  private readonly baseURLAlgoliaAPI: string =
+    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
   private buildQueryString(params: SearchParams): string {
     const searchParams = new URLSearchParams()
