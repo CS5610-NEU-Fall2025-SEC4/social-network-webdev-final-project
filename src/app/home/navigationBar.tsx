@@ -14,7 +14,12 @@ export default function Navigation({
   open?: boolean
   setOpen?: (val: boolean) => void
 }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !!localStorage.getItem('access_token')
+    }
+    return false
+  })
   const router = useRouter()
 
   useEffect(() => {
@@ -70,7 +75,6 @@ export default function Navigation({
         </Link>
 
         <div className="flex items-center space-x-8">
-          {}
           <NavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
         </div>
       </nav>
@@ -93,12 +97,9 @@ export default function Navigation({
           </button>
         </div>
         <div className="flex flex-col p-4 space-y-4">
-          {}
           <MobileNavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
         </div>
       </div>
-
-      {}
       {open && (
         <div
           className="fixed inset-0 bg-black bg-opacity-25 md:hidden z-20"
@@ -120,7 +121,6 @@ function NavLinks({
 }) {
   return (
     <>
-      {}
       {isAuthenticated && (
         <Link
           href="/profile"
@@ -147,7 +147,6 @@ function NavLinks({
         <span className="text-sm font-medium">Search</span>
       </Link>
 
-      {}
       {!isAuthenticated && (
         <>
           <Link
@@ -168,7 +167,6 @@ function NavLinks({
         </>
       )}
 
-      {}
       {isAuthenticated && (
         <button
           onClick={handleLogout}
@@ -193,7 +191,6 @@ function MobileNavLinks({
 }) {
   return (
     <>
-      {}
       {isAuthenticated && (
         <Link
           href="/profile"
@@ -219,7 +216,6 @@ function MobileNavLinks({
         <span className="text-base">Search</span>
       </Link>
 
-      {}
       {!isAuthenticated && (
         <>
           <Link
@@ -240,7 +236,6 @@ function MobileNavLinks({
         </>
       )}
 
-      {}
       {isAuthenticated && (
         <button
           onClick={handleLogout}

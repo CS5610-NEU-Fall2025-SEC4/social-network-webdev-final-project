@@ -8,28 +8,24 @@ import { LuEyeClosed } from 'react-icons/lu'
 export default function LogIn() {
   const router = useRouter()
 
-  
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   })
 
-  //state variables
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
-  //handle change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
     setErrorMessage('')
   }
 
-  //login
   const handleLogIn = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const res = await fetch('http:
+      const res = await fetch('http://localhost:5000/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
