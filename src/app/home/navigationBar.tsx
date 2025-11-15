@@ -1,8 +1,11 @@
 'use client'
 import Link from 'next/link'
 import { IoHomeOutline, IoCreateOutline } from 'react-icons/io5'
-import { CiLogin, CiSearch } from 'react-icons/ci'
+import { CiLogin, CiSearch, CiLogout } from 'react-icons/ci'
+import { FaRegCircleUser } from 'react-icons/fa6'
 import { DiHackernews } from 'react-icons/di'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function Navigation({
   open,
@@ -11,33 +14,91 @@ export default function Navigation({
   open?: boolean
   setOpen?: (val: boolean) => void
 }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('access_token')
+
+      if (!token) {
+        setIsAuthenticated(false)
+        return
+      }
+
+      try {
+        const res = await fetch('http://localhost:5000/users/isAuthenticated', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+
+        if (res.ok) {
+          setIsAuthenticated(true)
+        } else {
+          setIsAuthenticated(false)
+          localStorage.removeItem('access_token')
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error)
+        setIsAuthenticated(false)
+      }
+    }
+
+    checkAuth()
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token')
+    setIsAuthenticated(false)
+    router.push('/logIn')
+  }
+
   return (
     <>
-      {/* Desktop sidebar */}
+      {/* Desktop top navbar */}
       <nav
-        className="hidden md:flex fixed top-0 bottom-0 left-0 w-32 bg-blue-100 flex-col items-center py-6 space-y-6 shadow-md z-20"
+        className="hidden md:flex fixed top-0 left-0 right-0 h-16 bg-blue-100 items-center justify-between px-8 shadow-md z-20"
         id="wd-hckrnws-navigation"
       >
-        <SidebarLinks />
+        <Link
+          href="/"
+          className="flex items-center space-x-2 text-black hover:text-blue-600 !no-underline"
+        >
+          <DiHackernews className="text-4xl" />
+          <span className="font-bold text-xl">HckrNws</span>
+        </Link>
+
+        <div className="flex items-center space-x-8">
+          {/* ← PASS PROPS HERE */}
+          <NavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
+        </div>
       </nav>
 
       {/* Mobile sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-40 bg-blue-100 shadow-md transform transition-transform duration-300 z-30 md:hidden
+        className={`fixed top-0 left-0 h-full w-64 bg-blue-100 shadow-md transform transition-transform duration-300 z-30 md:hidden
         ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="flex justify-end p-4">
+        <div className="flex justify-between items-center p-4 border-b">
+          <Link href="/" className="flex items-center space-x-2 !no-underline">
+            <DiHackernews className="text-3xl" />
+            <span className="font-bold text-lg">HckrNws</span>
+          </Link>
           <button
             onClick={() => setOpen && setOpen(false)}
-            className="text-lg font-semibold hover:text-blue-600"
+            className="text-2xl font-semibold hover:text-blue-600"
           >
             ✕
           </button>
         </div>
-        <SidebarLinks />
+        <div className="flex flex-col p-4 space-y-4">
+          {/* ← PASS PROPS HERE */}
+          <MobileNavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
+        </div>
       </div>
 
-      {/* Overlay for mobile sidebar, so that it closes when clicked*/}
+      {/* Overlay for mobile sidebar */}
       {open && (
         <div
           className="fixed inset-0 bg-black bg-opacity-25 md:hidden z-20"
@@ -48,48 +109,147 @@ export default function Navigation({
   )
 }
 
-function SidebarLinks() {
+// Desktop horizontal nav links
+// ← ADD PROPS HERE
+function NavLinks({
+  isAuthenticated,
+  handleLogout,
+}: {
+  isAuthenticated: boolean
+  handleLogout: () => void
+}) {
   return (
-    <div className="flex flex-col items-center space-y-6">
-      <Link
-        href="/"
-        className="wd-nav-bar-item flex flex-col items-center text-black hover:text-blue-600"
-      >
-        <DiHackernews className="text-4xl mb-1" />
-        <span className="font-semibold text-sm">HckrNws</span>
-      </Link>
+    <>
+      {/* Show Profile only when logged in */}
+      {isAuthenticated && (
+        <Link
+          href="/profile"
+          className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
+        >
+          <FaRegCircleUser className="text-2xl" />
+          <span className="text-sm font-medium">Profile</span>
+        </Link>
+      )}
 
       <Link
         href="/home"
-        className="wd-nav-bar-item flex flex-col items-center text-black hover:text-blue-600 no-underline"
+        className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
       >
-        <IoHomeOutline className="text-3xl mb-1" />
-        <span className="text-sm ">Home</span>
+        <IoHomeOutline className="text-2xl" />
+        <span className="text-sm font-medium">Home</span>
       </Link>
 
       <Link
         href="/search"
-        className="wd-nav-bar-item flex flex-col items-center text-black hover:text-blue-600 no-underline"
+        className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
       >
-        <CiSearch className="text-3xl mb-1" />
-        <span className="text-sm">Search</span>
+        <CiSearch className="text-2xl" />
+        <span className="text-sm font-medium">Search</span>
+      </Link>
+
+      {/* Show Login and Register only when NOT logged in */}
+      {!isAuthenticated && (
+        <>
+          <Link
+            href="/logIn"
+            className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
+          >
+            <CiLogin className="text-2xl" />
+            <span className="text-sm font-medium">Log In</span>
+          </Link>
+
+          <Link
+            href="/register"
+            className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
+          >
+            <IoCreateOutline className="text-2xl" />
+            <span className="text-sm font-medium">Register</span>
+          </Link>
+        </>
+      )}
+
+      {/* Show Logout only when logged in */}
+      {isAuthenticated && (
+        <button
+          onClick={handleLogout}
+          className="flex items-center space-x-1 text-black hover:text-red-600"
+        >
+          <CiLogout className="text-2xl" />
+          <span className="text-sm font-medium">Logout</span>
+        </button>
+      )}
+    </>
+  )
+}
+
+// Mobile vertical nav links
+// ← ADD PROPS HERE
+function MobileNavLinks({
+  isAuthenticated,
+  handleLogout,
+}: {
+  isAuthenticated: boolean
+  handleLogout: () => void
+}) {
+  return (
+    <>
+      {/* Show Profile only when logged in */}
+      {isAuthenticated && (
+        <Link
+          href="/profile"
+          className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
+        >
+          <FaRegCircleUser className="text-2xl" />
+          <span className="text-base">Profile</span>
+        </Link>
+      )}
+      <Link
+        href="/home"
+        className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
+      >
+        <IoHomeOutline className="text-2xl" />
+        <span className="text-base">Home</span>
       </Link>
 
       <Link
-        href="/logIn"
-        className="wd-nav-bar-item flex flex-col items-center text-black hover:text-blue-600 no-underline"
+        href="/search"
+        className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
       >
-        <CiLogin className="text-3xl mb-1" />
-        <span className="text-sm">Log In</span>
+        <CiSearch className="text-2xl" />
+        <span className="text-base">Search</span>
       </Link>
 
-      <Link
-        href="/register"
-        className="wd-nav-bar-item flex flex-col items-center text-black hover:text-blue-600 no-underline"
-      >
-        <IoCreateOutline className="text-3xl mb-1" />
-        <span className="text-sm">Register</span>
-      </Link>
-    </div>
+      {/* Show Login and Register only when NOT logged in */}
+      {!isAuthenticated && (
+        <>
+          <Link
+            href="/logIn"
+            className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
+          >
+            <CiLogin className="text-2xl" />
+            <span className="text-base">Log In</span>
+          </Link>
+
+          <Link
+            href="/register"
+            className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
+          >
+            <IoCreateOutline className="text-2xl" />
+            <span className="text-base">Register</span>
+          </Link>
+        </>
+      )}
+
+      {/* Show Logout only when logged in */}
+      {isAuthenticated && (
+        <button
+          onClick={handleLogout}
+          className="flex items-center space-x-3 text-black hover:text-red-600 py-2 w-full text-left"
+        >
+          <CiLogout className="text-2xl" />
+          <span className="text-base">Logout</span>
+        </button>
+      )}
+    </>
   )
 }
