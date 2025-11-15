@@ -2,7 +2,7 @@ import { error } from 'console'
 import { HNSearchResponse, HNStory, SearchParams } from '../types/types'
 
 class HNAPIService {
-  // Point to backend instead of external Algolia API
+  
   private readonly baseURLAlgoliaAPI: string =
     process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 

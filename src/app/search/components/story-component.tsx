@@ -120,7 +120,7 @@ export default function StoryComponent({ story }: { story: HNStory }) {
             </div>
             <div>by {story.author}</div>
             <div>
-              {/* Add your relative date here */}
+              {}
               relative date
             </div>
           </Stack>

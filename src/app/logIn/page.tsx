@@ -8,7 +8,7 @@ import { LuEyeClosed } from 'react-icons/lu'
 export default function LogIn() {
   const router = useRouter()
 
-  // form state
+  
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -29,7 +29,7 @@ export default function LogIn() {
   const handleLogIn = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const res = await fetch('http://localhost:5000/users/login', {
+      const res = await fetch('http:
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -54,10 +54,10 @@ export default function LogIn() {
           console.warn('Failed to persist auth info:', err)
         }
 
-        // alert(data.message || 'Log In successful!')
+        
         router.push('/home')
       } else {
-        // alert(data.message || 'Log In failed. Invalid Username or Password.')
+        
         setErrorMessage(data.message || 'Invalid username or password.')
       }
     } catch (err) {
@@ -105,7 +105,7 @@ export default function LogIn() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)} // toggle button
+                onClick={() => setShowPassword(!showPassword)} 
                 className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-[6px] rounded-md bg-gray-100 hover:bg-gray-200 text-sm"
               >
                 {showPassword ? <LuEyeClosed /> : <FaEye />}

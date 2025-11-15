@@ -56,7 +56,7 @@ export default function Navigation({
 
   return (
     <>
-      {/* Desktop top navbar */}
+      {}
       <nav
         className="hidden md:flex fixed top-0 left-0 right-0 h-16 bg-blue-100 items-center justify-between px-8 shadow-md z-20"
         id="wd-hckrnws-navigation"
@@ -70,12 +70,12 @@ export default function Navigation({
         </Link>
 
         <div className="flex items-center space-x-8">
-          {/* ← PASS PROPS HERE */}
+          {}
           <NavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
         </div>
       </nav>
 
-      {/* Mobile sidebar */}
+      {}
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-blue-100 shadow-md transform transition-transform duration-300 z-30 md:hidden
         ${open ? 'translate-x-0' : '-translate-x-full'}`}
@@ -93,12 +93,12 @@ export default function Navigation({
           </button>
         </div>
         <div className="flex flex-col p-4 space-y-4">
-          {/* ← PASS PROPS HERE */}
+          {}
           <MobileNavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
         </div>
       </div>
 
-      {/* Overlay for mobile sidebar */}
+      {}
       {open && (
         <div
           className="fixed inset-0 bg-black bg-opacity-25 md:hidden z-20"
@@ -109,8 +109,8 @@ export default function Navigation({
   )
 }
 
-// Desktop horizontal nav links
-// ← ADD PROPS HERE
+
+
 function NavLinks({
   isAuthenticated,
   handleLogout,
@@ -120,7 +120,7 @@ function NavLinks({
 }) {
   return (
     <>
-      {/* Show Profile only when logged in */}
+      {}
       {isAuthenticated && (
         <Link
           href="/profile"
@@ -147,7 +147,7 @@ function NavLinks({
         <span className="text-sm font-medium">Search</span>
       </Link>
 
-      {/* Show Login and Register only when NOT logged in */}
+      {}
       {!isAuthenticated && (
         <>
           <Link
@@ -168,7 +168,7 @@ function NavLinks({
         </>
       )}
 
-      {/* Show Logout only when logged in */}
+      {}
       {isAuthenticated && (
         <button
           onClick={handleLogout}
@@ -182,8 +182,8 @@ function NavLinks({
   )
 }
 
-// Mobile vertical nav links
-// ← ADD PROPS HERE
+
+
 function MobileNavLinks({
   isAuthenticated,
   handleLogout,
@@ -193,7 +193,7 @@ function MobileNavLinks({
 }) {
   return (
     <>
-      {/* Show Profile only when logged in */}
+      {}
       {isAuthenticated && (
         <Link
           href="/profile"
@@ -219,7 +219,7 @@ function MobileNavLinks({
         <span className="text-base">Search</span>
       </Link>
 
-      {/* Show Login and Register only when NOT logged in */}
+      {}
       {!isAuthenticated && (
         <>
           <Link
@@ -240,7 +240,7 @@ function MobileNavLinks({
         </>
       )}
 
-      {/* Show Logout only when logged in */}
+      {}
       {isAuthenticated && (
         <button
           onClick={handleLogout}

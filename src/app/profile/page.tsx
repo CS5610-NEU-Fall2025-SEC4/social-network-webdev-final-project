@@ -10,9 +10,9 @@ type EditableUser = {
   lastName: string
   email: string
   bio?: string
-  // Optional extended attributes we may get from backend later
+  
   karma?: number
-  joined?: string // ISO date string
+  joined?: string 
   location?: string
   website?: string
   interests?: string[]
@@ -31,8 +31,8 @@ type EditableUser = {
   }
 }
 
-// A lightweight, backend-free profile page that reads/writes to localStorage.
-// It gracefully falls back to a demo profile when nothing exists yet.
+
+
 export default function ProfilePage() {
   const [tab, setTab] = useState<'overview' | 'edit'>('overview')
   const [user, setUser] = useState<EditableUser | null>(null)
@@ -48,7 +48,7 @@ export default function ProfilePage() {
   }, [user])
 
   useEffect(() => {
-    // Attempt to load a previously saved profile first
+    
     const stored = typeof window !== 'undefined' ? localStorage.getItem('userProfile') : null
     if (stored) {
       try {
@@ -59,7 +59,7 @@ export default function ProfilePage() {
       } catch {}
     }
 
-    // Fall back to any existing "user" object (e.g., created by login later)
+    
     const legacy = typeof window !== 'undefined' ? localStorage.getItem('user') : null
     if (legacy) {
       try {
@@ -96,7 +96,7 @@ export default function ProfilePage() {
       } catch {}
     }
 
-    // Default demo profile
+    
     const demo: EditableUser = {
       id: '1',
       username: 'demo',
@@ -177,7 +177,7 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* Tabs */}
+      {}
       <div className="flex gap-2 border-b border-gray-200 mb-4">
         <button
           className={`px-3 py-2 text-sm rounded-t ${tab === 'overview' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'}`}
@@ -195,7 +195,7 @@ export default function ProfilePage() {
 
       {tab === 'overview' && (
         <div className="grid gap-4 md:grid-cols-3">
-          {/* Left column: account and contact */}
+          {}
           <div className="md:col-span-2 grid gap-4">
             <div className="rounded-md border border-gray-200 p-4">
               {user && (
@@ -285,7 +285,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Right column: activity/stats */}
+          {}
           <div className="grid gap-4">
             <div className="rounded-md border border-gray-200 p-4">
               <h3 className="text-lg font-medium mb-3">Stats</h3>

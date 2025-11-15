@@ -9,7 +9,7 @@ export default function HckrNwsLayout({ children }: Readonly<{ children: ReactNo
 
   return (
     <div id="wd-hckrnws" className="flex flex-col min-h-screen">
-      {/* Mobile header with hamburger */}
+      {}
       <div className="flex items-center justify-between p-4 bg-blue-100 md:hidden">
         <button
           onClick={() => setOpen(!open)}
@@ -20,10 +20,10 @@ export default function HckrNwsLayout({ children }: Readonly<{ children: ReactNo
         <h1 className="font-semibold text-lg">HckrNws</h1>
       </div>
 
-      {/* Navigation - now at top on desktop */}
+      {}
       <Navigation open={open} setOpen={setOpen} />
 
-      {/* Main content - adjusted padding for top nav */}
+      {}
       <main className="flex-1 p-4 md:mt-16 md:p-6 overflow-y-auto">{children}</main>
       <Footer />
     </div>

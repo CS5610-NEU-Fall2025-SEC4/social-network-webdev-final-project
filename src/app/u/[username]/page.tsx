@@ -1,10 +1,10 @@
 import Link from 'next/link'
 
-// Public profile page: read-only snapshot for any user. Hardcoded/demo for now.
+
 export default function PublicProfile({ params }: { params: { username: string } }) {
   const { username } = params
 
-  // Demo directory of public profiles (replace with backend later)
+  
   const DIRECTORY: Record<
     string,
     {

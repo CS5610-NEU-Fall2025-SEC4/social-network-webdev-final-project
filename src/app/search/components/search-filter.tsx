@@ -78,7 +78,7 @@ export default function SearchBarWithFilters() {
           <Col md={3} sm={6}>
             <Form.Select
               size="sm"
-              // value={searchParams.get('sort') || 'search'}
+              
               defaultValue={''}
               // onChange={(e) => updateFilter('sort', e.target.value)}
             >
@@ -90,7 +90,7 @@ export default function SearchBarWithFilters() {
           <Col md={3} sm={6}>
             <Form.Select
               size="sm"
-              // value={searchParams.get('time') || ''}
+              
               defaultValue={''}
               // onChange={(e) => updateFilter('time', e.target.value)}
             >
@@ -116,7 +116,7 @@ export default function SearchBarWithFilters() {
           </Col>
         </Row>
 
-        {/* Clear Filters Button */}
+        {}
         {hasFilters && (
           <div className="text-end">
             <Button
