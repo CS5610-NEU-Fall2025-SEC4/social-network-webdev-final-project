@@ -74,7 +74,6 @@ export default async function PublicProfileById({ params }: { params: Promise<{ 
               <div className="rounded-lg bg-white shadow p-4">
                 <h3 className="text-lg font-medium mb-2">Contact</h3>
                 <ul className="text-gray-700 text-sm space-y-1">
-                  {/* Email intentionally hidden for public view */}
                   <li>
                     <span className="font-medium">Website:</span> {profile.website || '—'}
                   </li>
