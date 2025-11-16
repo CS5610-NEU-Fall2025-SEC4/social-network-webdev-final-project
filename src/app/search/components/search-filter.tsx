@@ -143,9 +143,7 @@ export default function SearchBarWithFilters() {
             </Select>
           </div>
 
-        {}
-        {hasFilters && (
-          <div className="text-end">
+          {hasFilters && (
             <Button
               variant="ghost"
               size="sm"
