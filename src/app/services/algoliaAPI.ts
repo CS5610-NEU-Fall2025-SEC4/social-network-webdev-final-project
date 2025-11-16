@@ -34,10 +34,10 @@ class HNAPIService {
   async getFrontPage(storyType: string) {
     const suffix =
       storyType && storyType !== '' ? `?storyType=${encodeURIComponent(storyType)}` : ''
-    return this.fetchAPI(`/front-page${suffix}`)
+    return this.fetchAPI<HNSearchResponse>(`/front-page${suffix}`)
   }
-  async getTag(storyType: string) {
-    return this.fetchAPI(`/tag/${encodeURIComponent(storyType)}`)
+  async getTag(storyType: string): Promise<HNSearchResponse> {
+    return this.fetchAPI<HNSearchResponse>(`/tag/${encodeURIComponent(storyType)}`)
   }
 }
 

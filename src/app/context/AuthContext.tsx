@@ -20,6 +20,8 @@ export interface ProfileData {
   social?: { twitter?: string; github?: string; linkedin?: string }
   createdAt?: string
   updatedAt?: string
+  followers?: Array<{ id: string; username: string }>
+  following?: Array<{ id: string; username: string }>
 }
 export interface UpdateProfilePayload {
   username?: string

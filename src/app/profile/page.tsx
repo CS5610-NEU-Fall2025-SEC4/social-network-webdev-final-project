@@ -29,6 +29,8 @@ type EditableUser = {
     followers?: number
     following?: number
   }
+  followers?: Array<{ id: string; username: string }>
+  following?: Array<{ id: string; username: string }>
 }
 
 export default function ProfilePage() {
@@ -59,6 +61,8 @@ export default function ProfilePage() {
         interests: profile.interests || [],
         social: profile.social || {},
         stats: {},
+        followers: profile.followers || [],
+        following: profile.following || [],
       }
       setUser(editable)
       setForm(editable)
@@ -129,9 +133,9 @@ export default function ProfilePage() {
               </h2>
               <p className="text-white/80">@{user?.username}</p>
             </div>
-            {user?.username && (
+            {user?.id && (
               <Link
-                href={`/u/${encodeURIComponent(user.username)}`}
+                href={`/profile/${encodeURIComponent(user.id)}`}
                 className="px-3 py-2 border border-white/70 text-white hover:bg-white/10 rounded-md text-sm"
               >
                 View public profile
@@ -147,7 +151,10 @@ export default function ProfilePage() {
                 ? 'bg-white text-blue-700 shadow-sm'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
-            onClick={() => setTab('overview')}
+            onClick={() => {
+              setMessage('')
+              setTab('overview')
+            }}
           >
             Overview
           </button>
@@ -157,7 +164,10 @@ export default function ProfilePage() {
                 ? 'bg-white text-blue-700 shadow-sm'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
-            onClick={() => setTab('edit')}
+            onClick={() => {
+              setMessage('')
+              setTab('edit')
+            }}
           >
             Edit Profile
           </button>
@@ -299,6 +309,34 @@ export default function ProfilePage() {
                 <p className="text-gray-600 text-sm">
                   Coming soon: posts and comments from your activity.
                 </p>
+              </div>
+              <div className="rounded-lg bg-white shadow p-4">
+                <h3 className="text-lg font-medium mb-2">Following</h3>
+                <ul className="text-sm space-y-1">
+                  {(user?.following || []).map((u: { id: string; username: string }) => (
+                    <li key={u.id}>
+                      <Link href={`/profile/${u.id}`} className="text-blue-700 hover:underline">
+                        @{u.username}
+                      </Link>
+                    </li>
+                  ))}
+                  {!user?.following?.length && (
+                    <li className="text-gray-500">Not following anyone yet.</li>
+                  )}
+                </ul>
+              </div>
+              <div className="rounded-lg bg-white shadow p-4">
+                <h3 className="text-lg font-medium mb-2">Followers</h3>
+                <ul className="text-sm space-y-1">
+                  {(user?.followers || []).map((u: { id: string; username: string }) => (
+                    <li key={u.id}>
+                      <Link href={`/profile/${u.id}`} className="text-blue-700 hover:underline">
+                        @{u.username}
+                      </Link>
+                    </li>
+                  ))}
+                  {!user?.followers?.length && <li className="text-gray-500">No followers yet.</li>}
+                </ul>
               </div>
             </div>
           </div>
@@ -446,6 +484,7 @@ export default function ProfilePage() {
                   className="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-800 rounded-md"
                   onClick={() => {
                     setForm(user)
+                    setMessage('')
                     setTab('overview')
                   }}
                 >
