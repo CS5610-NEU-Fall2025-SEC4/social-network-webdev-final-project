@@ -31,15 +31,7 @@ export default function Register() {
     setFormData({ ...formData, [name]: value })
   }
 
-  //valdiate the passwords before submission
-  // Regex explanation:
-  // (?=.*[a-z]) → must include at least one lowercase letter
-  // (?=.*[A-Z]) → must include at least one uppercase letter
-  // (?=.*\d) → must include at least one number
-  // (?=.*[^A-Za-z0-9]) → must include at least one special character (any non-alphanumeric)
-  // (no spaces) and {8,} → at least 8 characters total
   const validatePassword = (password: string): boolean => {
-    // Require: one lowercase, one uppercase, one digit, one special char; no spaces; length >= 8
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])\S{8,}$/
     return regex.test(password)
   }

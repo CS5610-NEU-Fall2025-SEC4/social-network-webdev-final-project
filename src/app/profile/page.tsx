@@ -90,6 +90,7 @@ export default function ProfilePage() {
     }
     try {
       await updateProfile({
+        username: form.username,
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
@@ -111,6 +112,14 @@ export default function ProfilePage() {
 
   return (
     <div className="p-4 md:p-6">
+      <div className="mb-2">
+        <Link
+          href="/home"
+          className="inline-flex items-center gap-1 text-gray-700 hover:text-blue-600 !no-underline text-sm"
+        >
+          &lt; Back
+        </Link>
+      </div>
       <div className="flex items-center justify-between gap-4 mb-4">
         <div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-semibold">
           {initials}

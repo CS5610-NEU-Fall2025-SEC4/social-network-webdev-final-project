@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { IoHomeOutline, IoCreateOutline } from 'react-icons/io5'
+import { IoHomeOutline } from 'react-icons/io5'
 import { CiLogin, CiSearch, CiLogout } from 'react-icons/ci'
 import { FaRegCircleUser } from 'react-icons/fa6'
 import { DiHackernews } from 'react-icons/di'
@@ -68,7 +68,7 @@ export default function Navigation({
         id="wd-hckrnws-navigation"
       >
         <Link
-          href="/"
+          href="/home"
           className="flex items-center space-x-2 text-black hover:text-blue-600 !no-underline"
         >
           <DiHackernews className="text-4xl" />
@@ -86,7 +86,7 @@ export default function Navigation({
         ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex justify-between items-center p-4 border-b">
-          <Link href="/" className="flex items-center space-x-2 !no-underline">
+          <Link href="/home" className="flex items-center space-x-2 !no-underline">
             <DiHackernews className="text-3xl" />
             <span className="font-bold text-lg">HckrNws</span>
           </Link>
@@ -147,23 +147,13 @@ function NavLinks({
       </Link>
 
       {!isAuthenticated && (
-        <>
-          <Link
-            href="/logIn"
-            className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
-          >
-            <CiLogin className="text-2xl" />
-            <span className="text-sm font-medium">Log In</span>
-          </Link>
-
-          <Link
-            href="/register"
-            className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
-          >
-            <IoCreateOutline className="text-2xl" />
-            <span className="text-sm font-medium">Register</span>
-          </Link>
-        </>
+        <Link
+          href="/logIn"
+          className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
+        >
+          <CiLogin className="text-2xl" />
+          <span className="text-sm font-medium">Log In</span>
+        </Link>
       )}
 
       {isAuthenticated && (
@@ -214,23 +204,13 @@ function MobileNavLinks({
       </Link>
 
       {!isAuthenticated && (
-        <>
-          <Link
-            href="/logIn"
-            className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
-          >
-            <CiLogin className="text-2xl" />
-            <span className="text-base">Log In</span>
-          </Link>
-
-          <Link
-            href="/register"
-            className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
-          >
-            <IoCreateOutline className="text-2xl" />
-            <span className="text-base">Register</span>
-          </Link>
-        </>
+        <Link
+          href="/logIn"
+          className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
+        >
+          <CiLogin className="text-2xl" />
+          <span className="text-base">Log In</span>
+        </Link>
       )}
 
       {isAuthenticated && (

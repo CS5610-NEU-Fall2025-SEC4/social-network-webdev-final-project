@@ -22,6 +22,7 @@ export interface ProfileData {
   updatedAt?: string
 }
 export interface UpdateProfilePayload {
+  username?: string
   firstName?: string
   lastName?: string
   email?: string

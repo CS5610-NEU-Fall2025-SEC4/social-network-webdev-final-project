@@ -4,6 +4,25 @@ import Link from 'next/link'
 export default function Home() {
   return (
     <div className="bg-black text-white">
+      <nav className="sticky top-0 z-30 backdrop-blur bg-black/70 border-b border-white/10">
+        <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
+          <Link href="/home" className="font-semibold text-lg !no-underline">
+            HckrNws
+          </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/home">
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm">
+                Explore Stories
+              </button>
+            </Link>
+            <Link href="/logIn">
+              <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm">
+                Join Conversation
+              </button>
+            </Link>
+          </div>
+        </div>
+      </nav>
       <div className="wd-hero-img">
         <h1 className="text-7xl font-boldmb-2 text-white pb-5">
           Welcome to <span className="wd-cyan">HckrNws</span>
@@ -15,18 +34,7 @@ export default function Home() {
         </h3>
       </div>
       <div className="flex flex-col items-center px-6 py-10 text-center">
-        <div className="flex flex-wrap justify-center gap-4 mb-16">
-          <Link href="./home">
-            <button className="bg-blue-600 text-white px-6 py-2 !rounded-xl hover:bg-blue-700 transition">
-              Explore Stories
-            </button>
-          </Link>
-          <Link href="./logIn">
-            <button className="bg-green-600 text-white px-6 py-2 !rounded-xl hover:bg-green-700 transition">
-              Join the Conversation
-            </button>
-          </Link>
-        </div>
+        <div className="flex flex-wrap justify-center gap-4 mb-16" />
 
         <div className="max-w-3xl text-left mb-16">
           <h3 className="text-2xl font-semibold text-center mb-6">Why You&apos;ll Love HckrNws</h3>
