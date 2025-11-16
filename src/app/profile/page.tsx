@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import UserDetails from '../details/user'
+import { useAuth } from '../context/AuthContext'
 
 type EditableUser = {
   id: string
@@ -10,9 +11,9 @@ type EditableUser = {
   lastName: string
   email: string
   bio?: string
-  
+
   karma?: number
-  joined?: string 
+  joined?: string
   location?: string
   website?: string
   interests?: string[]
@@ -31,15 +32,13 @@ type EditableUser = {
   }
 }
 
-
-
 export default function ProfilePage() {
+  const { profile, loading, authenticated, refreshProfile, updateProfile } = useAuth()
   const [tab, setTab] = useState<'overview' | 'edit'>('overview')
   const [user, setUser] = useState<EditableUser | null>(null)
   const [form, setForm] = useState<EditableUser | null>(null)
   const [message, setMessage] = useState<string>('')
 
-  // derive initials for avatar
   const initials = useMemo(() => {
     if (!user) return 'U'
     const a = user.firstName?.[0] || ''
@@ -48,84 +47,29 @@ export default function ProfilePage() {
   }, [user])
 
   useEffect(() => {
-    
-    const stored = typeof window !== 'undefined' ? localStorage.getItem('userProfile') : null
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored) as EditableUser
-        setUser(parsed)
-        setForm(parsed)
-        return
-      } catch {}
+    if (!loading && authenticated && profile) {
+      const editable: EditableUser = {
+        id: profile.id,
+        username: profile.username,
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        email: profile.email,
+        bio: profile.bio,
+        location: profile.location,
+        website: profile.website,
+        interests: profile.interests || [],
+        social: profile.social || {},
+      }
+      setUser(editable)
+      setForm(editable)
     }
+  }, [loading, authenticated, profile])
 
-    
-    const legacy = typeof window !== 'undefined' ? localStorage.getItem('user') : null
-    if (legacy) {
-      try {
-        const parsed = JSON.parse(legacy) as Partial<EditableUser>
-        const normalized: EditableUser = {
-          id: parsed.id || '1',
-          username: parsed.username || 'demo',
-          firstName: parsed.firstName || 'Demo',
-          lastName: parsed.lastName || 'User',
-          email: parsed.email || 'demo@example.com',
-          bio: parsed.bio || 'This is a demo profile. Connect a backend to load real data.',
-          karma: parsed.karma ?? 1234,
-          joined: parsed.joined || '2024-01-15T00:00:00.000Z',
-          location: parsed.location || 'Internet',
-          website: parsed.website || 'https://example.com',
-          interests: parsed.interests || ['webdev', 'nextjs', 'typescript'],
-          social: parsed.social || {
-            twitter: 'https://twitter.com/demo',
-            github: 'https://github.com/demo',
-            linkedin: 'https://www.linkedin.com/in/demo',
-          },
-          stats: parsed.stats || {
-            posts: 12,
-            comments: 47,
-            upvotesGiven: 210,
-            upvotesReceived: 389,
-            followers: 25,
-            following: 18,
-          },
-        }
-        setUser(normalized)
-        setForm(normalized)
-        return
-      } catch {}
+  useEffect(() => {
+    if (!loading && authenticated && !profile) {
+      void refreshProfile()
     }
-
-    
-    const demo: EditableUser = {
-      id: '1',
-      username: 'demo',
-      firstName: 'Demo',
-      lastName: 'User',
-      email: 'demo@example.com',
-      bio: 'This is a demo profile. Connect a backend to load real data.',
-      karma: 1234,
-      joined: '2024-01-15T00:00:00.000Z',
-      location: 'Internet',
-      website: 'https://example.com',
-      interests: ['webdev', 'nextjs', 'typescript'],
-      social: {
-        twitter: 'https://twitter.com/demo',
-        github: 'https://github.com/demo',
-        linkedin: 'https://www.linkedin.com/in/demo',
-      },
-      stats: {
-        posts: 12,
-        comments: 47,
-        upvotesGiven: 210,
-        upvotesReceived: 389,
-        followers: 25,
-        following: 18,
-      },
-    }
-    setUser(demo)
-    setForm(demo)
-  }, [])
+  }, [loading, authenticated, profile, refreshProfile])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (!form) return
@@ -134,9 +78,8 @@ export default function ProfilePage() {
     setMessage('')
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form) return
-    // very light validation
     if (!form.username.trim()) {
       setMessage('Username is required.')
       return
@@ -146,12 +89,23 @@ export default function ProfilePage() {
       return
     }
     try {
-      localStorage.setItem('userProfile', JSON.stringify(form))
-      setUser(form)
-      setMessage('Profile saved locally.')
+      await updateProfile({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        bio: form.bio,
+        location: form.location,
+        website: form.website,
+        interests: form.interests || [],
+        twitter: form.social?.twitter,
+        github: form.social?.github,
+        linkedin: form.social?.linkedin,
+      })
+      setMessage('Profile updated successfully.')
+      await refreshProfile()
       setTab('overview')
     } catch {
-      setMessage('Failed to save profile locally.')
+      setMessage('Failed to update profile.')
     }
   }
 

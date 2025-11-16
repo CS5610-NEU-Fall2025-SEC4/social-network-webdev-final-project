@@ -15,16 +15,6 @@ export default function About() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
         <div className="flex flex-col items-center">
           <Image
-            src="/images/Mrinal.jpg"
-            alt="Mrinal"
-            className="w-32 h-32 object-cover rounded-full mb-4 shadow-md"
-            width={128}
-            height={128}
-          />
-          <h2 className="font-semibold text-lg text-gray-800">Mrinal</h2>
-        </div>
-        <div className="flex flex-col items-center">
-          <Image
             src="/images/Kalyan.jpg"
             alt="Kalyan"
             className="w-32 h-32 object-cover rounded-full mb-4 shadow-md"
@@ -32,6 +22,16 @@ export default function About() {
             height={128}
           />
           <h2 className="font-semibold text-lg text-gray-800">Kalyan</h2>
+        </div>
+        <div className="flex flex-col items-center">
+          <Image
+            src="/images/Mrinal.jpg"
+            alt="Mrinal"
+            className="w-32 h-32 object-cover rounded-full mb-4 shadow-md"
+            width={128}
+            height={128}
+          />
+          <h2 className="font-semibold text-lg text-gray-800">Mrinal</h2>
         </div>
         <div className="flex flex-col items-center">
           <Image
