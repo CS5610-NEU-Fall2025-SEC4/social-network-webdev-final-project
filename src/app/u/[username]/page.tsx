@@ -73,7 +73,7 @@ export default function PublicProfile({ params }: { params: { username: string }
     <div className="p-4 md:p-6">
       <div className="mb-2">
         <Link
-          href="/home"
+          href="/profile"
           className="inline-flex items-center gap-1 text-gray-700 hover:text-blue-600 !no-underline text-sm"
         >
           &lt; Back
