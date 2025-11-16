@@ -32,7 +32,8 @@ export default function Navigation({
       }
 
       try {
-        const res = await fetch('http://localhost:5000/users/isAuthenticated', {
+        const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+        const res = await fetch(`${base}/users/isAuthenticated`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -110,8 +111,6 @@ export default function Navigation({
   )
 }
 
-
-
 function NavLinks({
   isAuthenticated,
   handleLogout,
@@ -179,8 +178,6 @@ function NavLinks({
     </>
   )
 }
-
-
 
 function MobileNavLinks({
   isAuthenticated,
