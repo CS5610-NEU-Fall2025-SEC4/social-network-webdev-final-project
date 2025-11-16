@@ -1,41 +1,28 @@
+'use client'
 import Link from 'next/link'
+import { useEffect, useMemo } from 'react'
+import { useParams } from 'next/navigation'
+import { useAppDispatch } from '../../store'
+import { useSelector } from 'react-redux'
+import { fetchPublicProfileById } from '../../store/publicProfileSlice'
+import type { PublicProfileState } from '../../store/publicProfileSlice'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+export default function PublicProfileById() {
+  const { id } = useParams<{ id: string }>()
+  const dispatch = useAppDispatch()
+  const profile = useSelector(
+    (s: unknown) => (s as { publicProfile: PublicProfileState }).publicProfile,
+  ) as PublicProfileState
 
-interface PublicUserRef {
-  id: string
-  username: string
-}
-interface PublicProfile {
-  id: string
-  username: string
-  firstName: string
-  lastName: string
-  bio?: string | null
-  location?: string | null
-  website?: string | null
-  interests?: string[]
-  social?: { twitter?: string; github?: string; linkedin?: string }
-  followers?: PublicUserRef[]
-  following?: PublicUserRef[]
-}
+  useEffect(() => {
+    if (id) void dispatch(fetchPublicProfileById(id))
+  }, [id, dispatch])
 
-async function fetchPublicProfile(id: string): Promise<PublicProfile | null> {
-  try {
-    const res = await fetch(`${API_BASE}/users/${id}`, { cache: 'no-store' })
-    if (!res.ok) return null
-    return (await res.json()) as PublicProfile
-  } catch {
-    return null
-  }
-}
-
-export default async function PublicProfileById({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const profile = await fetchPublicProfile(id)
-  const initials = (
-    (profile?.firstName?.[0] || '') + (profile?.lastName?.[0] || profile?.username?.[0] || 'U')
-  ).toUpperCase()
+  const initials = useMemo(() => {
+    const a = profile.firstName?.[0] || ''
+    const b = profile.lastName?.[0] || profile.username?.[0] || 'U'
+    return (a + b).toUpperCase()
+  }, [profile.firstName, profile.lastName, profile.username])
 
   return (
     <div className="p-4 md:p-8 bg-gray-50 min-h-[calc(100vh-4rem)]">
@@ -62,7 +49,7 @@ export default async function PublicProfileById({ params }: { params: Promise<{ 
           </div>
         </div>
 
-        {!profile ? (
+        {profile.status === 'failed' ? (
           <div className="rounded-lg bg-white shadow p-6 text-gray-700">Profile not found.</div>
         ) : (
           <div className="grid gap-4 md:grid-cols-3">
@@ -85,7 +72,7 @@ export default async function PublicProfileById({ params }: { params: Promise<{ 
               <div className="rounded-lg bg-white shadow p-4">
                 <h3 className="text-lg font-medium mb-2">Interests</h3>
                 <div className="flex flex-wrap gap-2">
-                  {(profile.interests || []).map((tag) => (
+                  {(profile.interests || []).map((tag: string) => (
                     <span
                       key={tag}
                       className="px-2 py-1 text-xs bg-indigo-50 text-indigo-800 rounded"

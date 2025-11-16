@@ -3,6 +3,10 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import UserDetails from '../details/user'
 import { useAuth } from '../context/AuthContext'
+import { useAppDispatch } from '../store'
+import { useSelector } from 'react-redux'
+import type { ProfileState as StoreProfileState } from '../store/profileSlice'
+import { fetchProfile, updateProfileThunk } from '../store/profileSlice'
 
 type EditableUser = {
   id: string
@@ -34,7 +38,11 @@ type EditableUser = {
 }
 
 export default function ProfilePage() {
-  const { profile, loading, authenticated, refreshProfile, updateProfile } = useAuth()
+  const { loading, authenticated } = useAuth()
+  const dispatch = useAppDispatch()
+  const profileState = useSelector(
+    (s: unknown) => (s as { profile: StoreProfileState }).profile,
+  ) as StoreProfileState
 
   const [tab, setTab] = useState<'overview' | 'edit'>('overview')
   const [user, setUser] = useState<EditableUser | null>(null)
@@ -42,22 +50,23 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<string>('')
 
   useEffect(() => {
-    if (!loading && authenticated && !profile) {
-      void refreshProfile()
+    if (!loading && authenticated && profileState.status === 'idle') {
+      void dispatch(fetchProfile())
     }
-  }, [loading, authenticated, profile, refreshProfile])
+  }, [loading, authenticated, profileState.status, dispatch])
 
   useEffect(() => {
+    const profile = profileState.id ? profileState : null
     if (profile) {
       const editable: EditableUser = {
-        id: profile.id,
-        username: profile.username,
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        email: profile.email,
-        bio: profile.bio,
-        location: profile.location,
-        website: profile.website,
+        id: profile.id!,
+        username: profile.username!,
+        firstName: profile.firstName!,
+        lastName: profile.lastName!,
+        email: profile.email!,
+        bio: profile.bio ?? undefined,
+        location: profile.location ?? undefined,
+        website: profile.website ?? undefined,
         interests: profile.interests || [],
         social: profile.social || {},
         stats: {},
@@ -67,7 +76,7 @@ export default function ProfilePage() {
       setUser(editable)
       setForm(editable)
     }
-  }, [profile])
+  }, [profileState])
 
   const initials = useMemo(() => {
     if (!user) return 'U'
@@ -90,21 +99,22 @@ export default function ProfilePage() {
       return
     }
     try {
-      await updateProfile({
-        username: form.username,
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email,
-        bio: form.bio,
-        location: form.location,
-        website: form.website,
-        interests: form.interests || [],
-        twitter: form.social?.twitter,
-        github: form.social?.github,
-        linkedin: form.social?.linkedin,
-      })
+      await dispatch(
+        updateProfileThunk({
+          username: form.username,
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          bio: form.bio,
+          location: form.location,
+          website: form.website,
+          interests: form.interests || [],
+          twitter: form.social?.twitter,
+          github: form.social?.github,
+          linkedin: form.social?.linkedin,
+        }),
+      ).unwrap()
       setMessage('Profile updated successfully.')
-      await refreshProfile()
       setTab('overview')
     } catch {
       setMessage('Failed to update profile.')
