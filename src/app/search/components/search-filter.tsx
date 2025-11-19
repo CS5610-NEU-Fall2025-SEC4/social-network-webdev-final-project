@@ -120,9 +120,12 @@ export default function SearchBarWithFilters() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Time</SelectItem>
+                <SelectItem value="hour">Last Hour</SelectItem>
                 <SelectItem value="24h">Last 24 Hours</SelectItem>
                 <SelectItem value="week">Past Week</SelectItem>
                 <SelectItem value="month">Past Month</SelectItem>
+                <SelectItem value="6months">Past 6 Months</SelectItem>
+                <SelectItem value="year">Past Year</SelectItem>
               </SelectContent>
             </Select>
           </div>

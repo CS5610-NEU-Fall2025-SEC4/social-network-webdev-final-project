@@ -12,7 +12,41 @@ export default async function SearchPage({
   searchParams: Promise<SearchParams>
 }) {
   const search_params = await searchParams
-  const results = await HNApiService.search(search_params)
+  const processedParams: SearchParams = { ...search_params }
+  const { time } = processedParams
+
+  if (time && time !== 'all') {
+    const now = Math.floor(Date.now() / 1000)
+    let secondsAgo = 0
+
+    switch (time) {
+      case 'hour':
+        secondsAgo = 60 * 60
+        break
+      case '24h':
+        secondsAgo = 24 * 60 * 60
+        break
+      case 'week':
+        secondsAgo = 7 * 24 * 60 * 60
+        break
+      case 'month':
+        secondsAgo = 30 * 24 * 60 * 60
+        break
+      case '6months':
+        secondsAgo = 6 * 30 * 24 * 60 * 60
+        break
+      case 'year':
+        secondsAgo = 365 * 24 * 60 * 60
+        break
+    }
+
+    if (secondsAgo > 0) {
+      processedParams.numericFilters = `created_at_i>${now - secondsAgo}`
+    }
+  }
+  delete processedParams.time
+
+  const results = await HNApiService.search(processedParams)
 
   return (
     <div className="container mx-auto py-8">

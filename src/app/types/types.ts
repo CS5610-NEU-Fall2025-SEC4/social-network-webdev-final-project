@@ -44,4 +44,5 @@ export type SearchParams = {
   sort?: string
   hitsPerPage?: string
   numericFilters?: string
+  time?: string
 }
