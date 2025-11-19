@@ -25,7 +25,9 @@ export default function SearchBarWithFilters() {
     } else {
       params.delete(key)
     }
-    params.set('page', '0')
+    if (key !== 'page') {
+      params.set('page', '0')
+    }
     router.push(`/search?${params.toString()}`)
   }
 
@@ -118,9 +120,12 @@ export default function SearchBarWithFilters() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Time</SelectItem>
+                <SelectItem value="hour">Last Hour</SelectItem>
                 <SelectItem value="24h">Last 24 Hours</SelectItem>
                 <SelectItem value="week">Past Week</SelectItem>
                 <SelectItem value="month">Past Month</SelectItem>
+                <SelectItem value="6months">Past 6 Months</SelectItem>
+                <SelectItem value="year">Past Year</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -139,6 +144,30 @@ export default function SearchBarWithFilters() {
                 <SelectItem value="30">30 per page</SelectItem>
                 <SelectItem value="50">50 per page</SelectItem>
                 <SelectItem value="100">100 per page</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <List className="h-4 w-4 text-gray-500" />
+            <Select
+              value={searchParams.get('page') || '0'}
+              onValueChange={(value) => updateFilter('page', value)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Page" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">Page 1</SelectItem>
+                <SelectItem value="1">Page 2</SelectItem>
+                <SelectItem value="2">Page 3</SelectItem>
+                <SelectItem value="3">Page 4</SelectItem>
+                <SelectItem value="4">Page 5</SelectItem>
+                <SelectItem value="5">Page 6</SelectItem>
+                <SelectItem value="6">Page 7</SelectItem>
+                <SelectItem value="7">Page 8</SelectItem>
+                <SelectItem value="8">Page 9</SelectItem>
+                <SelectItem value="9">Page 10</SelectItem>
               </SelectContent>
             </Select>
           </div>
