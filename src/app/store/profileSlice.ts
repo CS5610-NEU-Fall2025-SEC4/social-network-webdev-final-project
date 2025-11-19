@@ -19,6 +19,16 @@ export interface ProfileState {
   social?: { twitter?: string; github?: string; linkedin?: string }
   followers?: UserRef[]
   following?: UserRef[]
+  createdAt?: string
+  updatedAt?: string
+  visibility?: {
+    name?: boolean
+    bio?: boolean
+    location?: boolean
+    website?: boolean
+    interests?: boolean
+    social?: boolean
+  }
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
   error?: string
 }
@@ -28,7 +38,8 @@ const initialState: ProfileState = {
 }
 
 export const fetchProfile = createAsyncThunk('profile/fetchProfile', async () => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+  // Use the same key as AuthContext (`access_token`)
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
   const res = await fetch(`${API_BASE}/users/me`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     cache: 'no-store',
@@ -51,8 +62,16 @@ export const updateProfileThunk = createAsyncThunk(
     twitter?: string
     github?: string
     linkedin?: string
+    visibility?: {
+      name?: boolean
+      bio?: boolean
+      location?: boolean
+      website?: boolean
+      interests?: boolean
+      social?: boolean
+    }
   }) => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
     const res = await fetch(`${API_BASE}/users/me`, {
       method: 'PATCH',
       headers: {

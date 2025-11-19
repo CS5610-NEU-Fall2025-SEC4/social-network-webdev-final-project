@@ -18,6 +18,7 @@ export interface PublicProfileState {
   social?: { twitter?: string; github?: string; linkedin?: string }
   followers?: UserRef[]
   following?: UserRef[]
+  createdAt?: string
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
   error?: string
 }

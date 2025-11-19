@@ -48,9 +48,11 @@ export default function About() {
       <div className="max-w-3xl mx-auto mt-16 text-center">
         <h3 className="text-2xl font-semibold text-gray-800 mb-4">Our Project</h3>
         <p className="text-gray-600 text-base">
-          [Project description placeholder] — we’ll update this section later with details about our
-          project’s functionality, goals, and how it integrates various APIs. We’ll also add a short
-          summary of our <strong>tech stack</strong> and architecture once the project is complete.
+          A full-stack Next.js social platform for innovators and developers, enabling them to
+          connect, showcase projects, and network in real time. The platform features dynamic
+          content rendering, role-based access control, and API-powered real-time search, with
+          Tailwind CSS for responsive, modern UI design, and Node.js with MongoDB ensuring secure,
+          scalable, and efficient data management.
         </p>
       </div>
     </div>

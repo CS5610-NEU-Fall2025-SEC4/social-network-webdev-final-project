@@ -7,6 +7,35 @@ import { useAppDispatch } from '../store'
 import { useSelector } from 'react-redux'
 import type { ProfileState as StoreProfileState } from '../store/profileSlice'
 import { fetchProfile, updateProfileThunk } from '../store/profileSlice'
+import { fetchPublicProfileById } from '../store/publicProfileSlice'
+
+// Simple toggle switch component for visibility flags
+function VisibilityToggle({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string
+  checked: boolean
+  onChange: (val: boolean) => void
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[11px] uppercase tracking-wide text-gray-500">Public</span>
+      <button
+        type="button"
+        aria-pressed={checked}
+        aria-label={`${label} visibility toggle (currently ${checked ? 'public' : 'private'})`}
+        onClick={() => onChange(!checked)}
+        className={`relative inline-flex items-center w-12 h-6 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400 ${checked ? 'bg-cyan-600' : 'bg-gray-300'}`}
+      >
+        <span
+          className={`absolute left-1 top-1 w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-300 ${checked ? 'translate-x-6' : 'translate-x-0'}`}
+        />
+      </button>
+    </div>
+  )
+}
 
 type EditableUser = {
   id: string
@@ -24,6 +53,14 @@ type EditableUser = {
     twitter?: string
     github?: string
     linkedin?: string
+  }
+  visibility?: {
+    name?: boolean
+    bio?: boolean
+    location?: boolean
+    website?: boolean
+    interests?: boolean
+    social?: boolean
   }
   stats?: {
     posts?: number
@@ -69,9 +106,11 @@ export default function ProfilePage() {
         website: profile.website ?? undefined,
         interests: profile.interests || [],
         social: profile.social || {},
+        visibility: profile.visibility || {},
         stats: {},
         followers: profile.followers || [],
         following: profile.following || [],
+        joined: profile.createdAt ? String(profile.createdAt) : undefined,
       }
       setUser(editable)
       setForm(editable)
@@ -112,8 +151,14 @@ export default function ProfilePage() {
           twitter: form.social?.twitter,
           github: form.social?.github,
           linkedin: form.social?.linkedin,
+          visibility: form.visibility,
         }),
       ).unwrap()
+      // Refresh public profile data before navigating so hidden fields take effect
+      if (form.id) {
+        // Refresh the public profile slice silently (await to ensure latest visibility flags)
+        await dispatch(fetchPublicProfileById(form.id)).unwrap()
+      }
       setMessage('Profile updated successfully.')
       setTab('overview')
     } catch {
@@ -132,7 +177,18 @@ export default function ProfilePage() {
         </Link>
       </div>
       <div className="max-w-5xl mx-auto">
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 p-6 text-white shadow-md mb-4">
+        {profileState.status === 'failed' && (
+          <div className="mb-4 p-3 rounded-md bg-red-50 border border-red-200 text-red-700 flex items-center justify-between">
+            <span>{profileState.error || 'Failed to load profile.'}</span>
+            <button
+              onClick={() => dispatch(fetchProfile())}
+              className="px-3 py-1 text-sm rounded bg-red-600 text-white hover:bg-red-700"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-black to-cyan-700 p-6 text-white shadow-md mb-4">
           <div className="flex items-center justify-between gap-4">
             <div className="w-16 h-16 rounded-full bg-white/20 ring-2 ring-white/50 backdrop-blur flex items-center justify-center text-2xl font-semibold">
               {initials}
@@ -141,7 +197,12 @@ export default function ProfilePage() {
               <h2 className="text-2xl md:text-3xl font-semibold leading-tight">
                 {user?.firstName} {user?.lastName}
               </h2>
-              <p className="text-white/80">@{user?.username}</p>
+              <p className="text-white/80 mb-1">@{user?.username}</p>
+              {user?.joined && (
+                <span className="inline-block text-xs px-2 py-1 rounded-full bg-white/15 text-white/80 backdrop-blur-sm">
+                  Member since {new Date(user.joined).toLocaleDateString()}
+                </span>
+              )}
             </div>
             {user?.id && (
               <Link
@@ -158,7 +219,7 @@ export default function ProfilePage() {
           <button
             className={`px-3 py-2 text-sm rounded-t ${
               tab === 'overview'
-                ? 'bg-white text-blue-700 shadow-sm'
+                ? 'bg-white text-cyan-700 shadow-sm'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
             onClick={() => {
@@ -171,7 +232,7 @@ export default function ProfilePage() {
           <button
             className={`px-3 py-2 text-sm rounded-t ${
               tab === 'edit'
-                ? 'bg-white text-blue-700 shadow-sm'
+                ? 'bg-white text-cyan-700 shadow-sm'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
             onClick={() => {
@@ -205,13 +266,39 @@ export default function ProfilePage() {
                 <h3 className="text-lg font-medium mb-2">Contact</h3>
                 <ul className="text-gray-700 text-sm space-y-1">
                   <li>
-                    <span className="font-medium">Email:</span> {user?.email}
+                    <span className="font-medium">Email:</span>{' '}
+                    {user?.email ? (
+                      <a href={`mailto:${user.email}`} className="text-cyan-700 hover:underline">
+                        {user.email}
+                      </a>
+                    ) : (
+                      <span className="text-gray-500">Not provided</span>
+                    )}
                   </li>
                   <li>
-                    <span className="font-medium">Website:</span> {user?.website || '—'}
+                    <span className="font-medium">Website:</span>{' '}
+                    {user?.website ? (
+                      <a
+                        href={
+                          user.website.startsWith('http') ? user.website : `https://${user.website}`
+                        }
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-cyan-700 hover:underline"
+                      >
+                        {user.website}
+                      </a>
+                    ) : (
+                      <span className="text-gray-500">Not provided</span>
+                    )}
                   </li>
                   <li>
-                    <span className="font-medium">Location:</span> {user?.location || '—'}
+                    <span className="font-medium">Location:</span>{' '}
+                    {user?.location ? (
+                      <span>{user.location}</span>
+                    ) : (
+                      <span className="text-gray-500">Not provided</span>
+                    )}
                   </li>
                 </ul>
               </div>
@@ -219,7 +306,10 @@ export default function ProfilePage() {
                 <h3 className="text-lg font-medium mb-2">Interests</h3>
                 <div className="flex flex-wrap gap-2">
                   {(user?.interests || []).map((tag) => (
-                    <span key={tag} className="px-2 py-1 text-xs bg-blue-50 text-blue-800 rounded">
+                    <span
+                      key={tag}
+                      className="px-2 py-1 text-xs rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200"
+                    >
                       {tag}
                     </span>
                   ))}
@@ -340,7 +430,7 @@ export default function ProfilePage() {
                 <ul className="text-sm space-y-1">
                   {(user?.followers || []).map((u: { id: string; username: string }) => (
                     <li key={u.id}>
-                      <Link href={`/profile/${u.id}`} className="text-blue-700 hover:underline">
+                      <Link href={`/profile/${u.id}`} className="text-cyan-700 hover:underline">
                         @{u.username}
                       </Link>
                     </li>
@@ -353,23 +443,25 @@ export default function ProfilePage() {
         )}
 
         {tab === 'edit' && form && (
-          <div className="rounded-lg bg-white shadow p-4 max-w-xl mx-auto">
+          <div className="rounded-lg bg-gradient-to-br from-white to-cyan-50 border border-cyan-100 shadow p-6 max-w-2xl mx-auto space-y-6">
             {message && <p className="mb-3 text-sm text-gray-700">{message}</p>}
-            <div className="space-y-4">
+            <div className="space-y-6">
+              {/* Username */}
               <div>
                 <label className="block text-sm text-gray-700 mb-1">Username</label>
                 <input
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                   name="username"
                   value={form.username}
                   onChange={handleChange}
                 />
               </div>
+              {/* Names */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-700 mb-1">First name</label>
                   <input
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                     name="firstName"
                     value={form.firstName}
                     onChange={handleChange}
@@ -378,56 +470,97 @@ export default function ProfilePage() {
                 <div>
                   <label className="block text-sm text-gray-700 mb-1">Last name</label>
                   <input
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                     name="lastName"
                     value={form.lastName}
                     onChange={handleChange}
                   />
                 </div>
               </div>
+              {/* Email (always private) */}
               <div>
                 <label className="block text-sm text-gray-700 mb-1">Email</label>
                 <input
                   type="email"
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                   name="email"
                   value={form.email}
                   onChange={handleChange}
                 />
               </div>
+              {/* Website */}
               <div>
-                <label className="block text-sm text-gray-700 mb-1">Website</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-sm text-gray-700">Website</label>
+                  <VisibilityToggle
+                    label="Website"
+                    checked={form.visibility?.website !== false}
+                    onChange={(val) =>
+                      setForm({
+                        ...(form as EditableUser),
+                        visibility: { ...(form.visibility || {}), website: val },
+                      })
+                    }
+                  />
+                </div>
                 <input
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                   name="website"
                   value={form.website || ''}
                   onChange={handleChange}
                 />
               </div>
+              {/* Location */}
               <div>
-                <label className="block text-sm text-gray-700 mb-1">Location</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-sm text-gray-700">Location</label>
+                  <VisibilityToggle
+                    label="Location"
+                    checked={form.visibility?.location !== false}
+                    onChange={(val) =>
+                      setForm({
+                        ...(form as EditableUser),
+                        visibility: { ...(form.visibility || {}), location: val },
+                      })
+                    }
+                  />
+                </div>
                 <input
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                   name="location"
                   value={form.location || ''}
                   onChange={handleChange}
                 />
               </div>
+              {/* Bio */}
               <div>
-                <label className="block text-sm text-gray-700 mb-1">Bio</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-sm text-gray-700">Bio</label>
+                  <VisibilityToggle
+                    label="Bio"
+                    checked={form.visibility?.bio !== false}
+                    onChange={(val) =>
+                      setForm({
+                        ...(form as EditableUser),
+                        visibility: { ...(form.visibility || {}), bio: val },
+                      })
+                    }
+                  />
+                </div>
                 <textarea
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 min-h-24 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 min-h-24 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                   name="bio"
                   value={form.bio || ''}
                   onChange={handleChange}
                 />
               </div>
+              {/* Interests (always public) */}
               <div>
                 <label className="block text-sm text-gray-700 mb-1">
                   Interests (comma separated)
                 </label>
                 <input
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                   name="interests"
                   value={(form.interests || []).join(', ')}
                   onChange={(e) => {
@@ -439,11 +572,12 @@ export default function ProfilePage() {
                   }}
                 />
               </div>
+              {/* Social links (Twitter/GitHub/LinkedIn) */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm text-gray-700 mb-1">Twitter URL</label>
                   <input
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                     name="twitter"
                     value={form.social?.twitter || ''}
                     onChange={(e) =>
@@ -457,7 +591,7 @@ export default function ProfilePage() {
                 <div>
                   <label className="block text-sm text-gray-700 mb-1">GitHub URL</label>
                   <input
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                     name="github"
                     value={form.social?.github || ''}
                     onChange={(e) =>
@@ -471,7 +605,7 @@ export default function ProfilePage() {
                 <div>
                   <label className="block text-sm text-gray-700 mb-1">LinkedIn URL</label>
                   <input
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                     name="linkedin"
                     value={form.social?.linkedin || ''}
                     onChange={(e) =>
@@ -483,12 +617,14 @@ export default function ProfilePage() {
                   />
                 </div>
               </div>
+              {/* Actions */}
               <div className="flex gap-2">
                 <button
-                  className="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow"
+                  className="px-5 py-2.5 rounded-md bg-gradient-to-r from-black via-cyan-700 to-cyan-600 text-white font-medium shadow hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleSave}
+                  disabled={profileState.status === 'loading'}
                 >
-                  Save
+                  {profileState.status === 'loading' ? 'Saving…' : 'Save Changes'}
                 </button>
                 <button
                   className="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-800 rounded-md"
