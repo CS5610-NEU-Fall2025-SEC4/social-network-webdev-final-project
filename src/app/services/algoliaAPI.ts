@@ -1,7 +1,6 @@
 import { HNSearchResponse, HNStory, SearchParams } from '../types/types'
 
 class HNAPIService {
-  // Prefer explicit HN proxy, then backend API, else direct Algolia
   private readonly backendBase: string | undefined =
     process.env.NEXT_PUBLIC_HN_PROXY_URL || process.env.NEXT_PUBLIC_API_URL
   private readonly directBase = 'https://hn.algolia.com/api/v1'
@@ -28,7 +27,6 @@ class HNAPIService {
       }
       return (await response.json()) as T
     } catch (err) {
-      // If backend failed and we have not yet tried direct, fallback once.
       if (!this.usingDirect) {
         console.warn('HNAPIService: backend fetch failed, falling back to direct Algolia API.', err)
         const directUrl = `${this.directBase}${endpoint}`

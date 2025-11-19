@@ -41,12 +41,12 @@ body {
 
 .wd-hero-img {
   width: 100%;
-  min-height: 120vh; /* extra height to allow scroll while pinned */
+  min-height: 120vh;
   background-image: url('/images/landing-page-hero.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed; /* subtle parallax */
+  background-attachment: fixed;
   position: relative;
   display: block;
 }
@@ -81,7 +81,6 @@ body {
   transform: translateY(0);
 }
 
-/* Animated gradient border for navbar */
 .logo-gradient-bg {
   background: linear-gradient(90deg, #0e7490, #06b6d4, #22d3ee);
   background-size: 300% 300%;
@@ -133,7 +132,6 @@ body {
   text-decoration: none !important;
 }
 
-/* Cyan theme button utilities */
 .btn-cyan {
   position: relative;
   display: inline-flex;
@@ -194,7 +192,6 @@ body {
   transform: translateY(0);
 }
 
-/* Global fixed background image spanning page */
 .global-fixed-bg {
   background-image: url('/images/landing-page-hero.jpg');
   background-attachment: fixed;
