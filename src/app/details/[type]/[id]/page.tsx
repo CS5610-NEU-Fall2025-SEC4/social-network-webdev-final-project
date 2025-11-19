@@ -1,25 +1,20 @@
 'use client'
-import { useParams } from 'next/navigation'
 import PostDetails from '../../post'
 import UserDetails from '../../user'
 import CommentDetails from '../../comment'
 
-export default async function DetailsPage({
-  params,
-}: {
-  params: Promise<{ type: string; id: string }>
-}) {
-  const { type, id } = await params
+export default function DetailsPage({ params }: { params: { type: string; id: string } }) {
+  const { type, id } = params
   let template
   switch (type) {
     case 'post': {
       template = (
         <PostDetails
-          username={'hi'}
-          email={'johndoe@lost.com'}
-          firstName={'john'}
-          lastName={'doe'}
-          id={'23324'}
+          username="placeholder"
+          email="placeholder@example.com"
+          firstName="John"
+          lastName="Doe"
+          id={id}
         />
       )
       break
@@ -27,27 +22,26 @@ export default async function DetailsPage({
     case 'comment': {
       template = (
         <CommentDetails
-          username={'hi'}
-          email={'johndoe@lost.com'}
-          firstName={'john'}
-          lastName={'doe'}
-          id={'234'}
+          username="placeholder"
+          email="placeholder@example.com"
+          firstName="John"
+          lastName="Doe"
+          id={id}
         />
       )
-      template = <div>Comment Here</div>
       break
     }
     default: {
       template = (
         <UserDetails
-          username={'hi'}
-          email={'johndoe@lost.com'}
-          firstName={'john'}
-          lastName={'doe'}
-          id={'2342345'}
+          username="placeholder"
+          email="placeholder@example.com"
+          firstName="John"
+          lastName="Doe"
+          id={id}
         />
       )
     }
   }
-  return <div> {template} </div>
+  return <div>{template}</div>
 }

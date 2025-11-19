@@ -4,9 +4,11 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FaEye } from 'react-icons/fa'
 import { LuEyeClosed } from 'react-icons/lu'
+import { useAuth } from '../context/AuthContext'
 
 export default function LogIn() {
   const router = useRouter()
+  const { login } = useAuth()
 
   const [formData, setFormData] = useState({
     username: '',
@@ -25,40 +27,12 @@ export default function LogIn() {
   const handleLogIn = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const res = await fetch('http://localhost:5000/users/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-        }),
-      })
-
-      const data = await res.json()
-      if (res.ok) {
-        setErrorMessage('')
-        // Persist access token (and user if provided) so nav/profile can recognize auth state
-        try {
-          const token = data?.access_token || data?.token
-          if (token) {
-            localStorage.setItem('access_token', token)
-          }
-          if (data?.user) {
-            localStorage.setItem('user', JSON.stringify(data.user))
-          }
-        } catch (err) {
-          console.warn('Failed to persist auth info:', err)
-        }
-
-        
-        router.push('/home')
-      } else {
-        
-        setErrorMessage(data.message || 'Invalid username or password.')
-      }
+      await login({ username: formData.username, password: formData.password })
+      setErrorMessage('')
+      router.push('/home')
     } catch (err) {
-      console.error(err)
-      alert('Something went wrong. Please try again later.')
+      const msg = err instanceof Error ? err.message : 'Invalid username or password.'
+      setErrorMessage(msg)
     }
   }
 
@@ -101,7 +75,7 @@ export default function LogIn() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)} 
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-[6px] rounded-md bg-gray-100 hover:bg-gray-200 text-sm"
               >
                 {showPassword ? <LuEyeClosed /> : <FaEye />}

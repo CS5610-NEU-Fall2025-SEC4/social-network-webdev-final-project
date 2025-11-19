@@ -1,9 +1,9 @@
 'use client'
 import Link from 'next/link'
-import { IoHomeOutline, IoCreateOutline } from 'react-icons/io5'
+import { IoHomeOutline } from 'react-icons/io5'
 import { CiLogin, CiSearch, CiLogout } from 'react-icons/ci'
 import { FaRegCircleUser } from 'react-icons/fa6'
-import { DiHackernews } from 'react-icons/di'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -14,17 +14,15 @@ export default function Navigation({
   open?: boolean
   setOpen?: (val: boolean) => void
 }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return !!localStorage.getItem('access_token')
-    }
-    return false
-  })
+  // Avoid reading localStorage during SSR to prevent hydration mismatch
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
+    setMounted(true)
     const checkAuth = async () => {
-      const token = localStorage.getItem('access_token')
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
 
       if (!token) {
         setIsAuthenticated(false)
@@ -32,7 +30,8 @@ export default function Navigation({
       }
 
       try {
-        const res = await fetch('http://localhost:5000/users/isAuthenticated', {
+        const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+        const res = await fetch(`${base}/users/isAuthenticated`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -50,8 +49,9 @@ export default function Navigation({
       }
     }
 
-    checkAuth()
-  }, [])
+    // Only run after mount to keep server/client markup consistent
+    if (mounted) void checkAuth()
+  }, [mounted])
 
   const handleLogout = () => {
     localStorage.removeItem('access_token')
@@ -63,41 +63,51 @@ export default function Navigation({
     <>
       {}
       <nav
-        className="hidden md:flex fixed top-0 left-0 right-0 h-16 bg-blue-100 items-center justify-between px-8 shadow-md z-20"
+        className="hidden md:flex fixed top-0 left-0 right-0 h-16 bg-gradient-to-r from-white via-white/90 to-black backdrop-blur items-center justify-between px-8 shadow-md z-20 border-b border-white/10"
         id="wd-hckrnws-navigation"
       >
-        <Link
-          href="/"
-          className="flex items-center space-x-2 text-black hover:text-blue-600 !no-underline"
-        >
-          <DiHackernews className="text-4xl" />
-          <span className="font-bold text-xl">HckrNws</span>
+        <Link href="/home" className="flex items-center !no-underline group">
+          <Image
+            src="/images/HckrNws.png"
+            alt="HckrNws logo"
+            width={48}
+            height={48}
+            priority
+            className="rounded-md shadow-sm group-hover:scale-105 transition-transform border-none outline-none ring-0"
+          />
         </Link>
 
         <div className="flex items-center space-x-8">
-          <NavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
+          {mounted && <NavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />}
         </div>
       </nav>
 
       {}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-blue-100 shadow-md transform transition-transform duration-300 z-30 md:hidden
+        className={`fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-white to-black backdrop-blur-md shadow-lg border-r border-white/10 transform transition-transform duration-300 z-30 md:hidden
         ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex justify-between items-center p-4 border-b">
-          <Link href="/" className="flex items-center space-x-2 !no-underline">
-            <DiHackernews className="text-3xl" />
-            <span className="font-bold text-lg">HckrNws</span>
+          <Link href="/home" className="flex items-center !no-underline">
+            <Image
+              src="/images/HckrNws.png"
+              alt="HckrNws logo"
+              width={40}
+              height={40}
+              className="rounded-md shadow-sm border-none outline-none ring-0"
+            />
           </Link>
           <button
             onClick={() => setOpen && setOpen(false)}
-            className="text-2xl font-semibold hover:text-blue-600"
+            className="text-2xl font-semibold text-white hover:text-cyan-400"
           >
             ✕
           </button>
         </div>
         <div className="flex flex-col p-4 space-y-4">
-          <MobileNavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
+          {mounted && (
+            <MobileNavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
+          )}
         </div>
       </div>
       {open && (
@@ -109,8 +119,6 @@ export default function Navigation({
     </>
   )
 }
-
-
 
 function NavLinks({
   isAuthenticated,
@@ -124,7 +132,7 @@ function NavLinks({
       {isAuthenticated && (
         <Link
           href="/profile"
-          className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
+          className="flex items-center space-x-1 text-white hover:text-cyan-400 !no-underline"
         >
           <FaRegCircleUser className="text-2xl" />
           <span className="text-sm font-medium">Profile</span>
@@ -133,7 +141,7 @@ function NavLinks({
 
       <Link
         href="/home"
-        className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
+        className="flex items-center space-x-1 text-white hover:text-cyan-400 !no-underline"
       >
         <IoHomeOutline className="text-2xl" />
         <span className="text-sm font-medium">Home</span>
@@ -141,36 +149,26 @@ function NavLinks({
 
       <Link
         href="/search"
-        className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
+        className="flex items-center space-x-1 text-white hover:text-cyan-400 !no-underline"
       >
         <CiSearch className="text-2xl" />
         <span className="text-sm font-medium">Search</span>
       </Link>
 
       {!isAuthenticated && (
-        <>
-          <Link
-            href="/logIn"
-            className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
-          >
-            <CiLogin className="text-2xl" />
-            <span className="text-sm font-medium">Log In</span>
-          </Link>
-
-          <Link
-            href="/register"
-            className="flex items-center space-x-1 text-black hover:text-blue-600 !no-underline"
-          >
-            <IoCreateOutline className="text-2xl" />
-            <span className="text-sm font-medium">Register</span>
-          </Link>
-        </>
+        <Link
+          href="/logIn"
+          className="flex items-center space-x-1 text-white hover:text-cyan-400 !no-underline"
+        >
+          <CiLogin className="text-2xl" />
+          <span className="text-sm font-medium">Log In</span>
+        </Link>
       )}
 
       {isAuthenticated && (
         <button
           onClick={handleLogout}
-          className="flex items-center space-x-1 text-black hover:text-red-600"
+          className="flex items-center space-x-1 text-white hover:text-red-500"
         >
           <CiLogout className="text-2xl" />
           <span className="text-sm font-medium">Logout</span>
@@ -179,8 +177,6 @@ function NavLinks({
     </>
   )
 }
-
-
 
 function MobileNavLinks({
   isAuthenticated,
@@ -194,7 +190,7 @@ function MobileNavLinks({
       {isAuthenticated && (
         <Link
           href="/profile"
-          className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
+          className="flex items-center space-x-3 text-white hover:text-cyan-400 !no-underline py-2"
         >
           <FaRegCircleUser className="text-2xl" />
           <span className="text-base">Profile</span>
@@ -202,7 +198,7 @@ function MobileNavLinks({
       )}
       <Link
         href="/home"
-        className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
+        className="flex items-center space-x-3 text-white hover:text-cyan-400 !no-underline py-2"
       >
         <IoHomeOutline className="text-2xl" />
         <span className="text-base">Home</span>
@@ -210,36 +206,26 @@ function MobileNavLinks({
 
       <Link
         href="/search"
-        className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
+        className="flex items-center space-x-3 text-white hover:text-cyan-400 !no-underline py-2"
       >
         <CiSearch className="text-2xl" />
         <span className="text-base">Search</span>
       </Link>
 
       {!isAuthenticated && (
-        <>
-          <Link
-            href="/logIn"
-            className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
-          >
-            <CiLogin className="text-2xl" />
-            <span className="text-base">Log In</span>
-          </Link>
-
-          <Link
-            href="/register"
-            className="flex items-center space-x-3 text-black hover:text-blue-600 !no-underline py-2"
-          >
-            <IoCreateOutline className="text-2xl" />
-            <span className="text-base">Register</span>
-          </Link>
-        </>
+        <Link
+          href="/logIn"
+          className="flex items-center space-x-3 text-white hover:text-cyan-400 !no-underline py-2"
+        >
+          <CiLogin className="text-2xl" />
+          <span className="text-base">Log In</span>
+        </Link>
       )}
 
       {isAuthenticated && (
         <button
           onClick={handleLogout}
-          className="flex items-center space-x-3 text-black hover:text-red-600 py-2 w-full text-left"
+          className="flex items-center space-x-3 text-white hover:text-red-500 py-2 w-full text-left"
         >
           <CiLogout className="text-2xl" />
           <span className="text-base">Logout</span>

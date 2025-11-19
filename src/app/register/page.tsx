@@ -5,9 +5,11 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FaEye } from 'react-icons/fa'
 import { LuEyeClosed } from 'react-icons/lu'
+import { useAuth } from '../context/AuthContext'
 
 export default function Register() {
   const router = useRouter()
+  const { register } = useAuth()
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -29,15 +31,8 @@ export default function Register() {
     setFormData({ ...formData, [name]: value })
   }
 
-  //valdiate the passwords before submission
-  // Regex explanation:
-  // (?=.*[a-z]) → must include at least one lowercase letter
-  // (?=.*[A-Z]) → must include at least one uppercase letter
-  // (?=.*\d) → must include at least one number
-  // (?=.*[@_.]) → must include at least one special character among @, _, or .
-  // {8,} → at least 8 characters total
   const validatePassword = (password: string): boolean => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@_.])[A-Za-z\d@_.]{8,}$/
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])\S{8,}$/
     return regex.test(password)
   }
 
@@ -54,7 +49,7 @@ export default function Register() {
             <li>At least one lowercase letter</li>
             <li>At least one uppercase letter</li>
             <li>At least one digit (0–9)</li>
-            <li>At least one special character (@, _, . etc.)</li>
+            <li>At least one special character (e.g., ! @ # $ % ^ & * . _ -)</li>
             <li>Minimum length of 8 characters</li>
           </ul>
         </div>,
@@ -83,28 +78,18 @@ export default function Register() {
     if (!passwordsMatch()) return
 
     try {
-      const res = await fetch('http://localhost:5000/users/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-        }),
+      await register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
       })
-
-      const data = await res.json()
-      if (res.ok) {
-        alert(data.message || 'Registration successful!')
-        router.push('/logIn')
-      } else {
-        alert(data.message || 'Registration failed. Please try again.')
-      }
+      alert('Registration successful!')
+      router.push('/logIn')
     } catch (err) {
-      console.error(err)
-      alert('Something went wrong. Please try again later.')
+      const msg = err instanceof Error ? err.message : 'Registration failed. Please try again.'
+      alert(msg)
     }
   }
 

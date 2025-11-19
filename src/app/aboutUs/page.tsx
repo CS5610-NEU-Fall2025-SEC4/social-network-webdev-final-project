@@ -15,16 +15,6 @@ export default function About() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
         <div className="flex flex-col items-center">
           <Image
-            src="/images/Mrinal.jpg"
-            alt="Mrinal"
-            className="w-32 h-32 object-cover rounded-full mb-4 shadow-md"
-            width={128}
-            height={128}
-          />
-          <h2 className="font-semibold text-lg text-gray-800">Mrinal</h2>
-        </div>
-        <div className="flex flex-col items-center">
-          <Image
             src="/images/Kalyan.jpg"
             alt="Kalyan"
             className="w-32 h-32 object-cover rounded-full mb-4 shadow-md"
@@ -32,6 +22,16 @@ export default function About() {
             height={128}
           />
           <h2 className="font-semibold text-lg text-gray-800">Kalyan</h2>
+        </div>
+        <div className="flex flex-col items-center">
+          <Image
+            src="/images/Mrinal.jpg"
+            alt="Mrinal"
+            className="w-32 h-32 object-cover rounded-full mb-4 shadow-md"
+            width={128}
+            height={128}
+          />
+          <h2 className="font-semibold text-lg text-gray-800">Mrinal</h2>
         </div>
         <div className="flex flex-col items-center">
           <Image
@@ -48,9 +48,11 @@ export default function About() {
       <div className="max-w-3xl mx-auto mt-16 text-center">
         <h3 className="text-2xl font-semibold text-gray-800 mb-4">Our Project</h3>
         <p className="text-gray-600 text-base">
-          [Project description placeholder] — we’ll update this section later with details about our
-          project’s functionality, goals, and how it integrates various APIs. We’ll also add a short
-          summary of our <strong>tech stack</strong> and architecture once the project is complete.
+          A full-stack Next.js social platform for innovators and developers, enabling them to
+          connect, showcase projects, and network in real time. The platform features dynamic
+          content rendering, role-based access control, and API-powered real-time search, with
+          Tailwind CSS for responsive, modern UI design, and Node.js with MongoDB ensuring secure,
+          scalable, and efficient data management.
         </p>
       </div>
     </div>

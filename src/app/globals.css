@@ -41,18 +41,87 @@ body {
 
 .wd-hero-img {
   width: 100%;
-  height: 100vh;
+  min-height: 120vh;
   background-image: url('/images/landing-page-hero.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+  display: block;
+}
 
+.hero-pin-wrapper {
+  position: relative;
+  height: 120vh;
+}
+
+.hero-pin {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
+  padding: 0 1.5rem;
+  backdrop-filter: saturate(120%) brightness(105%);
+}
 
-  padding-top: 40vh;
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.logo-gradient-bg {
+  background: linear-gradient(90deg, #0e7490, #06b6d4, #22d3ee);
+  background-size: 300% 300%;
+  animation: logoGradient 12s ease infinite;
+}
+
+@keyframes logoGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.navbar-glass {
+  backdrop-filter: blur(14px) saturate(120%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.88) 14%,
+    rgba(0, 0, 0, 0.9) 58%,
+    rgba(0, 0, 0, 0.92) 100%
+  );
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.4s ease;
+}
+.navbar-glass.scrolled {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.93) 0%,
+    rgba(255, 255, 255, 0.86) 12%,
+    rgba(0, 0, 0, 0.93) 60%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
 }
 
 .wd-cyan {
@@ -61,6 +130,73 @@ body {
 
 .wd-nav-bar-item {
   text-decoration: none !important;
+}
+
+.btn-cyan {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 9999px;
+  padding: 0.75rem 1.6rem;
+  background: linear-gradient(90deg, #0e7490, #06b6d4, #22d3ee);
+  background-size: 200% 200%;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 6px 20px -2px rgba(6, 182, 212, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  transition:
+    background-position 0.8s ease,
+    transform 0.25s ease,
+    box-shadow 0.4s ease;
+}
+.btn-cyan:hover {
+  background-position: 100% 50%;
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 28px -4px rgba(6, 182, 212, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+.btn-cyan:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 14px -2px rgba(6, 182, 212, 0.45);
+}
+.btn-cyan-outline {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 9999px;
+  padding: 0.75rem 1.6rem;
+  background: rgba(0, 0, 0, 0.55);
+  color: #e0faff;
+  border: 1px solid #06b6d4;
+  box-shadow:
+    0 4px 16px -2px rgba(6, 182, 212, 0.35),
+    0 0 0 1px rgba(6, 182, 212, 0.4) inset;
+  transition:
+    background 0.35s ease,
+    transform 0.25s ease,
+    box-shadow 0.4s ease;
+}
+.btn-cyan-outline:hover {
+  background: rgba(6, 182, 212, 0.18);
+  transform: translateY(-2px);
+}
+.btn-cyan-outline:active {
+  transform: translateY(0);
+}
+
+.global-fixed-bg {
+  background-image: url('/images/landing-page-hero.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
 }
 
 /*---break---*/

@@ -1,8 +1,15 @@
 import { HNSearchResponse, HNStory, SearchParams } from '../types/types'
 
 class HNAPIService {
-  private readonly baseURLAlgoliaAPI: string =
-    process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+  private readonly backendBase: string | undefined =
+    process.env.NEXT_PUBLIC_HN_PROXY_URL || process.env.NEXT_PUBLIC_API_URL
+  private readonly directBase = 'https://hn.algolia.com/api/v1'
+  private get activeBase(): string {
+    return this.backendBase || this.directBase
+  }
+  private get usingDirect(): boolean {
+    return !this.backendBase || this.activeBase.includes('hn.algolia.com')
+  }
 
   private buildQueryString(params: SearchParams): string {
     const searchParams = new URLSearchParams()
@@ -12,14 +19,22 @@ class HNAPIService {
     return searchParams.toString()
   }
   private async fetchAPI<T>(endpoint: string): Promise<T> {
+    const url = `${this.activeBase}${endpoint}`
     try {
-      const response = await fetch(`${this.baseURLAlgoliaAPI}${endpoint}`)
+      const response = await fetch(url)
       if (!response.ok) {
         throw new Error(`API Error: ${response.status} ${response.statusText}`)
       }
-      return await response.json()
+      return (await response.json()) as T
     } catch (err) {
-      console.error(err)
+      if (!this.usingDirect) {
+        console.warn('HNAPIService: backend fetch failed, falling back to direct Algolia API.', err)
+        const directUrl = `${this.directBase}${endpoint}`
+        const resp = await fetch(directUrl)
+        if (!resp.ok) throw err
+        return (await resp.json()) as T
+      }
+      console.error('HNAPIService fetch failed:', err)
       throw err
     }
   }
@@ -32,12 +47,21 @@ class HNAPIService {
     return this.fetchAPI(`/items/${id}`)
   }
   async getFrontPage(storyType: string) {
+    if (this.usingDirect) {
+      const tagSearch = storyType && storyType !== '' ? `(front_page,${storyType})` : 'front_page'
+      const qs = this.buildQueryString({ tags: tagSearch, hitsPerPage: '10' })
+      return this.fetchAPI<HNSearchResponse>(`/search?${qs}`)
+    }
     const suffix =
       storyType && storyType !== '' ? `?storyType=${encodeURIComponent(storyType)}` : ''
-    return this.fetchAPI(`/front-page${suffix}`)
+    return this.fetchAPI<HNSearchResponse>(`/front-page${suffix}`)
   }
-  async getTag(storyType: string) {
-    return this.fetchAPI(`/tag/${encodeURIComponent(storyType)}`)
+  async getTag(storyType: string): Promise<HNSearchResponse> {
+    if (this.usingDirect) {
+      const qs = this.buildQueryString({ tags: storyType })
+      return this.fetchAPI<HNSearchResponse>(`/search?${qs}`)
+    }
+    return this.fetchAPI<HNSearchResponse>(`/tag/${encodeURIComponent(storyType)}`)
   }
 }
 
