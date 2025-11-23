@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 import { FaEye } from 'react-icons/fa'
 import { LuEyeClosed } from 'react-icons/lu'
 import { useAuth } from '../context/AuthContext'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 
 export default function LogIn() {
   const router = useRouter()
@@ -15,97 +18,118 @@ export default function LogIn() {
     password: '',
   })
 
-  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [message, setMessage] = useState<string>('')
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
-    setErrorMessage('')
+    setMessage('')
   }
 
   const handleLogIn = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
       await login({ username: formData.username, password: formData.password })
-      setErrorMessage('')
+      setMessage('Logging In')
       router.push('/home')
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Invalid username or password.'
-      setErrorMessage(msg)
+      const msg =
+        err instanceof Error
+          ? err.message.includes('empty')
+            ? ' Username or Password cannot be empty'
+            : err.message
+          : 'Invalid username or password.'
+      setMessage(msg)
     }
   }
 
   return (
-    <div id="wdp-login-screen">
-      <div className="min-h-screen flex flex-col justify-center items-center bg-white text-gray-900">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold mb-2">Hello, Welcome Back!!</h2>
-          <p className="text-gray-600 text-lg">Please log in to continue</p>
-        </div>
+    <div
+      id="wdp-login-screen"
+      className="min-h-screen flex flex-col justify-center items-center bg-gray-50 py-12 px-4"
+    >
+      <Card className="w-full max-w-2xl">
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl">Hello, Welcome Back!!</CardTitle>
+          <CardDescription className="text-lg">Please log in to continue</CardDescription>
+        </CardHeader>
 
-        {errorMessage && <p className="text-red-600 text-sm mb-3 text-center">{errorMessage}</p>}
-        <form onSubmit={handleLogIn}>
-          <div className="mb-4">
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              onBlur={() => {
-                if (!formData.username.trim()) alert('Username cannot be empty')
-              }}
-              placeholder="Username"
-              className="px-4 py-3 border border-gray-300 rounded-lg w-100"
-            />
-          </div>
+        <CardContent>
+          {message && (
+            <p
+              className={`${message.includes('Logging') ? 'text-green-600' : 'text-red-600'} text-sm mb-4 text-center bg-red-50 p-3 rounded-md`}
+            >
+              {message}
+            </p>
+          )}
 
-          <div className="mb-4">
-            <div className="relative w-full sm:w-auto sm:min-w-[400px]">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                onBlur={() => {
-                  if (!formData.password.trim()) alert('Password cannot be empty')
-                }}
-                placeholder="Password"
-                className="px-4 py-3 border border-gray-300 rounded-lg w-100"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-[6px] rounded-md bg-gray-100 hover:bg-gray-200 text-sm"
-              >
-                {showPassword ? <LuEyeClosed /> : <FaEye />}
-              </button>
+          <form onSubmit={handleLogIn} className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+              <label className="text-gray-800 mb-2 sm:mb-0 sm:w-32 text-left sm:text-right sm:whitespace-nowrap">
+                Username:
+              </label>
+              <div className="flex-1 sm:flex-initial sm:w-[600px]">
+                <Input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  placeholder="Username"
+                  className="w-full"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="text-center">
-            <div className="flex justify-center">
-              <button
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-center w-64"
-              >
+            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+              <label className="text-gray-800 mb-2 sm:mb-0 sm:w-32 text-left sm:text-right sm:whitespace-nowrap">
+                Password:
+              </label>
+              <div className="relative flex-1 sm:flex-initial sm:w-[600px]">
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Password"
+                  className="w-full pr-12"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-1 top-1/2 -translate-y-1/2"
+                >
+                  {showPassword ? (
+                    <FaEye className="h-4 w-4" />
+                  ) : (
+                    <LuEyeClosed className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex justify-center pt-4">
+              <Button type="submit" size="lg" className="w-64">
                 Log In
-              </button>
+              </Button>
+            </div>
+          </form>
+          <div className="text-center mt-8 space-y-2">
+            <div>
+              <Link href="./register" className="text-blue-600 hover:underline text-sm font-medium">
+                New user? Register here for FREE!
+              </Link>
+            </div>
+            <div>
+              <Link href="./home" className="text-gray-600 hover:underline text-sm font-medium">
+                Continue as Guest
+              </Link>
             </div>
           </div>
-        </form>
-        <div className="text-center mt-6">
-          <Link
-            href="./register"
-            className="block text-blue-600 hover:underline mb-2 text-sm font-medium"
-          >
-            New user? Register here for FREE!
-          </Link>
-          <Link href="./home" className="text-gray-600 hover:underline mb-2 text-sm font-medium">
-            Continue as Guest
-          </Link>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

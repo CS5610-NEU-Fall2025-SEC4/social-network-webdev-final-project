@@ -1,4 +1,5 @@
-import { HNSearchResponse, HNStory, SearchParams } from '../types/types'
+import { HNSearchResponse, HNStoryItem, SearchParams } from '../types/types'
+import { getCommentsByStoryId } from './commentAPI'
 
 class HNAPIService {
   private readonly backendBase: string | undefined =
@@ -43,9 +44,48 @@ class HNAPIService {
     return this.fetchAPI(`/search?${qs}`)
   }
 
-  async getItem(id: number): Promise<HNStory> {
-    return this.fetchAPI(`/items/${id}`)
+  async getLocalItem(id: string): Promise<HNStoryItem> {
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL
+    if (!backendUrl) {
+      throw new Error('Backend URL not configured')
+    }
+    const url = `${backendUrl}/story/${id}/full`
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`)
+    }
+    return response.json()
   }
+
+  async getItemFromSource(
+    id: number | string,
+    source: 'hackernews' | 'Internal' = 'hackernews',
+  ): Promise<HNStoryItem> {
+    if (source === 'Internal') {
+      return this.getLocalItem(String(id))
+    }
+    return this.getItem(Number(id))
+  }
+
+  async getItem(id: number): Promise<HNStoryItem> {
+    const algoliaStory = await this.fetchAPI<HNStoryItem>(`/items/${id}`)
+    try {
+      const mongoComments = await getCommentsByStoryId(String(id))
+
+      if (mongoComments && mongoComments.length > 0) {
+        const algoliaChildren = Array.isArray(algoliaStory.children)
+          ? (algoliaStory.children as HNStoryItem[])
+          : []
+
+        algoliaStory.children = [...algoliaChildren, ...mongoComments]
+      }
+    } catch (error) {
+      console.warn('Failed to fetch MongoDB comments for Algolia story:', error)
+    }
+
+    return algoliaStory
+  }
+
   async getFrontPage(storyType: string) {
     if (this.usingDirect) {
       const tagSearch = storyType && storyType !== '' ? `(front_page,${storyType})` : 'front_page'

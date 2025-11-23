@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation'
 import { FaEye } from 'react-icons/fa'
 import { LuEyeClosed } from 'react-icons/lu'
 import { useAuth } from '../context/AuthContext'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 
 export default function Register() {
   const router = useRouter()
@@ -26,9 +29,58 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false)
+  const [usernameError, setUsernameError] = useState('')
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
+
+    if (name === 'username') {
+      setUsernameError('')
+    }
+  }
+
+  const checkUsernameAvailability = async (username: string): Promise<boolean> => {
+    if (!username.trim()) {
+      setUsernameError('Username cannot be empty')
+      return false
+    }
+
+    setIsCheckingUsername(true)
+    try {
+      const hnResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/checkHnUsername/${username}`,
+      )
+      const hnData = await hnResponse.json()
+
+      const mongoResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/checkUsername/${username}`,
+      )
+      const mongoData = await mongoResponse.json()
+
+      if (hnData.exists || mongoData.exists) {
+        setUsernameError(
+          `Username "${username}" is already taken. Please choose a different username.`,
+        )
+        return false
+      }
+
+      setUsernameError('')
+      return true
+    } catch (error) {
+      console.error('Error checking username availability:', error)
+      setUsernameError('Error checking username availability. Please try again.')
+      return false
+    } finally {
+      setIsCheckingUsername(false)
+    }
+  }
+
+  const handleUsernameBlur = async () => {
+    if (formData.username.trim()) {
+      await checkUsernameAvailability(formData.username)
+    }
   }
 
   const validatePassword = (password: string): boolean => {
@@ -61,21 +113,45 @@ export default function Register() {
   }
 
   const passwordsMatch = (): boolean => {
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!')
-      return false
-    }
-    return true
+    return formData.password === formData.confirmPassword
   }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    const errors: string[] = []
+
+    if (!formData.firstName.trim()) {
+      errors.push('First name cannot be empty')
+    }
+    if (!formData.lastName.trim()) {
+      errors.push('Last name cannot be empty')
+    }
+    if (!formData.email.trim()) {
+      errors.push('Email cannot be empty')
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.push('Please enter a valid email address')
+    }
+    if (!formData.username.trim()) {
+      errors.push('Username cannot be empty')
+    }
     if (!passwordValid) {
-      alert('Please enter a valid password before proceeding.')
+      errors.push('Please enter a valid password')
+    }
+    if (!passwordsMatch()) {
+      errors.push('Passwords do not match')
+    }
+
+    if (errors.length > 0) {
+      alert('Please fix the following errors:\n\n• ' + errors.join('\n• '))
       return
     }
-    if (!passwordsMatch()) return
+
+    const isUsernameAvailable = await checkUsernameAvailability(formData.username)
+    if (!isUsernameAvailable) {
+      alert('Please fix the username error before submitting.')
+      return
+    }
 
     try {
       await register({
@@ -94,179 +170,189 @@ export default function Register() {
   }
 
   return (
-    <div id="wdp-login-screen">
-      <div className="min-h-screen flex flex-col justify-center items-center bg-white text-gray-900">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold mb-2">Hello, Welcome to the Family.</h2>
-          <p className="text-gray-600 text-lg">Please Enter details below to register.</p>
-        </div>
+    <div
+      id="wdp-register-screen"
+      className="min-h-screen flex flex-col justify-center items-center bg-gray-50 py-12 px-4"
+    >
+      <Card className="w-full max-w-3xl">
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl">Hello, Welcome to the Family.</CardTitle>
+          <CardDescription className="text-lg">
+            Please enter details below to register.
+          </CardDescription>
+        </CardHeader>
 
-        <form onSubmit={handleRegister}>
-          <div className="mb-4">
+        <CardContent>
+          <form onSubmit={handleRegister} className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-              <span className="text-gray-800 mb-2 sm:mb-0 sm:w-40 text-right">
+              <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:whitespace-nowrap">
                 Enter your First Name:
-              </span>
-              <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                onBlur={() => {
-                  if (!formData.firstName.trim()) alert('First name cannot be empty')
-                }}
-                placeholder="First Name"
-                className="px-4 py-3 border border-gray-300 rounded-lg w-full sm:w-auto sm:min-w-[400px]"
-              />
+              </label>
+              <div className="flex-1 sm:flex-initial sm:w-[600px]">
+                <Input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  placeholder="First Name"
+                  className="w-full"
+                />
+              </div>
             </div>
-          </div>
-          <div className="mb-4">
+
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-              <span className="text-gray-800 mb-2 sm:mb-0 sm:w-40 text-right">
+              <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:whitespace-nowrap">
                 Enter your Last Name:
-              </span>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                onBlur={() => {
-                  if (!formData.lastName.trim()) alert('Last name cannot be empty')
-                }}
-                placeholder="Last Name"
-                className="px-4 py-3 border border-gray-300 rounded-lg w-full sm:w-auto sm:min-w-[400px]"
-              />
+              </label>
+              <div className="flex-1 sm:flex-initial sm:w-[600px]">
+                <Input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  placeholder="Last Name"
+                  className="w-full"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="mb-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-              <span className="text-gray-800 mb-2 sm:mb-0 sm:w-40 text-right">
+              <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:whitespace-nowrap">
                 Enter your E-mail:
-              </span>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                onBlur={() => {
-                  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-                    alert('Please enter a valid email address')
-                  }
-                }}
-                placeholder="email@website.com"
-                className="px-4 py-3 border border-gray-300 rounded-lg w-full sm:w-auto sm:min-w-[400px]"
-              />
+              </label>
+              <div className="flex-1 sm:flex-initial sm:w-[600px]">
+                <Input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="email@website.com"
+                  className="w-full"
+                />
+              </div>
             </div>
-          </div>
-          <div className="mb-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-              <span className="text-gray-800 mb-2 sm:mb-0 sm:w-40 text-right">
+
+            <div className="flex flex-col sm:flex-row sm:items-start sm:gap-4">
+              <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:mt-3 sm:whitespace-nowrap">
                 Enter your Username:
-              </span>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                onBlur={() => {
-                  if (!formData.username.trim()) alert('Username cannot be empty')
-                }}
-                placeholder="username"
-                className="px-4 py-3 border border-gray-300 rounded-lg w-full sm:w-auto sm:min-w-[400px]"
-              />
+              </label>
+              <div className="flex-1 sm:flex-initial sm:w-[600px]">
+                <div className="relative">
+                  <Input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    onBlur={handleUsernameBlur}
+                    placeholder="username"
+                    className={`w-full ${usernameError ? 'border-red-500' : ''}`}
+                    disabled={isCheckingUsername}
+                    aria-invalid={!!usernameError}
+                  />
+                  {isCheckingUsername && (
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                      Checking...
+                    </span>
+                  )}
+                </div>
+                {usernameError && <p className="text-red-600 text-sm mt-1">{usernameError}</p>}
+                {!usernameError && formData.username && !isCheckingUsername && (
+                  <p className="text-green-600 text-sm mt-1">✅ Username available</p>
+                )}
+              </div>
             </div>
-          </div>
 
-          <div className="mb-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-              <span className="text-gray-800 mb-2 sm:mb-0 sm:w-40 text-right">
+              <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:whitespace-nowrap">
                 Enter your Password:
-              </span>
-
-              <div className="relative w-full sm:w-auto sm:min-w-[400px]">
-                <input
+              </label>
+              <div className="relative flex-1 sm:flex-initial sm:w-[600px]">
+                <Input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handlePasswordChange}
                   placeholder="Password"
-                  className="px-4 py-3 border border-gray-300 rounded-lg w-full pr-20"
+                  className="w-full pr-12"
                 />
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-[6px] rounded-md bg-gray-100 hover:bg-gray-200 text-sm"
+                  className="absolute right-1 top-1/2 -translate-y-1/2"
                 >
-                  {showPassword ? <LuEyeClosed /> : <FaEye />}
-                </button>
+                  {showPassword ? (
+                    <FaEye className="h-4 w-4" />
+                  ) : (
+                    <LuEyeClosed className="h-4 w-4" />
+                  )}
+                </Button>
               </div>
             </div>
-          </div>
 
-          <div className="mb-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-              {passwordError && (
-                <div className="text-red-600 mt-2 text-sm sm:ml-[10.2rem] ml-0 sm:w-[400px]">
-                  {passwordError}
+            {(passwordError || passwordValid) && (
+              <div className="flex flex-col sm:flex-row sm:items-start sm:gap-4">
+                <div className="sm:w-48" />
+                <div className="flex-1 sm:flex-initial sm:w-[600px]">
+                  {passwordError && <div className="text-red-600 text-sm">{passwordError}</div>}
+                  {passwordValid && formData.password.length > 0 && (
+                    <p className="text-green-600 text-sm">✅ Strong password</p>
+                  )}
                 </div>
-              )}
+              </div>
+            )}
 
-              {passwordValid && formData.password.length > 0 && (
-                <p className="text-green-600 text-sm mt-1 text-center sm:text-left sm:ml-[10.2rem] sm:w-[400px]">
-                  ✅ Strong password
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="mb-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-              <span className="text-gray-800 mb-2 sm:mb-0 sm:w-40 text-right">
+              <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:whitespace-nowrap">
                 Verify Password:
-              </span>
-              <div className="relative w-full sm:w-auto sm:min-w-[400px]">
-                <input
+              </label>
+              <div className="relative flex-1 sm:flex-initial sm:w-[600px]">
+                <Input
                   type={showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  onBlur={passwordsMatch}
                   placeholder="Verify Password"
-                  className="px-4 py-3 border border-gray-300 rounded-lg w-full sm:w-auto sm:min-w-[400px]"
+                  className="w-full pr-12"
                 />
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-[6px] rounded-md bg-gray-100 hover:bg-gray-200 text-sm"
+                  className="absolute right-1 top-1/2 -translate-y-1/2"
                 >
-                  {showConfirmPassword ? <LuEyeClosed /> : <FaEye />}
-                </button>
+                  {showConfirmPassword ? (
+                    <FaEye className="h-4 w-4" />
+                  ) : (
+                    <LuEyeClosed className="h-4 w-4" />
+                  )}
+                </Button>
               </div>
             </div>
-          </div>
 
-          <div className="flex justify-center text-center">
-            <button
-              type="submit"
-              className="block bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-center w-64"
-            >
-              Register
-            </button>
+            <div className="flex justify-center pt-4">
+              <Button type="submit" size="lg" className="w-64" disabled={isCheckingUsername}>
+                {isCheckingUsername ? 'Checking...' : 'Register'}
+              </Button>
+            </div>
+          </form>
+
+          <div className="text-center mt-8 space-y-2">
+            <div>
+              <Link href="./logIn" className="text-blue-600 hover:underline text-sm font-medium">
+                Already have an account? Log In here!
+              </Link>
+            </div>
+            <div>
+              <Link href="./home" className="text-gray-600 hover:underline text-sm font-medium">
+                Changed your mind? No worries, Continue as Guest.
+              </Link>
+            </div>
           </div>
-        </form>
-        <div className="text-center mt-6">
-          <Link
-            href="./logIn"
-            className="block text-blue-600 hover:underline mb-2 text-sm font-medium"
-          >
-            Already have an account? Log In here!
-          </Link>
-          <Link href="./home" className="text-gray-600 hover:underline mb-2 text-sm font-medium">
-            Changed your mind? No worries, Continue as Guest.
-          </Link>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
