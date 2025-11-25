@@ -66,10 +66,24 @@ export default function Register() {
       error = 'Email cannot be empty'
     } else if (name === 'username' && !value.trim()) {
       error = 'Username cannot be empty'
-    } else if (name === 'password' && !value.trim()) {
-      error = 'Password cannot be empty'
-    } else if (name === 'confirmPassword' && !value.trim()) {
-      error = 'Verify Password cannot be empty'
+    } else if (name === 'password') {
+      if (!value.trim()) {
+        error = 'Password cannot be empty'
+      }
+      if (formData.confirmPassword && value !== formData.confirmPassword) {
+        setFieldErrors({
+          ...fieldErrors,
+          password: error,
+          confirmPassword: 'Passwords do not match',
+        })
+        return
+      }
+    } else if (name === 'confirmPassword') {
+      if (!value.trim()) {
+        error = 'Verify Password cannot be empty'
+      } else if (formData.password !== value) {
+        error = 'Passwords do not match'
+      }
     }
 
     setFieldErrors({ ...fieldErrors, [name]: error })
