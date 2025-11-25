@@ -23,6 +23,15 @@ export default function Register() {
     confirmPassword: '',
   })
 
+  const [fieldErrors, setFieldErrors] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    username: '',
+    password: '',
+    confirmPassword: '',
+  })
+
   const [passwordError, setPasswordError] = useState<React.ReactNode>('')
   const [passwordValid, setPasswordValid] = useState(false)
 
@@ -39,6 +48,31 @@ export default function Register() {
     if (name === 'username') {
       setUsernameError('')
     }
+
+    if (fieldErrors[name as keyof typeof fieldErrors]) {
+      setFieldErrors({ ...fieldErrors, [name]: '' })
+    }
+  }
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    let error = ''
+
+    if (name === 'firstName' && !value.trim()) {
+      error = 'First Name cannot be empty'
+    } else if (name === 'lastName' && !value.trim()) {
+      error = 'Last Name cannot be empty'
+    } else if (name === 'email' && !value.trim()) {
+      error = 'Email cannot be empty'
+    } else if (name === 'username' && !value.trim()) {
+      error = 'Username cannot be empty'
+    } else if (name === 'password' && !value.trim()) {
+      error = 'Password cannot be empty'
+    } else if (name === 'confirmPassword' && !value.trim()) {
+      error = 'Verify Password cannot be empty'
+    }
+
+    setFieldErrors({ ...fieldErrors, [name]: error })
   }
 
   const checkUsernameAvailability = async (username: string): Promise<boolean> => {
@@ -80,6 +114,8 @@ export default function Register() {
   const handleUsernameBlur = async () => {
     if (formData.username.trim()) {
       await checkUsernameAvailability(formData.username)
+    } else {
+      setFieldErrors({ ...fieldErrors, username: 'Username cannot be Empty' })
     }
   }
 
@@ -189,11 +225,17 @@ export default function Register() {
                 Enter your First Name:
               </label>
               <div className="flex-1 sm:flex-initial sm:w-[600px]">
+                {fieldErrors.firstName && (
+                  <p className="text-red-600 text-sm mb-2 bg-red-50 p-2 rounded-md">
+                    {fieldErrors.firstName}
+                  </p>
+                )}
                 <Input
                   type="text"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="First Name"
                   className="w-full"
                 />
@@ -205,11 +247,17 @@ export default function Register() {
                 Enter your Last Name:
               </label>
               <div className="flex-1 sm:flex-initial sm:w-[600px]">
+                {fieldErrors.lastName && (
+                  <p className="text-red-600 text-sm mb-2 bg-red-50 p-2 rounded-md">
+                    {fieldErrors.lastName}
+                  </p>
+                )}
                 <Input
                   type="text"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="Last Name"
                   className="w-full"
                 />
@@ -221,11 +269,17 @@ export default function Register() {
                 Enter your E-mail:
               </label>
               <div className="flex-1 sm:flex-initial sm:w-[600px]">
+                {fieldErrors.email && (
+                  <p className="text-red-600 text-sm mb-2 bg-red-50 p-2 rounded-md">
+                    {fieldErrors.email}
+                  </p>
+                )}
                 <Input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="email@website.com"
                   className="w-full"
                 />
@@ -238,6 +292,11 @@ export default function Register() {
               </label>
               <div className="flex-1 sm:flex-initial sm:w-[600px]">
                 <div className="relative">
+                  {fieldErrors.username && (
+                    <p className="text-red-600 text-sm mb-2 bg-red-50 p-2 rounded-md">
+                      {fieldErrors.username}
+                    </p>
+                  )}
                   <Input
                     type="text"
                     name="username"
@@ -267,27 +326,35 @@ export default function Register() {
                 Enter your Password:
               </label>
               <div className="relative flex-1 sm:flex-initial sm:w-[600px]">
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handlePasswordChange}
-                  placeholder="Password"
-                  className="w-full pr-12"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-1 top-1/2 -translate-y-1/2"
-                >
-                  {showPassword ? (
-                    <FaEye className="h-4 w-4" />
-                  ) : (
-                    <LuEyeClosed className="h-4 w-4" />
-                  )}
-                </Button>
+                {fieldErrors.password && (
+                  <p className="text-red-600 text-sm mb-2 bg-red-50 p-2 rounded-md">
+                    {fieldErrors.password}
+                  </p>
+                )}
+                <div className="relative">
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handlePasswordChange}
+                    onBlur={handleBlur}
+                    placeholder="Password"
+                    className="w-full pr-12"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-1 top-1/2 -translate-y-1/2"
+                  >
+                    {showPassword ? (
+                      <FaEye className="h-4 w-4" />
+                    ) : (
+                      <LuEyeClosed className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -308,27 +375,35 @@ export default function Register() {
                 Verify Password:
               </label>
               <div className="relative flex-1 sm:flex-initial sm:w-[600px]">
-                <Input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Verify Password"
-                  className="w-full pr-12"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-1 top-1/2 -translate-y-1/2"
-                >
-                  {showConfirmPassword ? (
-                    <FaEye className="h-4 w-4" />
-                  ) : (
-                    <LuEyeClosed className="h-4 w-4" />
-                  )}
-                </Button>
+                {fieldErrors.confirmPassword && (
+                  <p className="text-red-600 text-sm mb-2 bg-red-50 p-2 rounded-md">
+                    {fieldErrors.confirmPassword}
+                  </p>
+                )}
+                <div className="relative">
+                  <Input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="Verify Password"
+                    className="w-full pr-12"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-1 top-1/2 -translate-y-1/2"
+                  >
+                    {showConfirmPassword ? (
+                      <FaEye className="h-4 w-4" />
+                    ) : (
+                      <LuEyeClosed className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
 

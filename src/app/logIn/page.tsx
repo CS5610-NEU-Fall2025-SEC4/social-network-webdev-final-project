@@ -18,6 +18,11 @@ export default function LogIn() {
     password: '',
   })
 
+  const [fieldErrors, setFieldErrors] = useState({
+    username: '',
+    password: '',
+  })
+
   const [message, setMessage] = useState<string>('')
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
@@ -25,6 +30,22 @@ export default function LogIn() {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
     setMessage('')
+    if (fieldErrors[name as keyof typeof fieldErrors]) {
+      setFieldErrors({ ...fieldErrors, [name]: '' })
+    }
+  }
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    let error = ''
+
+    if (name === 'username' && !value.trim()) {
+      error = 'Username cannot be empty'
+    } else if (name === 'password' && !value.trim()) {
+      error = 'Password cannot be empty'
+    }
+
+    setFieldErrors({ ...fieldErrors, [name]: error })
   }
 
   const handleLogIn = async (e: React.FormEvent) => {
@@ -70,11 +91,17 @@ export default function LogIn() {
                 Username:
               </label>
               <div className="flex-1 sm:flex-initial sm:w-[600px]">
+                {fieldErrors.username && (
+                  <p className="text-red-600 text-sm mb-2 bg-red-50 p-2 rounded-md">
+                    {fieldErrors.username}
+                  </p>
+                )}
                 <Input
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   placeholder="Username"
                   className="w-full"
                 />
@@ -86,27 +113,35 @@ export default function LogIn() {
                 Password:
               </label>
               <div className="relative flex-1 sm:flex-initial sm:w-[600px]">
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Password"
-                  className="w-full pr-12"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-1 top-1/2 -translate-y-1/2"
-                >
-                  {showPassword ? (
-                    <FaEye className="h-4 w-4" />
-                  ) : (
-                    <LuEyeClosed className="h-4 w-4" />
-                  )}
-                </Button>
+                {fieldErrors.password && (
+                  <p className="text-red-600 text-sm mb-2 bg-red-50 p-2 rounded-md">
+                    {fieldErrors.password}
+                  </p>
+                )}
+                <div className="relative">
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="Password"
+                    className="w-full pr-12"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-1 top-1/2 -translate-y-1/2"
+                  >
+                    {showPassword ? (
+                      <FaEye className="h-4 w-4" />
+                    ) : (
+                      <LuEyeClosed className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
 
