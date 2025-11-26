@@ -1,6 +1,7 @@
 import { HNStory } from '@/app/types/types'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
 export default function StoryComponent({ story }: { story: HNStory }) {
   const isStory = story._tags?.includes('story') || story.type === 'story'
@@ -18,6 +19,24 @@ export default function StoryComponent({ story }: { story: HNStory }) {
     }
     return '(Visit the Link)'
   }
+
+  const storyTags = story._tags?.filter(
+    (tag) => !tag.startsWith('author_') && !tag.startsWith('story_'),
+  )
+
+  const getRelativeTime = (timestamp: number) => {
+    const now = Date.now()
+    const secondsAgo = Math.floor((now - timestamp * 1000) / 1000)
+
+    if (secondsAgo < 60) return 'just now'
+    if (secondsAgo < 3600) return `${Math.floor(secondsAgo / 60)} minutes ago`
+    if (secondsAgo < 86400) return `${Math.floor(secondsAgo / 3600)} hours ago`
+    if (secondsAgo < 2592000) return `${Math.floor(secondsAgo / 86400)} days ago`
+    if (secondsAgo < 31536000) return `${Math.floor(secondsAgo / 2592000)} months ago`
+    return `${Math.floor(secondsAgo / 31536000)} years ago`
+  }
+
+  const isLocalStory = isNaN(Number(story.story_id))
 
   return (
     <Card className="shadow-sm mb-4 transition-transform transform hover:-translate-y-1 hover:shadow-md animate-fade-in">
@@ -40,10 +59,14 @@ export default function StoryComponent({ story }: { story: HNStory }) {
           ) : (
             story.title
           )}
-          {story.url && !isComment && (
-            <Link className="ml-2 text-gray-500 hover:underline" href={story.url}>
-              <small className="text-gray-500">{getLinkText()}</small>
-            </Link>
+          {!isComment && (
+            <Button variant="ghost" size="sm" asChild>
+              <Link
+                href={`/details/${isLocalStory ? story.story_id : story.objectID}?tags=${encodeURIComponent(storyTags?.join(',') || '')}`}
+              >
+                {getLinkText()}
+              </Link>
+            </Button>
           )}
         </CardTitle>
       </CardHeader>
@@ -55,7 +78,7 @@ export default function StoryComponent({ story }: { story: HNStory }) {
           <span>•</span>
           <div>by {story.author}</div>
           <span>•</span>
-          <div>relative date</div>
+          <div>{getRelativeTime(story.created_at_i)}</div>
           {(isStory || isAskHN || isShowHN) && (story.children || []).length > 0 && (
             <>
               <span>•</span>

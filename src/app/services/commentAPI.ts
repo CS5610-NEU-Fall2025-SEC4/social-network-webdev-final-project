@@ -1,4 +1,4 @@
-import { HNStory } from '../types/types'
+import { HNStory, HNStoryItem } from '../types/types'
 
 const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 const commentBaseUrl = `${base}/comment`
@@ -51,6 +51,11 @@ export async function createComment(
 export async function getCommentById(commentId: string): Promise<Comment> {
   const res = await fetch(`${commentBaseUrl}/${commentId}`)
   return handleResponse<Comment>(res)
+}
+
+export async function getCommentsByStoryId(storyId: string): Promise<HNStoryItem[]> {
+  const res = await fetch(`${commentBaseUrl}/story/${storyId}`)
+  return handleResponse<HNStoryItem[]>(res)
 }
 
 export async function updateComment(

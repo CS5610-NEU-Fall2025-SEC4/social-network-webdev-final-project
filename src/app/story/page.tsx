@@ -26,6 +26,27 @@ export default function CreatePostPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const getTagsForType = (storyType: CreateStoryPayload['type']): string[] => {
+    const tags: string[] = []
+
+    switch (storyType) {
+      case 'story':
+        tags.push('story')
+        break
+      case 'askHN':
+        tags.push('story', 'ask_hn')
+        break
+      case 'showHN':
+        tags.push('story', 'show_hn')
+        break
+      case 'job':
+        tags.push('job')
+        break
+    }
+
+    return tags
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -44,9 +65,12 @@ export default function CreatePostPage() {
       finalTitle = `Show HN: ${title}`
     }
 
+    const tags = getTagsForType(type)
+
     const payload: CreateStoryPayload = {
       title: finalTitle,
       type,
+      _tags: tags,
     }
 
     if (type === 'story' || type === 'job') {
@@ -79,7 +103,7 @@ export default function CreatePostPage() {
 
     try {
       const newStory = await createStory(payload, token)
-      router.push(`/details/post/${newStory.id}`)
+      router.push(`/details/${newStory.story_id}`)
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message || 'Failed to create post.')
@@ -128,6 +152,9 @@ export default function CreatePostPage() {
               <SelectItem value="job">Job</SelectItem>
             </SelectContent>
           </Select>
+          <p className="text-xs text-gray-500 mt-1">
+            Tags that will be added: {getTagsForType(type).join(', ')}
+          </p>
         </div>
 
         {(type === 'story' || type === 'job') && (
