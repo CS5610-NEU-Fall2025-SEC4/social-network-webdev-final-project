@@ -53,13 +53,26 @@ export default function LogIn() {
     try {
       await login({ username: formData.username, password: formData.password })
       setMessage('Logging In')
-      router.push('/home')
+      const storedProfile = localStorage.getItem('userProfile')
+      if (storedProfile) {
+        const profile = JSON.parse(storedProfile)
+
+        if (profile.role === 'ADMIN') {
+          router.push('/admin/dashboard')
+        } else {
+          router.push('/home')
+        }
+      } else {
+        router.push('/home')
+      }
     } catch (err) {
       const msg =
         err instanceof Error
-          ? err.message.includes('empty')
-            ? ' Username or Password cannot be empty'
-            : err.message
+          ? err.message.includes('blocked')
+            ? '⚠️ Your account has been blocked. Please contact support.'
+            : err.message.includes('empty')
+              ? 'Username or Password cannot be empty'
+              : err.message
           : 'Invalid username or password.'
       setMessage(msg)
     }

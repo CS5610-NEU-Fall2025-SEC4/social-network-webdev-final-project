@@ -14,13 +14,22 @@ export default function Register() {
   const router = useRouter()
   const { register } = useAuth()
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    firstName: string
+    lastName: string
+    email: string
+    username: string
+    password: string
+    confirmPassword: string
+    role: 'USER' | 'EMPLOYER'
+  }>({
     firstName: '',
     lastName: '',
     email: '',
     username: '',
     password: '',
     confirmPassword: '',
+    role: 'USER',
   })
 
   const [fieldErrors, setFieldErrors] = useState({
@@ -41,7 +50,7 @@ export default function Register() {
   const [isCheckingUsername, setIsCheckingUsername] = useState(false)
   const [usernameError, setUsernameError] = useState('')
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
 
@@ -210,6 +219,7 @@ export default function Register() {
         username: formData.username,
         email: formData.email,
         password: formData.password,
+        role: formData.role,
       })
       alert('Registration successful!')
       router.push('/logIn')
@@ -335,6 +345,34 @@ export default function Register() {
               </div>
             </div>
 
+            <div className="flex flex-col sm:flex-row sm:items-start sm:gap-4">
+              <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:mt-3 sm:whitespace-nowrap">
+                Select Account Type:
+              </label>
+              <div className="flex-1 sm:flex-initial sm:w-[600px]">
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 rounded-md border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="USER">USER</option>
+                  <option value="EMPLOYER">EMPLOYER</option>
+                </select>
+
+                <div className="mt-2 text-sm text-gray-600 bg-gray-50 p-3 rounded-md">
+                  {formData.role === 'USER' ? (
+                    <p>
+                      <strong>USER:</strong> Share stories, comment, and engage with the community
+                    </p>
+                  ) : (
+                    <p>
+                      <strong>EMPLOYER:</strong> Post job opportunities + all USER features
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
               <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:whitespace-nowrap">
                 Enter your Password:
