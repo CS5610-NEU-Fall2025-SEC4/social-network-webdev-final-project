@@ -3,13 +3,15 @@
 import { HNStory, HNStoryItem } from '../../types/types'
 import CommentEditor from './CommentEditor'
 import { Card, CardContent } from '@/components/ui/card'
+import UsernameLink from '@/components/username-link'
 
 interface CommentProps {
   comment: HNStoryItem | HNStory
   storyId: string
+  depth?: number
 }
 
-export default function Comment({ comment, storyId }: CommentProps) {
+export default function Comment({ comment, storyId, depth = 0 }: CommentProps) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString()
   }
@@ -25,7 +27,7 @@ export default function Comment({ comment, storyId }: CommentProps) {
     <Card className="border-l-4 border-l-orange-400 mb-3">
       <CardContent className="py-4">
         <div className="flex items-center gap-3 mb-3 text-sm text-gray-600">
-          <span className="font-semibold text-orange-600">{comment.author}</span>
+          <UsernameLink username={comment.author} className="font-semibold text-orange-600" />
           <span>•</span>
           <span>{formatDate(comment.created_at)}</span>
           <span>•</span>
@@ -38,10 +40,10 @@ export default function Comment({ comment, storyId }: CommentProps) {
           />
         )}
         <CommentEditor comment="Reply" storyId={storyId} parentId={comment.id} />
-        {hasNestedChildren(comment) && (
+        {hasNestedChildren(comment) && depth < 6 && (
           <div className="ml-6 mt-4 space-y-3 border-l-2 border-gray-200 pl-4">
             {comment.children.map((child) => (
-              <Comment key={child.id} comment={child} storyId={storyId} />
+              <Comment key={child.id} comment={child} storyId={storyId} depth={depth + 1} />
             ))}
           </div>
         )}

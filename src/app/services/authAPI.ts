@@ -98,3 +98,14 @@ export async function updateProfile(
   if (!res.ok) throw new Error('Profile update failed')
   return res.json()
 }
+
+export async function getUserIdByUsername(username: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${base}/users/search/${username}`)
+    if (!res.ok) return null
+    const data = await res.json()
+    return data.id
+  } catch {
+    return null
+  }
+}

@@ -6,6 +6,7 @@ import { FaRegCircleUser } from 'react-icons/fa6'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '../context/AuthContext'
 
 export default function Navigation({
   open,
@@ -15,47 +16,16 @@ export default function Navigation({
   setOpen?: (val: boolean) => void
 }) {
   // Avoid reading localStorage during SSR to prevent hydration mismatch
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { authenticated, logout } = useAuth()
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
     setMounted(true)
-    const checkAuth = async () => {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
-
-      if (!token) {
-        setIsAuthenticated(false)
-        return
-      }
-
-      try {
-        const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
-        const res = await fetch(`${base}/users/isAuthenticated`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        if (res.ok) {
-          setIsAuthenticated(true)
-        } else {
-          setIsAuthenticated(false)
-          localStorage.removeItem('access_token')
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error)
-        setIsAuthenticated(false)
-      }
-    }
-
-    // Only run after mount to keep server/client markup consistent
-    if (mounted) void checkAuth()
-  }, [mounted])
+  }, [])
 
   const handleLogout = () => {
-    localStorage.removeItem('access_token')
-    setIsAuthenticated(false)
+    logout()
     router.push('/logIn')
   }
 
@@ -78,7 +48,7 @@ export default function Navigation({
         </Link>
 
         <div className="flex items-center space-x-8">
-          {mounted && <NavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />}
+          {mounted && <NavLinks isAuthenticated={authenticated} handleLogout={handleLogout} />}
         </div>
       </nav>
 
@@ -106,7 +76,7 @@ export default function Navigation({
         </div>
         <div className="flex flex-col p-4 space-y-4">
           {mounted && (
-            <MobileNavLinks isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
+            <MobileNavLinks isAuthenticated={authenticated} handleLogout={handleLogout} />
           )}
         </div>
       </div>

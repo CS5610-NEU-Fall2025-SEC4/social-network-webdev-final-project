@@ -103,6 +103,15 @@ class HNAPIService {
     }
     return this.fetchAPI<HNSearchResponse>(`/tag/${encodeURIComponent(storyType)}`)
   }
+
+  async doesUserExist(username: string): Promise<boolean> {
+    try {
+      await this.fetchAPI(`/users/${username}`)
+      return true
+    } catch (error) {
+      return false
+    }
+  }
 }
 
 export const HNApiService = new HNAPIService()

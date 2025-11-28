@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import UserDetails from '../details/user'
-import { useAuth } from '../context/AuthContext'
+import { useRequireAuth } from '../hooks/useRequireAuth'
 import { useAppDispatch } from '../store'
 import { useSelector } from 'react-redux'
 import type { ProfileState as StoreProfileState } from '../store/profileSlice'
@@ -75,7 +75,7 @@ type EditableUser = {
 }
 
 export default function ProfilePage() {
-  const { loading, authenticated } = useAuth()
+  const { loading, authenticated } = useRequireAuth()
   const dispatch = useAppDispatch()
   const profileState = useSelector(
     (s: unknown) => (s as { profile: StoreProfileState }).profile,
@@ -164,6 +164,10 @@ export default function ProfilePage() {
     } catch {
       setMessage('Failed to update profile.')
     }
+  }
+
+  if (loading || !authenticated) {
+    return null
   }
 
   return (

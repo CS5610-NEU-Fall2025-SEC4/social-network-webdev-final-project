@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { createComment, CreateCommentPayload } from '@/app/services/commentAPI'
 import { useAuth } from '@/app/context/AuthContext'
+import { useRequireAuth } from '@/app/hooks/useRequireAuth'
 
 export default function CreateCommentPage() {
+  const { loading: authLoading, authenticated } = useRequireAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const { token } = useAuth()
@@ -29,6 +31,10 @@ export default function CreateCommentPage() {
       setParentId(parent_id_param)
     }
   }, [searchParams])
+
+  if (authLoading || !authenticated) {
+    return null
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
