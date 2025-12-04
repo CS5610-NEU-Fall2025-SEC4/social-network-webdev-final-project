@@ -17,7 +17,7 @@ import { useAuth } from '@/app/context/AuthContext'
 
 export default function CreatePostPage() {
   const router = useRouter()
-  const { token } = useAuth()
+  const { token, profile } = useAuth()
 
   const [title, setTitle] = useState('')
   const [type, setType] = useState<CreateStoryPayload['type']>('story')
@@ -25,6 +25,8 @@ export default function CreatePostPage() {
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const canPostJobs = profile?.role === 'EMPLOYER' || profile?.role === 'ADMIN'
 
   const getTagsForType = (storyType: CreateStoryPayload['type']): string[] => {
     const tags: string[] = []
@@ -54,6 +56,12 @@ export default function CreatePostPage() {
 
     if (!token) {
       setError('You must be logged in to create a post.')
+      setLoading(false)
+      return
+    }
+
+    if (type === 'job' && !canPostJobs) {
+      setError('Only employers and admins can post jobs.')
       setLoading(false)
       return
     }
@@ -103,7 +111,9 @@ export default function CreatePostPage() {
 
     try {
       const newStory = await createStory(payload, token)
-      router.push(`/details/${newStory.story_id}`)
+      router.push(
+        `/details/${newStory.story_id}?tags=${encodeURIComponent(getTagsForType(type).join(', '))}`,
+      )
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message || 'Failed to create post.')
@@ -149,12 +159,24 @@ export default function CreatePostPage() {
               <SelectItem value="story">Story</SelectItem>
               <SelectItem value="askHN">Ask HN</SelectItem>
               <SelectItem value="showHN">Show HN</SelectItem>
-              <SelectItem value="job">Job</SelectItem>
+              <SelectItem value="job" disabled={!canPostJobs}>
+                Job {!canPostJobs && '(Employers Only)'}
+              </SelectItem>
             </SelectContent>
           </Select>
           <p className="text-xs text-gray-500 mt-1">
             Tags that will be added: {getTagsForType(type).join(', ')}
           </p>
+          {type === 'job' && !canPostJobs && (
+            <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-700 font-medium">
+                Only employers and admins can post jobs.
+              </p>
+              <p className="text-xs text-red-600 mt-1">
+                Please select a different post type or upgrade your account to Employer.
+              </p>
+            </div>
+          )}
         </div>
 
         {(type === 'story' || type === 'job') && (
