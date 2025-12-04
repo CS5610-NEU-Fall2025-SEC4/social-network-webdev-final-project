@@ -6,6 +6,10 @@ import Comment from './comment'
 import LikeButton from './LikeButton'
 import CommentEditor from './CommentEditor'
 import UsernameLink from '@/components/username-link'
+import EditButton from './EditButton'
+import DeleteButton from './DeleteButton'
+import ShareButton from './ShareButton'
+import ReportButton from './ReportButton'
 
 export default async function DetailsPage({
   params,
@@ -29,26 +33,39 @@ export default async function DetailsPage({
   }
 
   const tags = tagsQuery ? tagsQuery.split(',') : []
+  console.log(tags)
   const filteredTags = tags.filter((tag) =>
     ['story', 'ask_hn', 'show_hn', 'job', 'comment'].includes(tag),
   )
+  console.log(filteredTags)
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="w-full px-2 sm:px-4 lg:px-6">
         <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <h1 className="text-3xl font-bold text-gray-900">{story.title}</h1>
-            {filteredTags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {filteredTags.map((tag) => (
-                  <span key={tag} className="px-2 py-1 bg-gray-100 rounded text-sm">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
+          <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+            <h1 className="text-3xl font-bold text-gray-900 flex-1 min-w-0">{story.title}</h1>
+            <div className="flex flex-wrap gap-2">
+              <ShareButton storyId={storyId} title={story.title || ''} tags={filteredTags} />
+              <EditButton storyId={storyId} authorUsername={story.author} />
+              <DeleteButton
+                storyId={storyId}
+                authorUsername={story.author}
+                title={story.title || 'Untitled'}
+              />
+              <ReportButton storyId={storyId} contentType="story" />
+            </div>
           </div>
+
+          {filteredTags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {filteredTags.map((tag) => (
+                <span key={tag} className="px-2 py-1 bg-gray-100 rounded text-sm">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
 
           <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
             <span className="flex items-center gap-1">
@@ -92,7 +109,8 @@ export default async function DetailsPage({
         {story.children && story.children.length > 0 && (
           <div className="mt-8">
             <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-              <FaCommentAlt /> {story.children.length} Comments
+              <FaCommentAlt /> Comments
+              {/* <FaCommentAlt /> {story.children.length} Comments */}
             </h2>
 
             <div className="space-y-4">

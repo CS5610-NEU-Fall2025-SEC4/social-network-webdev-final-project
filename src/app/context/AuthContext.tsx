@@ -21,6 +21,8 @@ export interface ProfileData {
   email: string
   firstName: string
   lastName: string
+  role: 'USER' | 'EMPLOYER' | 'ADMIN'
+  isBlocked?: boolean
   bio?: string
   location?: string
   website?: string
@@ -54,6 +56,7 @@ export interface RegisterPayload {
   email: string
   username: string
   password: string
+  role: 'USER' | 'EMPLOYER'
 }
 
 interface AuthContextValue {
@@ -110,10 +113,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (payload: LoginPayload) => {
     const data = await apiLogin(payload)
     const at = data.access_token || data.token
+    const userRole = data.role
     if (at) {
       localStorage.setItem('access_token', at)
       setToken(at)
       setAuthenticated(true)
+
+      const prof = await fetchProfile(at)
+      setProfile(prof)
+      localStorage.setItem('userProfile', JSON.stringify(prof))
+
       await refreshProfile()
     }
   }

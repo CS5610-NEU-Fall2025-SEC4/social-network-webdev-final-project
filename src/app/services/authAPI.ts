@@ -2,12 +2,14 @@ export interface LoginPayload {
   username: string
   password: string
 }
+
 export interface RegisterPayload {
   firstName: string
   lastName: string
   email: string
   username: string
   password: string
+  role: 'USER' | 'EMPLOYER'
 }
 export interface ProfileData {
   id: string
