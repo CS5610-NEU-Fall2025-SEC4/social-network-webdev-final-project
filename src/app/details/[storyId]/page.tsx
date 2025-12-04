@@ -52,7 +52,7 @@ export default async function DetailsPage({
 
           <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
             <span className="flex items-center gap-1">
-              <FaUser /> <UsernameLink username={story.author} /> {/* Changed here */}
+              <FaUser /> <UsernameLink username={story.author} />
             </span>
             {story.points && (
               <span className="flex items-center gap-1">

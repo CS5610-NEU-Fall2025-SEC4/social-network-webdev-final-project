@@ -59,7 +59,6 @@ export default function UsernameLink({ username, className }: UsernameLinkProps)
         }
       }
 
-      // Update cache after resolving
       userCache.set(username, { isHN: hnExists, internalId: id })
     } finally {
       setIsResolving(false)
