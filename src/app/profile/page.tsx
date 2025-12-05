@@ -9,7 +9,6 @@ import type { ProfileState as StoreProfileState } from '../store/profileSlice'
 import { fetchProfile, updateProfileThunk } from '../store/profileSlice'
 import { fetchPublicProfileById } from '../store/publicProfileSlice'
 
-// Simple toggle switch component for visibility flags
 function VisibilityToggle({
   label,
   checked,
@@ -72,6 +71,7 @@ type EditableUser = {
   }
   followers?: Array<{ id: string; username: string }>
   following?: Array<{ id: string; username: string }>
+  bookmarks?: string[]
 }
 
 export default function ProfilePage() {
@@ -110,6 +110,7 @@ export default function ProfilePage() {
         stats: {},
         followers: profile.followers || [],
         following: profile.following || [],
+        bookmarks: (profile as unknown as { bookmarks?: string[] }).bookmarks ?? [],
         joined: profile.createdAt ? String(profile.createdAt) : undefined,
       }
       setUser(editable)
@@ -154,9 +155,7 @@ export default function ProfilePage() {
           visibility: form.visibility,
         }),
       ).unwrap()
-      // Refresh public profile data before navigating so hidden fields take effect
       if (form.id) {
-        // Refresh the public profile slice silently (await to ensure latest visibility flags)
         await dispatch(fetchPublicProfileById(form.id)).unwrap()
       }
       setMessage('Profile updated successfully.')
@@ -192,6 +191,7 @@ export default function ProfilePage() {
             </button>
           </div>
         )}
+
         <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-black to-cyan-700 p-6 text-white shadow-md mb-4">
           <div className="flex items-center justify-between gap-4">
             <div className="w-16 h-16 rounded-full bg-white/20 ring-2 ring-white/50 backdrop-blur flex items-center justify-center text-2xl font-semibold">
@@ -233,19 +233,16 @@ export default function ProfilePage() {
           >
             Overview
           </button>
-          <button
+          <Link
+            href="/edit"
             className={`px-3 py-2 text-sm rounded-t ${
               tab === 'edit'
                 ? 'bg-white text-cyan-700 shadow-sm'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
-            onClick={() => {
-              setMessage('')
-              setTab('edit')
-            }}
           >
             Edit Profile
-          </button>
+          </Link>
         </div>
 
         {tab === 'overview' && (
@@ -370,6 +367,29 @@ export default function ProfilePage() {
 
             <div className="grid gap-4">
               <div className="rounded-lg bg-white shadow p-4">
+                <h3 className="text-lg font-medium mb-2">Bookmarks</h3>
+                <div className="space-y-2">
+                  {user?.bookmarks && user.bookmarks.length > 0 ? (
+                    user.bookmarks.map((id) => (
+                      <div
+                        key={id}
+                        className="flex items-center justify-between gap-4 border rounded-md p-3"
+                      >
+                        <div className="text-sm font-medium">Story {id}</div>
+                        <Link
+                          href={`/details/${encodeURIComponent(id)}`}
+                          className="text-xs text-cyan-700 hover:underline"
+                        >
+                          View
+                        </Link>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-600">No bookmarks yet.</p>
+                  )}
+                </div>
+              </div>
+              <div className="rounded-lg bg-white shadow p-4">
                 <h3 className="text-lg font-medium mb-3">Stats</h3>
                 <dl className="grid grid-cols-2 gap-3 text-sm">
                   <div>
@@ -409,12 +429,6 @@ export default function ProfilePage() {
                 </dl>
               </div>
               <div className="rounded-lg bg-white shadow p-4">
-                <h3 className="text-lg font-medium mb-2">Recent Activity</h3>
-                <p className="text-gray-600 text-sm">
-                  Coming soon: posts and comments from your activity.
-                </p>
-              </div>
-              <div className="rounded-lg bg-white shadow p-4">
                 <h3 className="text-lg font-medium mb-2">Following</h3>
                 <ul className="text-sm space-y-1">
                   {(user?.following || []).map((u: { id: string; username: string }) => (
@@ -441,205 +455,6 @@ export default function ProfilePage() {
                   ))}
                   {!user?.followers?.length && <li className="text-gray-500">No followers yet.</li>}
                 </ul>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {tab === 'edit' && form && (
-          <div className="rounded-lg bg-gradient-to-br from-white to-cyan-50 border border-cyan-100 shadow p-6 max-w-2xl mx-auto space-y-6">
-            {message && <p className="mb-3 text-sm text-gray-700">{message}</p>}
-            <div className="space-y-6">
-              {/* Username */}
-              <div>
-                <label className="block text-sm text-gray-700 mb-1">Username</label>
-                <input
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                  name="username"
-                  value={form.username}
-                  onChange={handleChange}
-                />
-              </div>
-              {/* Names */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm text-gray-700 mb-1">First name</label>
-                  <input
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                    name="firstName"
-                    value={form.firstName}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-700 mb-1">Last name</label>
-                  <input
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                    name="lastName"
-                    value={form.lastName}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-              {/* Email (always private) */}
-              <div>
-                <label className="block text-sm text-gray-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                />
-              </div>
-              {/* Website */}
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sm text-gray-700">Website</label>
-                  <VisibilityToggle
-                    label="Website"
-                    checked={form.visibility?.website !== false}
-                    onChange={(val) =>
-                      setForm({
-                        ...(form as EditableUser),
-                        visibility: { ...(form.visibility || {}), website: val },
-                      })
-                    }
-                  />
-                </div>
-                <input
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                  name="website"
-                  value={form.website || ''}
-                  onChange={handleChange}
-                />
-              </div>
-              {/* Location */}
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sm text-gray-700">Location</label>
-                  <VisibilityToggle
-                    label="Location"
-                    checked={form.visibility?.location !== false}
-                    onChange={(val) =>
-                      setForm({
-                        ...(form as EditableUser),
-                        visibility: { ...(form.visibility || {}), location: val },
-                      })
-                    }
-                  />
-                </div>
-                <input
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                  name="location"
-                  value={form.location || ''}
-                  onChange={handleChange}
-                />
-              </div>
-              {/* Bio */}
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sm text-gray-700">Bio</label>
-                  <VisibilityToggle
-                    label="Bio"
-                    checked={form.visibility?.bio !== false}
-                    onChange={(val) =>
-                      setForm({
-                        ...(form as EditableUser),
-                        visibility: { ...(form.visibility || {}), bio: val },
-                      })
-                    }
-                  />
-                </div>
-                <textarea
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 min-h-24 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                  name="bio"
-                  value={form.bio || ''}
-                  onChange={handleChange}
-                />
-              </div>
-              {/* Interests (always public) */}
-              <div>
-                <label className="block text-sm text-gray-700 mb-1">
-                  Interests (comma separated)
-                </label>
-                <input
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                  name="interests"
-                  value={(form.interests || []).join(', ')}
-                  onChange={(e) => {
-                    const parts = e.target.value
-                      .split(',')
-                      .map((s) => s.trim())
-                      .filter(Boolean)
-                    setForm({ ...(form as EditableUser), interests: parts })
-                  }}
-                />
-              </div>
-              {/* Social links (Twitter/GitHub/LinkedIn) */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm text-gray-700 mb-1">Twitter URL</label>
-                  <input
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                    name="twitter"
-                    value={form.social?.twitter || ''}
-                    onChange={(e) =>
-                      setForm({
-                        ...(form as EditableUser),
-                        social: { ...form.social, twitter: e.target.value },
-                      })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-700 mb-1">GitHub URL</label>
-                  <input
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                    name="github"
-                    value={form.social?.github || ''}
-                    onChange={(e) =>
-                      setForm({
-                        ...(form as EditableUser),
-                        social: { ...form.social, github: e.target.value },
-                      })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-700 mb-1">LinkedIn URL</label>
-                  <input
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                    name="linkedin"
-                    value={form.social?.linkedin || ''}
-                    onChange={(e) =>
-                      setForm({
-                        ...(form as EditableUser),
-                        social: { ...form.social, linkedin: e.target.value },
-                      })
-                    }
-                  />
-                </div>
-              </div>
-              {/* Actions */}
-              <div className="flex gap-2">
-                <button
-                  className="px-5 py-2.5 rounded-md bg-gradient-to-r from-black via-cyan-700 to-cyan-600 text-white font-medium shadow hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={handleSave}
-                  disabled={profileState.status === 'loading'}
-                >
-                  {profileState.status === 'loading' ? 'Saving…' : 'Save Changes'}
-                </button>
-                <button
-                  className="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-800 rounded-md"
-                  onClick={() => {
-                    setForm(user)
-                    setMessage('')
-                    setTab('overview')
-                  }}
-                >
-                  Cancel
-                </button>
               </div>
             </div>
           </div>
