@@ -98,7 +98,6 @@ export default function EditProfilePage() {
         }),
       ).unwrap()
     } catch {
-      // optional: show toast
     } finally {
       setSaving(false)
     }
