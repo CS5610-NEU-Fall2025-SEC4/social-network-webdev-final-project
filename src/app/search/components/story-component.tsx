@@ -9,7 +9,6 @@ import BookmarkIcon from '@/app/components/BookmarkIcon'
 import { useSelector } from 'react-redux'
 import type { ProfileState as StoreProfileState } from '@/app/store/profileSlice'
 import { useAuth } from '@/app/context/AuthContext'
-// FollowButton removed per request
 
 export default function StoryComponent({ story }: { story: HNStory }) {
   const { profile } = useAuth()
