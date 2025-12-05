@@ -47,7 +47,6 @@ export default async function DetailsPage({
           <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
             <h1 className="text-3xl font-bold text-gray-900 flex-1 min-w-0">{story.title}</h1>
             <div className="flex flex-wrap gap-2">
-              <DetailsBookmark itemId={storyId} />
               <ShareButton storyId={storyId} title={story.title || ''} tags={filteredTags} />
               <EditButton storyId={storyId} authorUsername={story.author} />
               <DeleteButton
