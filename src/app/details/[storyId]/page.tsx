@@ -5,6 +5,7 @@ import { FaRegClock, FaLink } from 'react-icons/fa6'
 import Comment from './comment'
 import LikeButton from './LikeButton'
 import CommentEditor from './CommentEditor'
+import UsernameLink from '@/components/username-link'
 import EditButton from './EditButton'
 import DeleteButton from './DeleteButton'
 import ShareButton from './ShareButton'
@@ -68,7 +69,7 @@ export default async function DetailsPage({
 
           <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
             <span className="flex items-center gap-1">
-              <FaUser /> {story.author}
+              <FaUser /> <UsernameLink username={story.author} />
             </span>
             {story.points && (
               <span className="flex items-center gap-1">

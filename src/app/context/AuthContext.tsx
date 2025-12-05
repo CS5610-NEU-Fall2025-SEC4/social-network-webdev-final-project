@@ -1,11 +1,19 @@
 'use client'
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  ReactNode,
+} from 'react'
 import {
   fetchProfile,
   login as apiLogin,
   register as apiRegister,
   updateProfile as apiUpdateProfile,
 } from '../services/authAPI'
+import { useRouter } from 'next/navigation'
 
 export interface ProfileData {
   id: string
@@ -70,6 +78,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<ProfileData | null>(null)
   const [authenticated, setAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('userProfile')
+    setToken(null)
+    setProfile(null)
+    setAuthenticated(false)
+    router.push('/logIn')
+  }, [router])
 
   useEffect(() => {
     const stored = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
@@ -82,8 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setProfile(prof)
           localStorage.setItem('userProfile', JSON.stringify(prof))
         } catch {
-          setAuthenticated(false)
-          setToken(null)
+          logout()
         } finally {
           setLoading(false)
         }
@@ -91,7 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       setLoading(false)
     }
-  }, [])
+  }, [logout])
 
   const login = async (payload: LoginPayload) => {
     const data = await apiLogin(payload)
@@ -122,22 +139,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('userProfile', JSON.stringify(prof))
     } catch (e) {
       console.warn('Failed to refresh profile', e)
+      logout()
     }
   }
 
   const updateProfile = async (updates: UpdateProfilePayload) => {
     if (!token) return
-    const prof = await apiUpdateProfile(token, updates)
-    setProfile(prof)
-    localStorage.setItem('userProfile', JSON.stringify(prof))
-  }
-
-  const logout = () => {
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('userProfile')
-    setToken(null)
-    setProfile(null)
-    setAuthenticated(false)
+    try {
+      const prof = await apiUpdateProfile(token, updates)
+      setProfile(prof)
+      localStorage.setItem('userProfile', JSON.stringify(prof))
+    } catch (e) {
+      console.warn('Failed to update profile', e)
+      logout()
+      throw e
+    }
   }
 
   const value: AuthContextValue = {

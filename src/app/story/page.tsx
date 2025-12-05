@@ -14,8 +14,10 @@ import {
 } from '@/components/ui/select'
 import { createStory, CreateStoryPayload } from '@/app/services/postAPI'
 import { useAuth } from '@/app/context/AuthContext'
+import { useRequireAuth } from '@/app/hooks/useRequireAuth'
 
 export default function CreatePostPage() {
+  const { loading: authLoading, authenticated } = useRequireAuth()
   const router = useRouter()
   const { token, profile } = useAuth()
 
@@ -25,6 +27,10 @@ export default function CreatePostPage() {
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  if (authLoading || !authenticated) {
+    return null
+  }
 
   const canPostJobs = profile?.role === 'EMPLOYER' || profile?.role === 'ADMIN'
 

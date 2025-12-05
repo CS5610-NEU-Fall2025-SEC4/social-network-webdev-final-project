@@ -6,6 +6,7 @@ import { FaRegCircleUser } from 'react-icons/fa6'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '../context/AuthContext'
 import { RiAdminLine } from 'react-icons/ri'
 
 function RoleBadge({ role }: { role: string }) {
@@ -31,69 +32,19 @@ export default function Navigation({
   open?: boolean
   setOpen?: (val: boolean) => void
 }) {
-  // Avoid reading localStorage during SSR to prevent hydration mismatch
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [userRole, setUserRole] = useState<string | null>(null)
-  const [username, setUsername] = useState<string>('')
+  const { authenticated, profile, logout } = useAuth()
   const [mounted, setMounted] = useState(false)
-  const router = useRouter()
 
   useEffect(() => {
     setMounted(true)
-    const checkAuth = async () => {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
-
-      if (!token) {
-        setIsAuthenticated(false)
-        return
-      }
-
-      const profileStr = localStorage.getItem('userProfile')
-      if (profileStr) {
-        try {
-          const profile = JSON.parse(profileStr)
-          setUserRole(profile.role)
-          setUsername(profile.username)
-        } catch (e) {
-          console.error('Failed to parse profile', e)
-        }
-      }
-
-      try {
-        const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
-        const res = await fetch(`${base}/users/isAuthenticated`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        if (res.ok) {
-          setIsAuthenticated(true)
-        } else {
-          setIsAuthenticated(false)
-          localStorage.removeItem('access_token')
-          localStorage.removeItem('userProfile')
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error)
-        setIsAuthenticated(false)
-      }
-    }
-
-    // Only run after mount to keep server/client markup consistent
-    if (mounted) void checkAuth()
-  }, [mounted])
+  }, [])
 
   const handleLogout = () => {
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('userProfile')
-    setIsAuthenticated(false)
-    router.push('/logIn')
+    logout()
   }
 
   return (
     <>
-      {}
       <nav
         className="hidden md:flex fixed top-0 left-0 right-0 h-16 bg-gradient-to-r from-white via-white/90 to-black backdrop-blur items-center justify-between px-8 shadow-md z-20 border-b border-white/10"
         id="wd-hckrnws-navigation"
@@ -112,16 +63,15 @@ export default function Navigation({
         <div className="flex items-center space-x-8">
           {mounted && (
             <NavLinks
-              isAuthenticated={isAuthenticated}
+              isAuthenticated={authenticated}
               handleLogout={handleLogout}
-              userRole={userRole}
-              username={username}
+              userRole={profile?.role || null}
+              username={profile?.username || ''}
             />
-          )}{' '}
+          )}
         </div>
       </nav>
 
-      {}
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-white to-black backdrop-blur-md shadow-lg border-r border-white/10 transform transition-transform duration-300 z-30 md:hidden
         ${open ? 'translate-x-0' : '-translate-x-full'}`}
@@ -146,10 +96,10 @@ export default function Navigation({
         <div className="flex flex-col p-4 space-y-4">
           {mounted && (
             <MobileNavLinks
-              isAuthenticated={isAuthenticated}
+              isAuthenticated={authenticated}
               handleLogout={handleLogout}
-              userRole={userRole}
-              username={username}
+              userRole={profile?.role || null}
+              username={profile?.username || ''}
             />
           )}
         </div>
