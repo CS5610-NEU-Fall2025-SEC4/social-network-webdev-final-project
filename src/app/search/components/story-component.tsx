@@ -50,15 +50,6 @@ export default function StoryComponent({ story }: { story: HNStory }) {
 
   const isLocalStory = isNaN(Number(story.story_id))
 
-  const type: string = isJob
-    ? 'job'
-    : isAskHN
-      ? 'askHN'
-      : isShowHN
-        ? 'showHN'
-        : isComment
-          ? 'comment'
-          : 'story'
   const itemId: string = String(
     isLocalStory ? (story.story_id ?? story.objectID) : (story.objectID ?? story.story_id),
   )
