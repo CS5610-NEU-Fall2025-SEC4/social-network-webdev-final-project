@@ -1,9 +1,21 @@
+'use client'
 import { HNStory } from '@/app/types/types'
+import type { Profile } from '@/app/services/userAPI'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import UsernameLink from '@/components/username-link'
+import BookmarkIcon from '@/app/components/BookmarkIcon'
+import { useSelector } from 'react-redux'
+import type { ProfileState as StoreProfileState } from '@/app/store/profileSlice'
+import { useAuth } from '@/app/context/AuthContext'
 
 export default function StoryComponent({ story }: { story: HNStory }) {
+  const { profile } = useAuth()
+  const profileState = useSelector(
+    (s: unknown) => (s as { profile: StoreProfileState }).profile,
+  ) as StoreProfileState
+  const reduxBookmarks = (profileState as unknown as { bookmarks?: string[] }).bookmarks || []
   const isStory = story._tags?.includes('story') || story.type === 'story'
   const isAskHN = story._tags?.includes('ask_hn')
   const isShowHN = story._tags?.includes('show_hn')
@@ -38,6 +50,13 @@ export default function StoryComponent({ story }: { story: HNStory }) {
 
   const isLocalStory = isNaN(Number(story.story_id))
 
+  const itemId: string = String(
+    isLocalStory ? (story.story_id ?? story.objectID) : (story.objectID ?? story.story_id),
+  )
+  const initiallyBookmarked =
+    ((profile as Partial<Profile>)?.bookmarks ?? []).includes(itemId) ||
+    reduxBookmarks.includes(itemId)
+
   return (
     <Card className="shadow-sm mb-4 transition-transform transform hover:-translate-y-1 hover:shadow-md animate-fade-in">
       <CardHeader>
@@ -47,26 +66,35 @@ export default function StoryComponent({ story }: { story: HNStory }) {
               dangerouslySetInnerHTML={{ __html: story.comment_text ?? '' }}
               className="text-gray-800"
             />
-          ) : story.url ? (
-            <Link
-              href={story.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-800 hover:underline"
-            >
-              {story.title}
-            </Link>
           ) : (
-            story.title
+            <span className="inline-flex items-center gap-2">
+              {story.url ? (
+                <Link
+                  href={story.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-800 hover:underline"
+                >
+                  {story.title}
+                </Link>
+              ) : (
+                story.title
+              )}
+              {!isComment && (
+                <Button variant="ghost" size="sm" asChild>
+                  <Link
+                    href={`/details/${isLocalStory ? story.story_id : story.objectID}?tags=${encodeURIComponent(storyTags?.join(',') || '')}`}
+                  >
+                    {getLinkText()}
+                  </Link>
+                </Button>
+              )}
+            </span>
           )}
-          {!isComment && (
-            <Button variant="ghost" size="sm" asChild>
-              <Link
-                href={`/details/${isLocalStory ? story.story_id : story.objectID}?tags=${encodeURIComponent(storyTags?.join(',') || '')}`}
-              >
-                {getLinkText()}
-              </Link>
-            </Button>
+          {isComment && (
+            <div className="mt-2">
+              <BookmarkIcon itemId={itemId} initiallyBookmarked={initiallyBookmarked} />
+            </div>
           )}
         </CardTitle>
       </CardHeader>
@@ -76,13 +104,23 @@ export default function StoryComponent({ story }: { story: HNStory }) {
             <span className="font-bold">{story.points}</span> points
           </div>
           <span>•</span>
-          <div>by {story.author}</div>
+          <div>
+            by <UsernameLink username={story.author} />
+          </div>
           <span>•</span>
           <div>{getRelativeTime(story.created_at_i)}</div>
           {(isStory || isAskHN || isShowHN) && (story.children || []).length > 0 && (
             <>
               <span>•</span>
               <div>{story.children.length} comments</div>
+            </>
+          )}
+          {!isComment && (
+            <>
+              <span>•</span>
+              <div className="flex items-center">
+                <BookmarkIcon itemId={itemId} initiallyBookmarked={initiallyBookmarked} />
+              </div>
             </>
           )}
         </div>

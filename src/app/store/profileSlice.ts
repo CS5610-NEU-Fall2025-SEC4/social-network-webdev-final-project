@@ -19,6 +19,7 @@ export interface ProfileState {
   social?: { twitter?: string; github?: string; linkedin?: string }
   followers?: UserRef[]
   following?: UserRef[]
+  bookmarks?: string[]
   createdAt?: string
   updatedAt?: string
   visibility?: {
@@ -88,11 +89,45 @@ export const updateProfileThunk = createAsyncThunk(
   },
 )
 
+export const followUserThunk = createAsyncThunk(
+  'profile/followUser',
+  async (targetUserId: string) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
+    const res = await fetch(`${API_BASE}/users/${encodeURIComponent(targetUserId)}/follow`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    })
+    if (!res.ok) throw new Error(await res.text())
+    return (await res.json()) as Omit<ProfileState, 'status' | 'error'>
+  },
+)
+
+export const unfollowUserThunk = createAsyncThunk(
+  'profile/unfollowUser',
+  async (targetUserId: string) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
+    const res = await fetch(`${API_BASE}/users/${encodeURIComponent(targetUserId)}/unfollow`, {
+      method: 'PATCH',
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    })
+    if (!res.ok) throw new Error(await res.text())
+    return (await res.json()) as Omit<ProfileState, 'status' | 'error'>
+  },
+)
+
 const profileSlice = createSlice({
   name: 'profile',
   initialState,
   reducers: {
     resetProfileState: () => initialState,
+    addBookmarkLocal: (state, action: PayloadAction<string>) => {
+      const id = action.payload
+      state.bookmarks = Array.from(new Set([...(state.bookmarks || []), id]))
+    },
+    removeBookmarkLocal: (state, action: PayloadAction<string>) => {
+      const id = action.payload
+      state.bookmarks = (state.bookmarks || []).filter((b) => b !== id)
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -126,8 +161,38 @@ const profileSlice = createSlice({
         state.status = 'failed'
         state.error = action.error.message
       })
+      .addCase(followUserThunk.pending, (state) => {
+        state.status = 'loading'
+        state.error = undefined
+      })
+      .addCase(
+        followUserThunk.fulfilled,
+        (state, action: PayloadAction<Omit<ProfileState, 'status' | 'error'>>) => {
+          Object.assign(state, action.payload)
+          state.status = 'succeeded'
+        },
+      )
+      .addCase(followUserThunk.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
+      .addCase(unfollowUserThunk.pending, (state) => {
+        state.status = 'loading'
+        state.error = undefined
+      })
+      .addCase(
+        unfollowUserThunk.fulfilled,
+        (state, action: PayloadAction<Omit<ProfileState, 'status' | 'error'>>) => {
+          Object.assign(state, action.payload)
+          state.status = 'succeeded'
+        },
+      )
+      .addCase(unfollowUserThunk.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
   },
 })
 
-export const { resetProfileState } = profileSlice.actions
+export const { resetProfileState, addBookmarkLocal, removeBookmarkLocal } = profileSlice.actions
 export default profileSlice.reducer

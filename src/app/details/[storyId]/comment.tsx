@@ -9,6 +9,9 @@ import CommentEditForm from './CommentEditForm'
 import ReportButton from './ReportButton'
 import { Card, CardContent } from '@/components/ui/card'
 import UsernameLink from '@/components/username-link'
+import BookmarkIcon from '@/app/components/BookmarkIcon'
+import { useSelector } from 'react-redux'
+import type { ProfileState as StoreProfileState } from '@/app/store/profileSlice'
 
 interface CommentProps {
   comment: HNStoryItem | HNStory
@@ -18,6 +21,12 @@ interface CommentProps {
 
 export default function Comment({ comment, storyId, depth = 0 }: CommentProps) {
   const [isEditing, setIsEditing] = useState(false)
+  const profileState = useSelector(
+    (s: unknown) => (s as { profile: StoreProfileState }).profile,
+  ) as StoreProfileState
+  const bookmarks = (profileState as unknown as { bookmarks?: string[] }).bookmarks || []
+  const commentId = String(comment.id)
+  const initiallyBookmarked = bookmarks.includes(commentId)
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString()
@@ -62,6 +71,7 @@ export default function Comment({ comment, storyId, depth = 0 }: CommentProps) {
               authorUsername={comment.author}
               commentText={comment.text || ''}
             />
+            <BookmarkIcon itemId={commentId} initiallyBookmarked={initiallyBookmarked} />
             <ReportButton storyId={String(comment.id)} contentType="comment" />
           </div>
         </div>

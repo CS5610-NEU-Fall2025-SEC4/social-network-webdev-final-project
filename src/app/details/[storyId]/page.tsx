@@ -10,6 +10,7 @@ import EditButton from './EditButton'
 import DeleteButton from './DeleteButton'
 import ShareButton from './ShareButton'
 import ReportButton from './ReportButton'
+import DetailsBookmark from '../DetailsBookmark'
 
 export default async function DetailsPage({
   params,
@@ -67,7 +68,7 @@ export default async function DetailsPage({
             </div>
           )}
 
-          <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+          <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4 items-center">
             <span className="flex items-center gap-1">
               <FaUser /> <UsernameLink username={story.author} />
             </span>
@@ -78,6 +79,12 @@ export default async function DetailsPage({
             )}
             <span className="flex items-center gap-1">
               <FaRegClock /> {formatDate(story.created_at_i)}
+            </span>
+            {(story.children || []).length > 0 && (
+              <span className="flex items-center gap-1">{story.children.length} comments</span>
+            )}
+            <span className="flex items-center">
+              <DetailsBookmark itemId={storyId} />
             </span>
           </div>
 
