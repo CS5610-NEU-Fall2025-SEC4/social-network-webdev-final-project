@@ -6,35 +6,7 @@ import { useRequireAuth } from '../hooks/useRequireAuth'
 import { useAppDispatch } from '../store'
 import { useSelector } from 'react-redux'
 import type { ProfileState as StoreProfileState } from '../store/profileSlice'
-import { fetchProfile, updateProfileThunk } from '../store/profileSlice'
-import { fetchPublicProfileById } from '../store/publicProfileSlice'
-
-function VisibilityToggle({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string
-  checked: boolean
-  onChange: (val: boolean) => void
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-[11px] uppercase tracking-wide text-gray-500">Public</span>
-      <button
-        type="button"
-        aria-pressed={checked}
-        aria-label={`${label} visibility toggle (currently ${checked ? 'public' : 'private'})`}
-        onClick={() => onChange(!checked)}
-        className={`relative inline-flex items-center w-12 h-6 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-400 ${checked ? 'bg-cyan-600' : 'bg-gray-300'}`}
-      >
-        <span
-          className={`absolute left-1 top-1 w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-300 ${checked ? 'translate-x-6' : 'translate-x-0'}`}
-        />
-      </button>
-    </div>
-  )
-}
+import { fetchProfile } from '../store/profileSlice'
 
 type EditableUser = {
   id: string
@@ -83,8 +55,6 @@ export default function ProfilePage() {
 
   const [tab, setTab] = useState<'overview' | 'edit'>('overview')
   const [user, setUser] = useState<EditableUser | null>(null)
-  const [form, setForm] = useState<EditableUser | null>(null)
-  const [message, setMessage] = useState<string>('')
 
   useEffect(() => {
     if (!loading && authenticated && profileState.status === 'idle') {
@@ -114,7 +84,6 @@ export default function ProfilePage() {
         joined: profile.createdAt ? String(profile.createdAt) : undefined,
       }
       setUser(editable)
-      setForm(editable)
     }
   }, [profileState])
 
@@ -125,45 +94,20 @@ export default function ProfilePage() {
     return (a + b || user.username?.[0] || 'U').toUpperCase()
   }, [user])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (!form) return
-    const { name, value } = e.target
-    setForm({ ...form, [name]: value } as EditableUser)
-    setMessage('')
-  }
-
-  const handleSave = async () => {
-    if (!form) return
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      setMessage('Please enter a valid email address.')
-      return
+  const stats = useMemo(() => {
+    const followers = (user?.followers || []).length
+    const following = (user?.following || []).length
+    const bookmarks = (user?.bookmarks || []).length
+    return {
+      posts: user?.stats?.posts ?? 0,
+      comments: user?.stats?.comments ?? 0,
+      upvotesGiven: user?.stats?.upvotesGiven ?? 0,
+      upvotesReceived: user?.stats?.upvotesReceived ?? 0,
+      followers,
+      following,
+      bookmarks,
     }
-    try {
-      await dispatch(
-        updateProfileThunk({
-          username: form.username,
-          firstName: form.firstName,
-          lastName: form.lastName,
-          email: form.email,
-          bio: form.bio,
-          location: form.location,
-          website: form.website,
-          interests: form.interests || [],
-          twitter: form.social?.twitter,
-          github: form.social?.github,
-          linkedin: form.social?.linkedin,
-          visibility: form.visibility,
-        }),
-      ).unwrap()
-      if (form.id) {
-        await dispatch(fetchPublicProfileById(form.id)).unwrap()
-      }
-      setMessage('Profile updated successfully.')
-      setTab('overview')
-    } catch {
-      setMessage('Failed to update profile.')
-    }
-  }
+  }, [user])
 
   if (loading || !authenticated) {
     return null
@@ -226,10 +170,7 @@ export default function ProfilePage() {
                 ? 'bg-white text-cyan-700 shadow-sm'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
-            onClick={() => {
-              setMessage('')
-              setTab('overview')
-            }}
+            onClick={() => setTab('overview')}
           >
             Overview
           </button>
@@ -394,27 +335,31 @@ export default function ProfilePage() {
                 <dl className="grid grid-cols-2 gap-3 text-sm">
                   <div>
                     <dt className="text-gray-500">Posts</dt>
-                    <dd className="font-semibold">{user?.stats?.posts ?? 0}</dd>
+                    <dd className="font-semibold">{stats.posts}</dd>
                   </div>
                   <div>
                     <dt className="text-gray-500">Comments</dt>
-                    <dd className="font-semibold">{user?.stats?.comments ?? 0}</dd>
+                    <dd className="font-semibold">{stats.comments}</dd>
                   </div>
                   <div>
                     <dt className="text-gray-500">Upvotes given</dt>
-                    <dd className="font-semibold">{user?.stats?.upvotesGiven ?? 0}</dd>
+                    <dd className="font-semibold">{stats.upvotesGiven}</dd>
                   </div>
                   <div>
                     <dt className="text-gray-500">Upvotes received</dt>
-                    <dd className="font-semibold">{user?.stats?.upvotesReceived ?? 0}</dd>
+                    <dd className="font-semibold">{stats.upvotesReceived}</dd>
                   </div>
                   <div>
                     <dt className="text-gray-500">Followers</dt>
-                    <dd className="font-semibold">{user?.stats?.followers ?? 0}</dd>
+                    <dd className="font-semibold">{stats.followers}</dd>
                   </div>
                   <div>
                     <dt className="text-gray-500">Following</dt>
-                    <dd className="font-semibold">{user?.stats?.following ?? 0}</dd>
+                    <dd className="font-semibold">{stats.following}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-500">Bookmarks</dt>
+                    <dd className="font-semibold">{stats.bookmarks}</dd>
                   </div>
                   <div>
                     <dt className="text-gray-500">Karma</dt>

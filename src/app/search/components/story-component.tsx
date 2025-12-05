@@ -75,28 +75,30 @@ export default function StoryComponent({ story }: { story: HNStory }) {
               dangerouslySetInnerHTML={{ __html: story.comment_text ?? '' }}
               className="text-gray-800"
             />
-          ) : story.url ? (
-            <Link
-              href={story.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-800 hover:underline"
-            >
-              {story.title}
-            </Link>
           ) : (
-            story.title
-          )}
-          {!isComment && (
-            <div className="flex gap-2 items-center">
-              <Button variant="ghost" size="sm" asChild>
+            <span className="inline-flex items-center gap-2">
+              {story.url ? (
                 <Link
-                  href={`/details/${isLocalStory ? story.story_id : story.objectID}?tags=${encodeURIComponent(storyTags?.join(',') || '')}`}
+                  href={story.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-800 hover:underline"
                 >
-                  {getLinkText()}
+                  {story.title}
                 </Link>
-              </Button>
-            </div>
+              ) : (
+                story.title
+              )}
+              {!isComment && (
+                <Button variant="ghost" size="sm" asChild>
+                  <Link
+                    href={`/details/${isLocalStory ? story.story_id : story.objectID}?tags=${encodeURIComponent(storyTags?.join(',') || '')}`}
+                  >
+                    {getLinkText()}
+                  </Link>
+                </Button>
+              )}
+            </span>
           )}
           {isComment && (
             <div className="mt-2">
