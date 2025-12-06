@@ -40,7 +40,9 @@ export default function BookmarkIcon({ itemId, initiallyBookmarked, size = 18 }:
       }
       try {
         await dispatch(fetchProfile()).unwrap()
-      } catch {}
+      } catch (err) {
+        console.error('Bookmark action failed:', err)
+      }
     } catch (e) {
       console.error('Bookmark toggle failed', e)
     } finally {

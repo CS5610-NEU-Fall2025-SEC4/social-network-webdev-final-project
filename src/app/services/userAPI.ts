@@ -3,6 +3,7 @@ export type PublicProfile = {
   username: string
   firstName: string
   lastName: string
+  avatarUrl?: string
   bio?: string | null
   location?: string | null
   website?: string | null
@@ -82,6 +83,24 @@ export async function removeBookmark(
   if (!res.ok) {
     const errText = await res.text().catch(() => '')
     throw new Error(`Failed to remove bookmark: ${res.status} ${res.statusText} ${errText}`.trim())
+  }
+  return res.json()
+}
+
+export async function uploadProfilePhoto(
+  token: string,
+  file: File,
+): Promise<{ avatarUrl: string }> {
+  const form = new FormData()
+  form.append('file', file)
+  const res = await fetch(`${BASE}/users/me/photo`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  })
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '')
+    throw new Error(`Failed to upload photo: ${res.status} ${res.statusText} ${errText}`.trim())
   }
   return res.json()
 }

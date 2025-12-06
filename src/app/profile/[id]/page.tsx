@@ -7,11 +7,13 @@ import FollowButton from '@/app/components/FollowButton'
 import { useAuth } from '@/app/context/AuthContext'
 import Link from 'next/link'
 import FollowList from '../components/FollowList'
+import Image from 'next/image'
 
 export default function PublicProfilePage() {
   const params = useParams()
   const id = params?.id as string
   const { profile } = useAuth()
+  const [photoUrl, setPhotoUrl] = useState<string | undefined>(undefined)
   const [data, setData] = useState<Awaited<ReturnType<typeof getPublicProfile>> | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -22,7 +24,8 @@ export default function PublicProfilePage() {
         if (!id) return
         const res = await getPublicProfile(id)
         setData(res)
-      } catch (e) {
+      } catch (err) {
+        console.error('Failed to load public profile:', err)
         setError('Failed to load profile')
       } finally {
         setLoading(false)
@@ -31,11 +34,11 @@ export default function PublicProfilePage() {
     run()
   }, [id])
 
+  useEffect(() => {
+    setPhotoUrl((data as unknown as { avatarUrl?: string })?.avatarUrl || undefined)
+  }, [data])
+
   const isSelf = useMemo(() => profile?.id === id, [profile?.id, id])
-  const initiallyFollowing = useMemo(() => {
-    if (!profile || !data) return false
-    return (profile.following ?? []).some((u: { id: string; username: string }) => u.id === data.id)
-  }, [profile, data])
 
   if (loading)
     return (
@@ -72,8 +75,18 @@ export default function PublicProfilePage() {
       <div className="max-w-5xl mx-auto">
         <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-black to-cyan-700 p-6 text-white shadow-md mb-4">
           <div className="flex items-center justify-between gap-4">
-            <div className="w-16 h-16 rounded-full bg-white/20 ring-2 ring-white/50 backdrop-blur flex items-center justify-center text-2xl font-semibold">
-              {(data.firstName?.[0] || '') + (data.lastName?.[0] || data.username?.[0] || 'U')}
+            <div className="w-16 h-16 rounded-full ring-2 ring-white/50 overflow-hidden bg-white/20 backdrop-blur flex items-center justify-center text-2xl font-semibold">
+              {photoUrl ? (
+                <Image
+                  src={photoUrl}
+                  alt="Avatar"
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                (data.firstName?.[0] || '') + (data.lastName?.[0] || data.username?.[0] || 'U')
+              )}
             </div>
             <div className="flex-1">
               <h1 className="text-2xl md:text-3xl font-semibold leading-tight">

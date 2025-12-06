@@ -29,7 +29,9 @@ export default function FollowButton({ targetUserId, targetUsername, className }
       }
       try {
         await dispatch(fetchProfile()).unwrap()
-      } catch {}
+      } catch (err) {
+        console.error('Follow action failed:', err)
+      }
     } catch (e) {
       console.error('Follow toggle failed', e)
     } finally {
