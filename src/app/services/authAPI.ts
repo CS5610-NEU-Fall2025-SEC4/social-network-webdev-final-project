@@ -28,6 +28,7 @@ export interface ProfileData {
   updatedAt?: string
   followers?: Array<{ id: string; username: string }>
   following?: Array<{ id: string; username: string }>
+  stats?: { posts: number; comments: number }
 }
 export interface UpdateProfilePayload {
   username?: string

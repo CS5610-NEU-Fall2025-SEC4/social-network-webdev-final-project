@@ -12,6 +12,7 @@ export type PublicProfile = {
   followers?: { id: string; username: string }[]
   following?: { id: string; username: string }[]
   createdAt?: string
+  stats?: { posts: number; comments: number }
   role: string
   isBlocked?: boolean
 }

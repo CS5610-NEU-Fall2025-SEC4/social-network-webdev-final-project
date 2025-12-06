@@ -20,6 +20,7 @@ export interface ProfileState {
   followers?: UserRef[]
   following?: UserRef[]
   bookmarks?: string[]
+  stats?: { posts: number; comments: number }
   createdAt?: string
   updatedAt?: string
   visibility?: {

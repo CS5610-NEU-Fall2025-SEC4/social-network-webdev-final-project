@@ -231,13 +231,12 @@ export default function PublicProfilePage() {
                   </div>
                   <div>
                     <dt className="text-gray-500">Posts</dt>
-                    <dd className="font-semibold">0</dd>
+                    <dd className="font-semibold">{data.stats?.posts ?? 0}</dd>
                   </div>
                   <div>
                     <dt className="text-gray-500">Comments</dt>
-                    <dd className="font-semibold">0</dd>
+                    <dd className="font-semibold">{data.stats?.comments ?? 0}</dd>
                   </div>
-                  <div className="col-span-2 text-xs text-gray-400">More stats coming soon.</div>
                 </dl>
               </div>
             </div>
