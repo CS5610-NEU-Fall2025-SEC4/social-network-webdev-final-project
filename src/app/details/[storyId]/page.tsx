@@ -121,9 +121,11 @@ export default async function DetailsPage({
             </h2>
 
             <div className="space-y-4">
-              {story.children.map((comment) => (
-                <Comment key={comment.id} comment={comment} storyId={storyId} />
-              ))}
+              {[...story.children]
+                .sort((a, b) => (b.created_at_i || 0) - (a.created_at_i || 0))
+                .map((comment) => (
+                  <Comment key={comment.id} comment={comment} storyId={storyId} />
+                ))}
             </div>
           </div>
         )}
