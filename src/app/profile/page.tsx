@@ -199,7 +199,6 @@ export default function ProfilePage() {
 
         <div className="grid gap-4 md:grid-cols-3">
           <div className="md:col-span-2 grid gap-4">
-            {/* Removed redundant user header card to avoid duplicate pic/name/username */}
             <div className="rounded-lg bg-white shadow p-4">
               <h3 className="text-lg font-medium mb-2">About</h3>
               <p className="text-gray-700 whitespace-pre-line">{user?.bio || 'No bio yet.'}</p>
