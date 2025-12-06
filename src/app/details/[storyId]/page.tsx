@@ -32,16 +32,42 @@ export default async function DetailsPage({
 
   const isInternalStory = isNaN(Number(storyId))
 
-  let story: HNStoryItem
+  let story: HNStoryItem | null = null
+
   if (isInternalStory) {
-    const base = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? ''
-    const res = await fetch(`${base}/story/${storyId}/full`, {
-      cache: 'no-store',
-    })
-    if (!res.ok) throw new Error('Failed to load story')
-    story = await res.json()
+    try {
+      const base = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? ''
+      const res = await fetch(`${base}/story/${storyId}/full`, {
+        cache: 'no-store',
+      })
+      if (res.ok) {
+        story = await res.json()
+      }
+    } catch (error) {
+      console.error('Error fetching internal story:', error)
+    }
   } else {
-    story = await HNApiService.getItemFromSource(storyId, 'hackernews')
+    story = await HNApiService.getItemFromSource(storyId, 'hackernews').catch(() => null)
+  }
+
+  if (!story) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-md p-8 text-center max-w-md mx-auto">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Post Not Found</h1>
+          <p className="text-gray-600 mb-6">
+            The story you are looking for could not be found. It may have been deleted or does not
+            exist.
+          </p>
+          <Link
+            href="/"
+            className="inline-block px-6 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
+          >
+            Return Home
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   const formatDate = (timestamp: number) => {
@@ -145,9 +171,11 @@ export default async function DetailsPage({
             </h2>
 
             <div className="space-y-4">
-              {story.children.map((comment) => (
-                <Comment key={comment.id} comment={comment} storyId={storyId} />
-              ))}
+              {[...story.children]
+                .sort((a, b) => (b.created_at_i || 0) - (a.created_at_i || 0))
+                .map((comment) => (
+                  <Comment key={comment.id} comment={comment} storyId={storyId} />
+                ))}
             </div>
           </div>
         )}
