@@ -44,7 +44,6 @@ export default function FollowButton({ targetUserId, targetUsername, className }
         setHydrating(false)
       }
     }
-    // Only fetch if we don't already have a positive match from profile
     if (!initialDerived) {
       void hydrate()
     }
