@@ -13,6 +13,7 @@ export type PublicProfile = {
   following?: { id: string; username: string }[]
   createdAt?: string
   role: string
+  isBlocked?: boolean
 }
 
 export type Profile = PublicProfile & {

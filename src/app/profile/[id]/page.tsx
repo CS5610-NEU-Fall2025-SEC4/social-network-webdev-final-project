@@ -105,10 +105,17 @@ export default function PublicProfilePage() {
                 </span>
               )}
             </div>
-            {!isSelf && <FollowButton targetUserId={data.id} targetUsername={data.username} />}
+            {!isSelf && !data.isBlocked && (
+              <FollowButton targetUserId={data.id} targetUsername={data.username} />
+            )}
           </div>
         </div>
 
+        {data.isBlocked && (
+          <div className="mb-4 p-3 rounded-md bg-red-50 border border-red-200 text-red-700">
+            This user has been blocked. Interactions are disabled.
+          </div>
+        )}
         <div className="grid gap-4 md:grid-cols-3">
           <div className="md:col-span-2 grid gap-4">
             <div className="rounded-lg bg-white shadow p-4">
