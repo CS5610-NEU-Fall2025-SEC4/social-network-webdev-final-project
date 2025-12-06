@@ -1,11 +1,14 @@
 'use client'
 
 import { useAuth } from '@/app/context/AuthContext'
-import TopStories from '../top/page'
 import CustomContent from './CustomContent'
 import { CreatePostButton } from '@/components/ui/createPostButton'
 
-export default function HomeClient() {
+interface HomeClientProps {
+  topStories: React.ReactNode
+}
+
+export default function HomeClient({ topStories }: HomeClientProps) {
   const { authenticated } = useAuth()
 
   return (
@@ -31,7 +34,7 @@ export default function HomeClient() {
         <CreatePostButton />
       </div>
       <div id="top-news" className="mt-4">
-        <TopStories />
+        {topStories}
       </div>
     </div>
   )
