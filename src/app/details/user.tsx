@@ -34,7 +34,9 @@ export default function UserDetails({
       await navigator.clipboard.writeText(id)
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
-    } catch {}
+    } catch (err) {
+      console.error('Copy user ID failed:', err)
+    }
   }
 
   return (

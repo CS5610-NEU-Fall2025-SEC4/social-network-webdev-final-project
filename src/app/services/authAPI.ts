@@ -17,6 +17,7 @@ export interface ProfileData {
   email: string
   firstName: string
   lastName: string
+  role: 'USER' | 'EMPLOYER' | 'ADMIN'
   bio?: string
   location?: string
   website?: string
@@ -24,6 +25,9 @@ export interface ProfileData {
   social?: { twitter?: string; github?: string; linkedin?: string }
   createdAt?: string
   updatedAt?: string
+  isBlocked?: boolean
+  followers?: Array<{ id: string; username: string }>
+  following?: Array<{ id: string; username: string }>
 }
 export interface UpdateProfilePayload {
   username?: string
@@ -53,7 +57,9 @@ export async function login(payload: LoginPayload) {
       const data = await res.json()
       if (data?.message)
         message = Array.isArray(data.message) ? data.message.join(', ') : data.message
-    } catch {}
+    } catch (err) {
+      console.error('Login error response parse failed:', err)
+    }
     throw new Error(message)
   }
   return res.json()
@@ -71,7 +77,9 @@ export async function register(payload: RegisterPayload) {
       const data = await res.json()
       if (data?.message)
         message = Array.isArray(data.message) ? data.message.join(', ') : data.message
-    } catch {}
+    } catch (err) {
+      console.error('Register error response parse failed:', err)
+    }
     throw new Error(message)
   }
   return res.json()
@@ -107,7 +115,8 @@ export async function getUserIdByUsername(username: string): Promise<string | nu
     if (!res.ok) return null
     const data = await res.json()
     return data.id
-  } catch {
+  } catch (err) {
+    console.error('Get user ID by username failed:', err)
     return null
   }
 }
