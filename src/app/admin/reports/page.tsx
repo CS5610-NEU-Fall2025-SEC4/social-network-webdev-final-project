@@ -27,10 +27,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { FaFlag, FaCheckCircle, FaTimes, FaTrash, FaBan } from 'react-icons/fa'
+import { FaFlag, FaCheckCircle, FaTimes, FaTrash, FaBan, FaEye } from 'react-icons/fa'
+import { useRouter } from 'next/navigation'
 
 export default function ReportsPage() {
   const { token } = useAuth()
+  const router = useRouter()
   const [reports, setReports] = useState<Report[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -258,6 +260,19 @@ export default function ReportsPage() {
                       <p className="text-sm text-gray-600 mt-1 line-clamp-3">
                         {report.content.text.replace(/<[^>]*>/g, '').substring(0, 200)}...
                       </p>
+                    </div>
+                  )}
+                  {report.contentType === 'story' && (
+                    <div className="mt-3">
+                      <Button
+                        onClick={() => router.push(`/details/${report.contentId}`)}
+                        size="sm"
+                        variant="outline"
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        <FaEye className="mr-1" />
+                        View Story
+                      </Button>
                     </div>
                   )}
                 </div>
