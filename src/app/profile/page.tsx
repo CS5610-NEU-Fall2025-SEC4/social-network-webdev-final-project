@@ -78,7 +78,10 @@ export default function ProfilePage() {
         interests: profile.interests || [],
         social: profile.social || {},
         visibility: profile.visibility || {},
-        stats: {},
+        stats: {
+          posts: profile.stats?.posts ?? 0,
+          comments: profile.stats?.comments ?? 0,
+        },
         followers: profile.followers || [],
         following: profile.following || [],
         bookmarks: (profile as unknown as { bookmarks?: string[] }).bookmarks ?? [],
