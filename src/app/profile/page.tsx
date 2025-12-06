@@ -154,38 +154,23 @@ export default function ProfilePage() {
                 </span>
               )}
             </div>
-            {user?.id && (
+            <div className="flex items-center gap-2">
+              {user?.id && (
+                <Link
+                  href={`/profile/${encodeURIComponent(user.id)}`}
+                  className="px-3 py-2 border border-white/70 text-white hover:bg-white/10 rounded-md text-sm"
+                >
+                  View public profile
+                </Link>
+              )}
               <Link
-                href={`/profile/${encodeURIComponent(user.id)}`}
+                href="/edit"
                 className="px-3 py-2 border border-white/70 text-white hover:bg-white/10 rounded-md text-sm"
               >
-                View public profile
+                Edit profile
               </Link>
-            )}
+            </div>
           </div>
-        </div>
-
-        <div className="flex gap-2 border-b border-gray-200 mb-4">
-          <button
-            className={`px-3 py-2 text-sm rounded-t ${
-              tab === 'overview'
-                ? 'bg-white text-cyan-700 shadow-sm'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-            onClick={() => setTab('overview')}
-          >
-            Overview
-          </button>
-          <Link
-            href="/edit"
-            className={`px-3 py-2 text-sm rounded-t ${
-              tab === 'edit'
-                ? 'bg-white text-cyan-700 shadow-sm'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Edit Profile
-          </Link>
         </div>
 
         {tab === 'overview' && (
