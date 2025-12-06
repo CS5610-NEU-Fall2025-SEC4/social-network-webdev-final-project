@@ -1,6 +1,8 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import FollowList from './components/FollowList'
+import BookmarkTitle from './BookmarkTitle'
 import UserDetails from '../details/user'
 import { useRequireAuth } from '../hooks/useRequireAuth'
 import { useAppDispatch } from '../store'
@@ -311,24 +313,24 @@ export default function ProfilePage() {
                 <h3 className="text-lg font-medium mb-2">Bookmarks</h3>
                 <div className="space-y-2">
                   {user?.bookmarks && user.bookmarks.length > 0 ? (
-                    user.bookmarks.map((id) => (
-                      <div
-                        key={id}
-                        className="flex items-center justify-between gap-4 border rounded-md p-3"
-                      >
-                        <div className="text-sm font-medium">Story {id}</div>
-                        <Link
-                          href={`/details/${encodeURIComponent(id)}`}
-                          className="text-xs text-cyan-700 hover:underline"
-                        >
-                          View
-                        </Link>
-                      </div>
-                    ))
+                    [...user.bookmarks]
+                      .reverse()
+                      .slice(0, 8)
+                      .map((id) => <BookmarkTitle key={id} id={id} />)
                   ) : (
                     <p className="text-sm text-gray-600">No bookmarks yet.</p>
                   )}
                 </div>
+                {user?.bookmarks && user.bookmarks.length > 8 && (
+                  <div className="mt-3 flex justify-end">
+                    <Link
+                      href="/profile/bookmarks"
+                      className="text-xs text-cyan-700 hover:underline"
+                    >
+                      See all
+                    </Link>
+                  </div>
+                )}
               </div>
               <div className="rounded-lg bg-white shadow p-4">
                 <h3 className="text-lg font-medium mb-3">Stats</h3>
@@ -373,34 +375,25 @@ export default function ProfilePage() {
                   </div>
                 </dl>
               </div>
-              <div className="rounded-lg bg-white shadow p-4">
-                <h3 className="text-lg font-medium mb-2">Following</h3>
-                <ul className="text-sm space-y-1">
-                  {(user?.following || []).map((u: { id: string; username: string }) => (
-                    <li key={u.id}>
-                      <Link href={`/profile/${u.id}`} className="text-blue-700 hover:underline">
-                        @{u.username}
-                      </Link>
-                    </li>
-                  ))}
-                  {!user?.following?.length && (
-                    <li className="text-gray-500">Not following anyone yet.</li>
-                  )}
-                </ul>
-              </div>
-              <div className="rounded-lg bg-white shadow p-4">
-                <h3 className="text-lg font-medium mb-2">Followers</h3>
-                <ul className="text-sm space-y-1">
-                  {(user?.followers || []).map((u: { id: string; username: string }) => (
-                    <li key={u.id}>
-                      <Link href={`/profile/${u.id}`} className="text-cyan-700 hover:underline">
-                        @{u.username}
-                      </Link>
-                    </li>
-                  ))}
-                  {!user?.followers?.length && <li className="text-gray-500">No followers yet.</li>}
-                </ul>
-              </div>
+              <FollowList
+                title="Following"
+                items={user?.following || []}
+                emptyMessage="Not following anyone yet."
+                seeAllHref={
+                  user?.following && user.following.length > 8 ? '/profile/following' : undefined
+                }
+                limit={8}
+                linkClassName="text-blue-700 hover:underline"
+              />
+              <FollowList
+                title="Followers"
+                items={user?.followers || []}
+                emptyMessage="No followers yet."
+                seeAllHref={
+                  user?.followers && user.followers.length > 8 ? '/profile/followers' : undefined
+                }
+                limit={8}
+              />
             </div>
           </div>
         )}

@@ -41,7 +41,7 @@ export default function StoryComponent({ story }: { story: HNStory }) {
   )
 
   return (
-    <Card className="shadow-sm mb-4 transition-transform transform hover:-translate-y-1 hover:shadow-md animate-fade-in">
+    <Card className="shadow-sm mb-4 animate-fade-in">
       <CardHeader>
         <CardTitle className="mb-2 text-lg font-semibold">
           {isComment ? (

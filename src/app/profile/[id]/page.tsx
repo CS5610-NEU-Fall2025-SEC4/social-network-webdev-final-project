@@ -6,6 +6,7 @@ import { getPublicProfile } from '@/app/services/userAPI'
 import FollowButton from '@/app/components/FollowButton'
 import { useAuth } from '@/app/context/AuthContext'
 import Link from 'next/link'
+import FollowList from '../components/FollowList'
 
 export default function PublicProfilePage() {
   const params = useParams()
@@ -210,34 +211,28 @@ export default function PublicProfilePage() {
             </div>
           </div>
           <div className="grid gap-4">
-            <div className="rounded-lg bg-white shadow p-4">
-              <h3 className="text-lg font-medium mb-2">Following</h3>
-              <ul className="text-sm space-y-1">
-                {(data.following || []).map((u) => (
-                  <li key={u.id}>
-                    <Link href={`/profile/${u.id}`} className="text-cyan-700 hover:underline">
-                      @{u.username}
-                    </Link>
-                  </li>
-                ))}
-                {!data.following?.length && (
-                  <li className="text-gray-500">Not following anyone yet.</li>
-                )}
-              </ul>
-            </div>
-            <div className="rounded-lg bg-white shadow p-4">
-              <h3 className="text-lg font-medium mb-2">Followers</h3>
-              <ul className="text-sm space-y-1">
-                {(data.followers || []).map((u) => (
-                  <li key={u.id}>
-                    <Link href={`/profile/${u.id}`} className="text-cyan-700 hover:underline">
-                      @{u.username}
-                    </Link>
-                  </li>
-                ))}
-                {!data.followers?.length && <li className="text-gray-500">No followers yet.</li>}
-              </ul>
-            </div>
+            <FollowList
+              title="Following"
+              items={data.following || []}
+              emptyMessage="Not following anyone yet."
+              seeAllHref={
+                data.following && data.following.length > 8
+                  ? `/profile/${data.id}/following`
+                  : undefined
+              }
+              limit={8}
+            />
+            <FollowList
+              title="Followers"
+              items={data.followers || []}
+              emptyMessage="No followers yet."
+              seeAllHref={
+                data.followers && data.followers.length > 8
+                  ? `/profile/${data.id}/followers`
+                  : undefined
+              }
+              limit={8}
+            />
           </div>
         </div>
       </div>
