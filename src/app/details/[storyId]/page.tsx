@@ -1,4 +1,6 @@
 import { HNApiService } from '../../services/algoliaAPI'
+import type { HNStoryItem } from '@/app/types/types'
+import 'server-only'
 import Link from 'next/link'
 import { FaUser, FaStar, FaCommentAlt } from 'react-icons/fa'
 import { FaRegClock, FaLink } from 'react-icons/fa6'
@@ -11,6 +13,12 @@ import DeleteButton from './DeleteButton'
 import ShareButton from './ShareButton'
 import ReportButton from './ReportButton'
 import DetailsBookmark from '../DetailsBookmark'
+function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
 
 export default async function DetailsPage({
   params,
@@ -24,10 +32,23 @@ export default async function DetailsPage({
 
   const isInternalStory = isNaN(Number(storyId))
 
-  const story = await HNApiService.getItemFromSource(
-    storyId,
-    isInternalStory ? 'Internal' : 'hackernews',
-  ).catch(() => null)
+  let story: HNStoryItem | null = null
+
+  if (isInternalStory) {
+    try {
+      const base = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? ''
+      const res = await fetch(`${base}/story/${storyId}/full`, {
+        cache: 'no-store',
+      })
+      if (res.ok) {
+        story = await res.json()
+      }
+    } catch (error) {
+      console.error('Error fetching internal story:', error)
+    }
+  } else {
+    story = await HNApiService.getItemFromSource(storyId, 'hackernews').catch(() => null)
+  }
 
   if (!story) {
     return (
@@ -65,14 +86,23 @@ export default async function DetailsPage({
       <div className="w-full px-2 sm:px-4 lg:px-6">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 flex-1 min-w-0">{story.title}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 flex-1 min-w-0">
+              {story.title ||
+                (story.text ? stripHtml(story.text).slice(0, 80) : `Story ${storyId}`)}
+            </h1>
             <div className="flex flex-wrap gap-2">
-              <ShareButton storyId={storyId} title={story.title || ''} tags={filteredTags} />
+              <ShareButton
+                storyId={storyId}
+                title={story.title || (story.text ? stripHtml(story.text).slice(0, 80) : '')}
+                tags={filteredTags}
+              />
               <EditButton storyId={storyId} authorUsername={story.author} />
               <DeleteButton
                 storyId={storyId}
                 authorUsername={story.author}
-                title={story.title || 'Untitled'}
+                title={
+                  story.title || (story.text ? stripHtml(story.text).slice(0, 80) : 'Untitled')
+                }
               />
               <ReportButton storyId={storyId} contentType="story" />
             </div>
