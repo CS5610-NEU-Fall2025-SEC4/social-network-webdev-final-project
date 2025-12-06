@@ -113,7 +113,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (payload: LoginPayload) => {
     const data = await apiLogin(payload)
     const at = data.access_token || data.token
-    const userRole = data.role
     if (at) {
       localStorage.setItem('access_token', at)
       setToken(at)
@@ -122,8 +121,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const prof = await fetchProfile(at)
       setProfile(prof)
       localStorage.setItem('userProfile', JSON.stringify(prof))
-
-      await refreshProfile()
     }
   }
 

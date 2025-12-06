@@ -17,6 +17,7 @@ export interface ProfileData {
   email: string
   firstName: string
   lastName: string
+  role: 'USER' | 'EMPLOYER' | 'ADMIN'
   bio?: string
   location?: string
   website?: string
@@ -24,6 +25,9 @@ export interface ProfileData {
   social?: { twitter?: string; github?: string; linkedin?: string }
   createdAt?: string
   updatedAt?: string
+  isBlocked?: boolean
+  followers?: Array<{ id: string; username: string }>
+  following?: Array<{ id: string; username: string }>
 }
 export interface UpdateProfilePayload {
   username?: string
