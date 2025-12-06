@@ -27,7 +27,27 @@ export default async function DetailsPage({
   const story = await HNApiService.getItemFromSource(
     storyId,
     isInternalStory ? 'Internal' : 'hackernews',
-  )
+  ).catch(() => null)
+
+  if (!story) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8 flex items-center justify-center">
+        <div className="bg-white rounded-lg shadow-md p-8 text-center max-w-md mx-auto">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Post Not Found</h1>
+          <p className="text-gray-600 mb-6">
+            The story you are looking for could not be found. It may have been deleted or does not
+            exist.
+          </p>
+          <Link
+            href="/"
+            className="inline-block px-6 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
+          >
+            Return Home
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp * 1000).toLocaleString()
