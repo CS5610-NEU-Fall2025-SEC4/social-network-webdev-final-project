@@ -18,7 +18,6 @@ type EditableUser = {
   lastName: string
   email: string
   bio?: string
-  karma?: number
   joined?: string
   location?: string
   website?: string
@@ -39,8 +38,6 @@ type EditableUser = {
   stats?: {
     posts?: number
     comments?: number
-    upvotesGiven?: number
-    upvotesReceived?: number
     followers?: number
     following?: number
   }
@@ -106,8 +103,6 @@ export default function ProfilePage() {
     return {
       posts: user?.stats?.posts ?? 0,
       comments: user?.stats?.comments ?? 0,
-      upvotesGiven: user?.stats?.upvotesGiven ?? 0,
-      upvotesReceived: user?.stats?.upvotesReceived ?? 0,
       followers,
       following,
       bookmarks,
@@ -312,13 +307,13 @@ export default function ProfilePage() {
                 {user?.bookmarks && user.bookmarks.length > 0 ? (
                   [...user.bookmarks]
                     .reverse()
-                    .slice(0, 8)
+                    .slice(0, 5)
                     .map((id) => <BookmarkTitle key={id} id={id} />)
                 ) : (
                   <p className="text-sm text-gray-600">No bookmarks yet.</p>
                 )}
               </div>
-              {user?.bookmarks && user.bookmarks.length > 8 && (
+              {user?.bookmarks && user.bookmarks.length > 5 && (
                 <div className="mt-3 flex justify-end">
                   <Link href="/profile/bookmarks" className="text-xs text-cyan-700 hover:underline">
                     See all
@@ -338,14 +333,6 @@ export default function ProfilePage() {
                   <dd className="font-semibold">{stats.comments}</dd>
                 </div>
                 <div>
-                  <dt className="text-gray-500">Upvotes given</dt>
-                  <dd className="font-semibold">{stats.upvotesGiven}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-500">Upvotes received</dt>
-                  <dd className="font-semibold">{stats.upvotesReceived}</dd>
-                </div>
-                <div>
                   <dt className="text-gray-500">Followers</dt>
                   <dd className="font-semibold">{stats.followers}</dd>
                 </div>
@@ -356,10 +343,6 @@ export default function ProfilePage() {
                 <div>
                   <dt className="text-gray-500">Bookmarks</dt>
                   <dd className="font-semibold">{stats.bookmarks}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-500">Karma</dt>
-                  <dd className="font-semibold">{user?.karma ?? 0}</dd>
                 </div>
                 <div>
                   <dt className="text-gray-500">Joined</dt>
@@ -374,9 +357,11 @@ export default function ProfilePage() {
               items={user?.following || []}
               emptyMessage="Not following anyone yet."
               seeAllHref={
-                user?.following && user.following.length > 8 ? '/profile/following' : undefined
+                user?.following && user.following.length > 5
+                  ? `/profile/${user.id}/following`
+                  : undefined
               }
-              limit={8}
+              limit={5}
               linkClassName="text-blue-700 hover:underline"
             />
             <FollowList
@@ -384,9 +369,11 @@ export default function ProfilePage() {
               items={user?.followers || []}
               emptyMessage="No followers yet."
               seeAllHref={
-                user?.followers && user.followers.length > 8 ? '/profile/followers' : undefined
+                user?.followers && user.followers.length > 5
+                  ? `/profile/${user.id}/followers`
+                  : undefined
               }
-              limit={8}
+              limit={5}
             />
           </div>
         </div>
