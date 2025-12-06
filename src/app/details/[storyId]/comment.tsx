@@ -12,6 +12,7 @@ import UsernameLink from '@/components/username-link'
 import BookmarkIcon from '@/app/components/BookmarkIcon'
 import { useSelector } from 'react-redux'
 import type { ProfileState as StoreProfileState } from '@/app/store/profileSlice'
+import LikeButton from './LikeButton'
 
 interface CommentProps {
   comment: HNStoryItem | HNStory
@@ -30,6 +31,12 @@ export default function Comment({ comment, storyId, depth = 0 }: CommentProps) {
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString()
+  }
+  const wasEdited = () => {
+    if (!comment.editedAt) return false
+    const createdTime = new Date(comment.created_at).getTime()
+    const editedTime = new Date(comment.editedAt).getTime()
+    return editedTime - createdTime > 60000
   }
 
   const hasNestedChildren = (
@@ -62,6 +69,9 @@ export default function Comment({ comment, storyId, depth = 0 }: CommentProps) {
             <span>{formatDate(comment.created_at)}</span>
             <span>•</span>
             <span>{comment.points} points</span>
+            {wasEdited() && (
+              <span className="px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded">edited</span>
+            )}
           </div>
 
           <div className="flex items-center gap-1">
@@ -72,7 +82,11 @@ export default function Comment({ comment, storyId, depth = 0 }: CommentProps) {
               commentText={comment.text || ''}
             />
             <BookmarkIcon itemId={commentId} initiallyBookmarked={initiallyBookmarked} />
-            <ReportButton storyId={String(comment.id)} contentType="comment" />
+            <ReportButton
+              storyId={String(comment.id)}
+              contentType="comment"
+              authorUsername={comment.author}
+            />
           </div>
         </div>
 
@@ -91,7 +105,14 @@ export default function Comment({ comment, storyId, depth = 0 }: CommentProps) {
                 dangerouslySetInnerHTML={{ __html: comment.text }}
               />
             )}
-            <CommentEditor comment="Reply" storyId={storyId} parentId={comment.id} />
+            <div className="flex items-center gap-2">
+              <LikeButton
+                itemId={comment.id}
+                itemType="comment"
+                initialPoints={comment.points || 0}
+              />
+              <CommentEditor comment="Reply" storyId={storyId} parentId={comment.id} />
+            </div>
           </>
         )}
 

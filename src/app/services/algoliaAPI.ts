@@ -68,22 +68,7 @@ class HNAPIService {
   }
 
   async getItem(id: number): Promise<HNStoryItem> {
-    const algoliaStory = await this.fetchAPI<HNStoryItem>(`/items/${id}`)
-    try {
-      const mongoComments = await getCommentsByStoryId(String(id))
-
-      if (mongoComments && mongoComments.length > 0) {
-        const algoliaChildren = Array.isArray(algoliaStory.children)
-          ? (algoliaStory.children as HNStoryItem[])
-          : []
-
-        algoliaStory.children = [...algoliaChildren, ...mongoComments]
-      }
-    } catch (error) {
-      console.warn('Failed to fetch MongoDB comments for Algolia story:', error)
-    }
-
-    return algoliaStory
+    return this.fetchAPI<HNStoryItem>(`/items/${id}`)
   }
 
   async getFrontPage(storyType: string) {

@@ -18,15 +18,18 @@ import { reportStory } from '@/app/services/reportAPI'
 interface ReportButtonProps {
   storyId: string
   contentType: 'story' | 'comment'
+  authorUsername?: string
 }
 
-export default function ReportButton({ storyId, contentType }: ReportButtonProps) {
+export default function ReportButton({ storyId, contentType, authorUsername }: ReportButtonProps) {
   const { authenticated, token, profile } = useAuth()
   const [showDialog, setShowDialog] = useState(false)
   const [reason, setReason] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const isExternalContent = !isNaN(Number(storyId))
+  const [showExternalAlert, setShowExternalAlert] = useState(false)
 
   if (!authenticated || !profile) {
     return null
@@ -34,6 +37,18 @@ export default function ReportButton({ storyId, contentType }: ReportButtonProps
 
   if (profile.role === 'ADMIN') {
     return null
+  }
+
+  if (authorUsername && profile.username === authorUsername) {
+    return null
+  }
+
+  const handleReportClick = () => {
+    if (isExternalContent) {
+      setShowExternalAlert(true)
+    } else {
+      setShowDialog(true)
+    }
   }
 
   const handleSubmit = async () => {
@@ -72,7 +87,7 @@ export default function ReportButton({ storyId, contentType }: ReportButtonProps
   return (
     <>
       <Button
-        onClick={() => setShowDialog(true)}
+        onClick={() => handleReportClick()}
         variant="ghost"
         size="sm"
         className="flex items-center gap-2 text-gray-600 hover:text-red-600"
@@ -80,6 +95,30 @@ export default function ReportButton({ storyId, contentType }: ReportButtonProps
         <FaFlag />
         Report
       </Button>
+      <Dialog open={showExternalAlert} onOpenChange={setShowExternalAlert}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cannot Report External Content</DialogTitle>
+            <DialogDescription>
+              This {contentType === 'story' ? 'post' : 'comment'} is from Hacker News and cannot be
+              reported through our platform. If you believe this content violates guidelines, please
+              report it directly on{' '}
+              <a
+                href="https://news.ycombinator.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-orange-600 hover:underline font-medium"
+              >
+                Hacker News
+              </a>
+              .
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setShowExternalAlert(false)}>Got it</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>

@@ -96,13 +96,12 @@ export default function StoryComponent({ story }: { story: HNStory }) {
           </div>
           <span>•</span>
           <div>{getRelativeTime(story.created_at_i)}</div>
-          {(isStory || isAskHN || isShowHN) && (story.children || []).length > 0 && (
+          {/* {(isStory || isAskHN || isShowHN) && (story.children || []).length > 0 && (
             <>
               <span>•</span>
               <div>{story.children.length} comments</div>
             </>
-          )}
-
+          )} */}
           {!isComment && (
             <>
               <span>•</span>
