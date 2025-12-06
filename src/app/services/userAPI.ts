@@ -50,6 +50,20 @@ export async function unfollowUser(targetId: string, token: string): Promise<{ m
   return res.json()
 }
 
+export async function isFollowing(targetId: string, token: string): Promise<boolean> {
+  const res = await fetch(`${BASE}/users/${targetId}/isFollowing`, {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  })
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '')
+    throw new Error(`Failed to check following: ${res.status} ${res.statusText} ${errText}`.trim())
+  }
+  const data = (await res.json()) as { following: boolean }
+  return data.following
+}
+
 export async function addBookmark(
   payload: { itemId: string },
   token: string,
