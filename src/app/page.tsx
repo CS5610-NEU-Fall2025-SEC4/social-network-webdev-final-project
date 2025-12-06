@@ -71,7 +71,7 @@ export default function Home() {
             startups, and science.
           </p>
           <div className="flex flex-wrap gap-4 justify-center fade-in">
-            <Link href="/search" className="!no-underline">
+            <Link href="/home" className="!no-underline">
               <button className="btn-cyan text-sm">Start Exploring</button>
             </Link>
             <Link href="/register" className="!no-underline">

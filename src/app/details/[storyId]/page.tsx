@@ -73,6 +73,12 @@ export default async function DetailsPage({
   const formatDate = (timestamp: number) => {
     return new Date(timestamp * 1000).toLocaleString()
   }
+  const wasEdited = () => {
+    if (!story.editedAt) return false
+    const createdTime = story.created_at_i * 1000
+    const editedTime = new Date(story.editedAt).getTime()
+    return editedTime - createdTime > 60000
+  }
 
   const tags = tagsQuery ? tagsQuery.split(',') : []
   console.log(tags)
@@ -104,7 +110,7 @@ export default async function DetailsPage({
                   story.title || (story.text ? stripHtml(story.text).slice(0, 80) : 'Untitled')
                 }
               />
-              <ReportButton storyId={storyId} contentType="story" />
+              <ReportButton storyId={storyId} contentType="story" authorUsername={story.author} />
             </div>
           </div>
 
@@ -130,8 +136,15 @@ export default async function DetailsPage({
             <span className="flex items-center gap-1">
               <FaRegClock /> {formatDate(story.created_at_i)}
             </span>
-            {(story.children || []).length > 0 && (
-              <span className="flex items-center gap-1">{story.children.length} comments</span>
+            {story.commentCount !== undefined && (
+              <span className="flex items-center gap-1">
+                <FaCommentAlt />
+                {story.commentCount} comment{story.commentCount !== 1 ? 's' : ''}
+              </span>
+            )}
+
+            {wasEdited() && (
+              <span className="px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded">edited</span>
             )}
             <span className="flex items-center">
               <DetailsBookmark itemId={storyId} />
@@ -159,7 +172,7 @@ export default async function DetailsPage({
         </div>
 
         <div className="flex mt-3 mb-4">
-          <LikeButton />
+          <LikeButton itemId={storyId} itemType="story" initialPoints={story.points || 0} />
           <CommentEditor comment="Comment" storyId={storyId} />
         </div>
 
@@ -167,7 +180,6 @@ export default async function DetailsPage({
           <div className="mt-8">
             <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
               <FaCommentAlt /> Comments
-              {/* <FaCommentAlt /> {story.children.length} Comments */}
             </h2>
 
             <div className="space-y-4">

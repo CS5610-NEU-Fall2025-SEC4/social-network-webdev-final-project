@@ -38,13 +38,13 @@ export default function CommentEditor({ comment, storyId, parentId }: CommentEdi
     try {
       const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 
-      const payload: { text: string; story_id: string; parent_id?: string | number } = {
+      const payload: { text: string; story_id: string; parent_id?: string } = {
         text: commentText,
-        story_id: storyId,
+        story_id: String(storyId),
       }
 
       if (parentId) {
-        payload.parent_id = parentId
+        payload.parent_id = String(parentId)
       }
       const response = await fetch(`${base}/comment`, {
         method: 'POST',

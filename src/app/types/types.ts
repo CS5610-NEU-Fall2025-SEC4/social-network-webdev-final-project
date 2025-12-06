@@ -17,6 +17,8 @@ export type HNStory = {
   type: StoryType
   url: string | null
   _tags: string[]
+  editedAt?: string | null
+  commentCount?: number
 }
 
 export type HNStoryItem = {
@@ -36,6 +38,8 @@ export type HNStoryItem = {
   type: StoryType
   url: string | null
   _tags: string[]
+  editedAt?: string | null
+  commentCount?: number
 }
 
 export type HNUser = {
