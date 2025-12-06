@@ -92,7 +92,7 @@ export default function LogIn() {
         <CardContent>
           {message && (
             <p
-              className={`${message.includes('Logging') ? 'text-green-600' : 'text-red-600'} text-sm mb-4 text-center bg-red-50 p-3 rounded-md`}
+              className={`${message.includes('Logging') ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'} text-sm mb-4 text-center p-3 rounded-md`}
             >
               {message}
             </p>
