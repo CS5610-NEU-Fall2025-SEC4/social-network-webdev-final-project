@@ -42,6 +42,7 @@ export default function EditProfilePage() {
 
   const [form, setForm] = useState<EditableUser | null>(null)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!loading && authenticated && profileState.status === 'idle') {
@@ -77,9 +78,11 @@ export default function EditProfilePage() {
   const handleSave = async () => {
     if (!form) return
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      setError('Please enter a valid email address')
       return
     }
     setSaving(true)
+    setError(null)
     try {
       await dispatch(
         updateProfileThunk({
@@ -97,7 +100,11 @@ export default function EditProfilePage() {
           visibility: form.visibility,
         }),
       ).unwrap()
-    } catch {
+      setError(null)
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : 'Failed to update profile'
+      setError(errMsg)
+      console.error('Profile update error:', err)
     } finally {
       setSaving(false)
     }
@@ -122,6 +129,12 @@ export default function EditProfilePage() {
           {saving ? 'Saving…' : 'Save Changes'}
         </button>
       </div>
+
+      {error && (
+        <div className="mb-4 max-w-4xl mx-auto p-3 rounded-md bg-red-50 border border-red-200 text-red-700 text-sm">
+          {error}
+        </div>
+      )}
 
       <div className="max-w-4xl mx-auto rounded-lg bg-white shadow p-4 grid gap-4">
         <div>
