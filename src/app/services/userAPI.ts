@@ -12,6 +12,7 @@ export type PublicProfile = {
   followers?: { id: string; username: string }[]
   following?: { id: string; username: string }[]
   createdAt?: string
+  stats?: { posts: number; comments: number }
   role: string
   isBlocked?: boolean
 }
@@ -24,7 +25,7 @@ export type Profile = PublicProfile & {
   bookmarks?: string[]
 }
 
-const BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:3001'
+const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
 
 export async function getPublicProfile(userId: string): Promise<PublicProfile> {
   const res = await fetch(`${BASE}/users/${userId}`, { cache: 'no-store' })
