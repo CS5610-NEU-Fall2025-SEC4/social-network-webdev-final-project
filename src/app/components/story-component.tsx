@@ -1,26 +1,16 @@
+'use client'
 import { HNStory } from '@/app/types/types'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import UsernameLink from '@/components/username-link'
+import UsernameLink from '@/app/components/username-link'
 import BookmarkClient from './BookmarkClient'
+import { useEffect, useState } from 'react'
 
 export default function StoryComponent({ story }: { story: HNStory }) {
-  const isStory = story._tags?.includes('story') || story.type === 'story'
-  const isAskHN = story._tags?.includes('ask_hn')
-  const isShowHN = story._tags?.includes('show_hn')
-  const isJob = story._tags?.includes('job')
+  const [likeCount, setLikeCount] = useState<number>(0)
+  const [loading, setLoading] = useState(true)
+
   const isComment = story._tags?.includes('comment') || story.type === 'comment'
-
-  const getLinkText = () => {
-    if (isJob) return '(View Job Listing)'
-    if (isStory) return '(Visit the Post)'
-    return '(Visit the Link)'
-  }
-
-  const storyTags = story._tags?.filter(
-    (tag) => !tag.startsWith('author_') && !tag.startsWith('story_'),
-  )
 
   const getRelativeTime = (timestamp: number) => {
     const now = Date.now()
@@ -39,6 +29,27 @@ export default function StoryComponent({ story }: { story: HNStory }) {
   const itemId: string = String(
     isLocalStory ? (story.story_id ?? story.objectID) : (story.objectID ?? story.story_id),
   )
+  useEffect(() => {
+    const fetchLikeCount = async () => {
+      try {
+        const base = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? ''
+        const response = await fetch(`${base}/likes/${itemId}/status`)
+        if (response.ok) {
+          const data = await response.json()
+          setLikeCount(data.totalPoints || 0)
+        } else {
+          setLikeCount(0)
+        }
+      } catch (error) {
+        console.error('Error fetching like count:', error)
+        setLikeCount(0)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchLikeCount()
+  }, [itemId])
 
   return (
     <Card className="shadow-sm mb-4 animate-fade-in">
@@ -50,31 +61,9 @@ export default function StoryComponent({ story }: { story: HNStory }) {
               className="text-gray-800"
             />
           ) : (
-            <span className="inline-flex items-center gap-2">
-              {story.url ? (
-                <Link
-                  href={story.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-800 hover:underline"
-                >
-                  {story.title}
-                </Link>
-              ) : (
-                story.title
-              )}
-              {!isComment && (
-                <Button variant="ghost" size="sm" asChild>
-                  <Link
-                    href={`/details/${
-                      isLocalStory ? story.story_id : story.objectID
-                    }?tags=${encodeURIComponent(storyTags?.join(',') || '')}`}
-                  >
-                    {getLinkText()}
-                  </Link>
-                </Button>
-              )}
-            </span>
+            <Link href={`/details/${itemId}`} className="text-gray-800 hover:underline">
+              {story.title}
+            </Link>
           )}
 
           {isComment && (
@@ -88,7 +77,7 @@ export default function StoryComponent({ story }: { story: HNStory }) {
       <CardContent>
         <div className="flex items-center space-x-4 text-sm text-gray-600">
           <div>
-            <span className="font-bold">{story.points}</span> points
+            <span className="font-bold">{loading ? '...' : likeCount}</span> points
           </div>
           <span>•</span>
           <div>
@@ -96,12 +85,6 @@ export default function StoryComponent({ story }: { story: HNStory }) {
           </div>
           <span>•</span>
           <div>{getRelativeTime(story.created_at_i)}</div>
-          {/* {(isStory || isAskHN || isShowHN) && (story.children || []).length > 0 && (
-            <>
-              <span>•</span>
-              <div>{story.children.length} comments</div>
-            </>
-          )} */}
           {!isComment && (
             <>
               <span>•</span>

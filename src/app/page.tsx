@@ -114,6 +114,48 @@ export default function Home() {
 
         <div className="max-w-xl text-center fade-in">
           <h3 className="text-2xl font-semibold mb-5">Want to get to know us better?</h3>
+          {/* Team Members */}
+          <div className="mb-6 text-white/90">
+            <p className="font-large mb-2">Our Team:</p>
+            <table className="mx-auto text-sm">
+              <tbody>
+                <tr>
+                  <td className="pr-4 text-right">Preethi Rajesh Yennemadi</td>
+                  <td className="pl-4 text-center">Section 4</td>
+                  <td className="pl-4 text-left">Grad Student MSCS</td>
+                </tr>
+                <tr>
+                  <td className="pr-4 text-right">Kalyana Ramanuja Swami Mudumby</td>
+                  <td className="pl-4 text-center">Section 4</td>
+                  <td className="pl-4 text-left">Grad Student MSCS</td>
+                </tr>
+                <tr>
+                  <td className="pr-4 text-right">Mrinal Srinath Setty</td>
+                  <td className="pl-4 text-center">Section 4</td>
+                  <td className="pl-4 text-left">Grad Student MSCS</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          {/* GitHub Links */}
+          <div className="mb-6 space-y-2">
+            <a
+              href="https://github.com/CS5610-NEU-Fall2025-SEC4/social-network-webdev-final-project"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-sm text-white/80 hover:text-white underline"
+            >
+              Frontend Repository → social-network-webdev-final-project
+            </a>
+            <a
+              href="https://github.com/CS5610-NEU-Fall2025-SEC4/social-network-backend"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-sm text-white/80 hover:text-white underline"
+            >
+              Backend Repository → social-network-backend
+            </a>
+          </div>
           <Link href="./aboutUs" className="!no-underline">
             <button className="px-8 py-3 rounded-full border border-white/30 text-white bg-white/5 hover:border-white/60 hover:bg-white/15 transition shadow-md hover:shadow-lg">
               Learn More

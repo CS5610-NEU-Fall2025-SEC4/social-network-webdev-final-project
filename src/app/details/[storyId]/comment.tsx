@@ -8,7 +8,7 @@ import DeleteCommentButton from './DeleteCommentButton'
 import CommentEditForm from './CommentEditForm'
 import ReportButton from './ReportButton'
 import { Card, CardContent } from '@/components/ui/card'
-import UsernameLink from '@/components/username-link'
+import UsernameLink from '@/app/components/username-link'
 import BookmarkIcon from '@/app/components/BookmarkIcon'
 import { useSelector } from 'react-redux'
 import type { ProfileState as StoreProfileState } from '@/app/store/profileSlice'
@@ -60,11 +60,11 @@ export default function Comment({ comment, storyId, depth = 0 }: CommentProps) {
   }
 
   return (
-    <Card className="border-l-4 border-l-orange-400 mb-3">
+    <Card className="border-l-4 border-l-cyan-400 mb-3">
       <CardContent className="py-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3 text-sm text-gray-600">
-            <UsernameLink username={comment.author} className="font-semibold text-orange-600" />
+            <UsernameLink username={comment.author} className="font-semibold text-cyan-600" />
             <span>•</span>
             <span>{formatDate(comment.created_at)}</span>
             <span>•</span>

@@ -35,7 +35,7 @@ export default function StatsCard({
         <div className="flex-1">
           <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">{title}</p>
         </div>
-        {icon && <div className="text-orange-500 text-3xl">{icon}</div>}
+        {icon && <div className="text-cyan-600 text-3xl">{icon}</div>}
       </div>
 
       <div className="mb-2">

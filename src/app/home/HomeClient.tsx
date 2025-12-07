@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/app/context/AuthContext'
 import CustomContent from './CustomContent'
-import { CreatePostButton } from '@/components/ui/createPostButton'
+import { CreatePostButton } from '@/app/components/createPostButton'
 
 interface HomeClientProps {
   topStories: React.ReactNode

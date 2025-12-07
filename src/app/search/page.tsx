@@ -1,5 +1,5 @@
-import SearchFilter from './components/search-filter'
-import SearchResults from './components/search-results'
+import SearchFilter from '../components/search-filter'
+import SearchResults from '../components/search-results'
 import { HNApiService } from '../services/algoliaAPI'
 import { SearchParams } from '../types/types'
 import { Suspense } from 'react'
