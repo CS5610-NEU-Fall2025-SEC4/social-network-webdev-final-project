@@ -147,7 +147,7 @@ export default function UsersPage() {
     const colors = {
       USER: 'bg-blue-100 text-blue-700',
       EMPLOYER: 'bg-purple-100 text-purple-700',
-      ADMIN: 'bg-orange-100 text-orange-700',
+      ADMIN: 'bg-cyan-100 text-cyan-700',
     }
     return colors[role as keyof typeof colors] || colors.USER
   }
@@ -204,7 +204,7 @@ export default function UsersPage() {
       {loading && (
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading users...</p>
           </div>
         </div>
@@ -247,8 +247,8 @@ export default function UsersPage() {
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10 bg-orange-100 rounded-full flex items-center justify-center">
-                          <FaUser className="text-orange-600" />
+                        <div className="flex-shrink-0 h-10 w-10 bg-cyan-100 rounded-full flex items-center justify-center">
+                          <FaUser className="text-cyan-600" />
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">{user.username}</div>

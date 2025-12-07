@@ -107,7 +107,7 @@ export default function ReportButton({ storyId, contentType, authorUsername }: R
                 href="https://news.ycombinator.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-orange-600 hover:underline font-medium"
+                className="text-cyan-600 hover:underline font-medium"
               >
                 Hacker News
               </a>

@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../context/AuthContext'
-import { RiAdminLine } from 'react-icons/ri'
+import { MdAdminPanelSettings } from "react-icons/md";
 
 function RoleBadge({ role }: { role: string }) {
   const colors = {
@@ -144,7 +144,7 @@ function NavLinks({
               href="/admin/dashboard"
               className="flex items-center space-x-1 text-yellow-300 hover:text-yellow-400 !no-underline font-semibold"
             >
-              <RiAdminLine className="text-xl" />
+              <MdAdminPanelSettings className="text-xl" />
               <span className="text-sm">Admin</span>
             </Link>
           )}
@@ -221,7 +221,7 @@ function MobileNavLinks({
               href="/admin/dashboard"
               className="flex items-center space-x-3 text-yellow-300 hover:text-yellow-400 !no-underline py-2 font-semibold"
             >
-              <RiAdminLine className="text-2xl" />
+              <MdAdminPanelSettings className="text-2xl" />
               <span className="text-base">Admin Dashboard</span>
             </Link>
           )}

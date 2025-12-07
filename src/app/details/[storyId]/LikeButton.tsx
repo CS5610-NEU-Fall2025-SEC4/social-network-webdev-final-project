@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { useAuth } from '@/app/context/AuthContext'
 import { toggleLike, getLikeStatus } from '@/app/services/likesAPI'
 import { useRouter } from 'next/navigation'
+import LoginPrompt from '@/app/components/LoginPrompt'
 
 interface LikeButtonProps {
   itemId: string | number
@@ -24,16 +25,12 @@ export default function LikeButton({
   const [loading, setLoading] = useState(false)
   const { token, profile } = useAuth()
   const router = useRouter()
+  const [showLogin, setShowLogin] = useState(false)
 
   useEffect(() => {
     const fetchLikeStatus = async () => {
       try {
-        const status = await getLikeStatus(
-          String(itemId),
-          itemType,
-          profile?.username,
-          initialPoints,
-        )
+        const status = await getLikeStatus(String(itemId), profile?.username)
         setIsLiked(status.isLiked)
 
         if (onPointsUpdate) {
@@ -47,17 +44,17 @@ export default function LikeButton({
     if (profile?.username) {
       fetchLikeStatus()
     }
-  }, [itemId, itemType, profile?.username, initialPoints, onPointsUpdate])
+  }, [itemId, profile?.username, onPointsUpdate])
 
   const handleLikeClick = async () => {
     if (!token || !profile) {
-      router.push('/logIn')
+      setShowLogin(true)
       return
     }
 
     setLoading(true)
     try {
-      const result = await toggleLike(String(itemId), itemType, token, initialPoints)
+      const result = await toggleLike(String(itemId), token)
       setIsLiked(result.liked)
 
       if (onPointsUpdate) {
@@ -72,16 +69,19 @@ export default function LikeButton({
   }
 
   return (
-    <Button variant="ghost" onClick={handleLikeClick} disabled={loading} className="gap-2">
-      {isLiked ? (
-        <span>
-          <BiSolidLike className="text-blue-600" /> Like
-        </span>
-      ) : (
-        <span>
-          <BiLike /> Like
-        </span>
-      )}
-    </Button>
+    <>
+      <Button variant="ghost" onClick={handleLikeClick} disabled={loading} className="gap-2">
+        {isLiked ? (
+          <span>
+            <BiSolidLike className="text-blue-600" /> Like
+          </span>
+        ) : (
+          <span>
+            <BiLike /> Like
+          </span>
+        )}
+      </Button>
+      <LoginPrompt open={showLogin} onClose={() => setShowLogin(false)} />
+    </>
   )
 }

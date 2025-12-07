@@ -1,4 +1,4 @@
-import SearchResults from '../search/components/search-results'
+import SearchResults from '../components/search-results'
 import { HNApiService } from '../services/algoliaAPI'
 
 export const dynamic = 'force-dynamic'

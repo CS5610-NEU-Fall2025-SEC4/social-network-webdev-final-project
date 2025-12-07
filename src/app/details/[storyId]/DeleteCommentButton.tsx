@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { useRouter } from 'next/navigation'
-import { FaTrash } from 'react-icons/fa'
+import { FaTrash, FaExclamationTriangle } from 'react-icons/fa'
 import { deleteComment } from '@/app/services/commentAPI'
 
 interface DeleteCommentButtonProps {
@@ -29,6 +29,7 @@ export default function DeleteCommentButton({
   const { profile, authenticated, token } = useAuth()
   const router = useRouter()
   const [showDialog, setShowDialog] = useState(false)
+  const [showExternalWarning, setShowExternalWarning] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -42,6 +43,16 @@ export default function DeleteCommentButton({
 
   if (!canDelete) {
     return null
+  }
+
+  const isExternal = !isNaN(Number(commentId))
+
+  const handleDeleteClick = () => {
+    if (isExternal) {
+      setShowExternalWarning(true)
+    } else {
+      setShowDialog(true)
+    }
   }
 
   const handleDelete = async () => {
@@ -78,7 +89,7 @@ export default function DeleteCommentButton({
   return (
     <>
       <Button
-        onClick={() => setShowDialog(true)}
+        onClick={handleDeleteClick}
         variant="ghost"
         size="sm"
         className="flex items-center gap-1 text-gray-600 hover:text-red-600"
@@ -86,6 +97,49 @@ export default function DeleteCommentButton({
         <FaTrash />
         Delete
       </Button>
+
+      <Dialog open={showExternalWarning} onOpenChange={setShowExternalWarning}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-cyan-600">
+              <FaExclamationTriangle />
+              Cannot Delete External Comment
+            </DialogTitle>
+            <DialogDescription>
+              This comment cannot be deleted because it is external content from Hacker News.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4 space-y-3">
+            <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-4">
+              <p className="text-sm text-gray-700">
+                <strong>Why can&apos;t I delete this?</strong>
+              </p>
+              <p className="text-sm text-gray-600 mt-2">
+                This is an external Hacker News comment (ID:{' '}
+                <code className="bg-gray-100 px-1 py-0.5 rounded">{commentId}</code>) that exists
+                outside your platform. You can only delete comments created directly on your
+                platform.
+              </p>
+            </div>
+
+            <div className="text-sm text-gray-700">
+              <p className="font-medium">What you can do:</p>
+              <ul className="list-disc list-inside mt-2 space-y-1 text-gray-600">
+                <li>Report the comment if it violates guidelines</li>
+                <li>Reply with your perspective</li>
+                <li>Unlike it if you previously liked it</li>
+              </ul>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowExternalWarning(false)}>
+              Got it
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
@@ -103,7 +157,7 @@ export default function DeleteCommentButton({
               {previewText.length >= 100 && '...'}
             </p>
             {isAdmin && (
-              <p className="text-xs text-orange-600 mt-2">
+              <p className="text-xs text-cyan-600 mt-2">
                 Note: If this comment has replies, it will be soft-deleted and marked as [deleted by
                 admin]
               </p>

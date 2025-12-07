@@ -30,34 +30,22 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return undefined as T
 }
 
-export async function toggleLike(
-  itemId: string,
-  itemType: 'story' | 'comment',
-  token: string,
-  originalPoints: number = 0,
-): Promise<ToggleLikeResponse> {
-  const res = await fetch(
-    `${likeBaseUrl}/${itemId}/toggle?type=${itemType}&originalPoints=${originalPoints}`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+export async function toggleLike(itemId: string, token: string): Promise<ToggleLikeResponse> {
+  const res = await fetch(`${likeBaseUrl}/${itemId}/toggle`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  )
+  })
   return handleResponse<ToggleLikeResponse>(res)
 }
 
 export async function getLikeStatus(
   itemId: string,
-  itemType: 'story' | 'comment',
   username?: string,
-  originalPoints: number = 0,
 ): Promise<LikeStatusResponse> {
-  const usernameParam = username ? `&username=${encodeURIComponent(username)}` : ''
-  const res = await fetch(
-    `${likeBaseUrl}/${itemId}/status?type=${itemType}&originalPoints=${originalPoints}${usernameParam}`,
-  )
+  const usernameParam = username ? `?username=${encodeURIComponent(username)}` : ''
+  const res = await fetch(`${likeBaseUrl}/${itemId}/status${usernameParam}`)
   return handleResponse<LikeStatusResponse>(res)
 }
 

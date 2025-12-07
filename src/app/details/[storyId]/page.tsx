@@ -3,21 +3,40 @@ import type { HNStoryItem } from '@/app/types/types'
 import 'server-only'
 import Link from 'next/link'
 import { FaUser, FaStar, FaCommentAlt } from 'react-icons/fa'
-import { FaRegClock, FaLink } from 'react-icons/fa6'
+import { FaRegClock } from 'react-icons/fa6'
+import { FaExternalLinkAlt } from 'react-icons/fa'
 import Comment from './comment'
 import LikeButton from './LikeButton'
 import CommentEditor from './CommentEditor'
-import UsernameLink from '@/components/username-link'
+import UsernameLink from '@/app/components/username-link'
 import EditButton from './EditButton'
 import DeleteButton from './DeleteButton'
 import ShareButton from './ShareButton'
 import ReportButton from './ReportButton'
 import DetailsBookmark from '../DetailsBookmark'
+
 function stripHtml(html: string): string {
   return html
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+async function getLikeCount(itemId: string): Promise<number> {
+  try {
+    const base = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? ''
+    const res = await fetch(`${base}/likes/${itemId}/status`, {
+      cache: 'no-store',
+    })
+    if (res.ok) {
+      const data = await res.json()
+      return data.totalPoints || 0
+    }
+    return 0
+  } catch (error) {
+    console.error('Error fetching like count:', error)
+    return 0
+  }
 }
 
 export default async function DetailsPage({
@@ -61,7 +80,7 @@ export default async function DetailsPage({
           </p>
           <Link
             href="/"
-            className="inline-block px-6 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
+            className="inline-block px-6 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-600 transition-colors"
           >
             Return Home
           </Link>
@@ -69,7 +88,7 @@ export default async function DetailsPage({
       </div>
     )
   }
-
+  const likeCount = await getLikeCount(storyId)
   const formatDate = (timestamp: number) => {
     return new Date(timestamp * 1000).toLocaleString()
   }
@@ -86,7 +105,7 @@ export default async function DetailsPage({
     ['story', 'ask_hn', 'show_hn', 'job', 'comment'].includes(tag),
   )
   console.log(filteredTags)
-
+  const isExternal = !isNaN(Number(storyId))
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="w-full px-2 sm:px-4 lg:px-6">
@@ -128,11 +147,9 @@ export default async function DetailsPage({
             <span className="flex items-center gap-1">
               <FaUser /> <UsernameLink username={story.author} />
             </span>
-            {story.points && (
-              <span className="flex items-center gap-1">
-                <FaStar /> {story.points} points
-              </span>
-            )}
+            <span className="flex items-center gap-1">
+              <FaStar /> {likeCount} points
+            </span>
             <span className="flex items-center gap-1">
               <FaRegClock /> {formatDate(story.created_at_i)}
             </span>
@@ -142,7 +159,19 @@ export default async function DetailsPage({
                 {story.commentCount} comment{story.commentCount !== 1 ? 's' : ''}
               </span>
             )}
-
+            {isExternal && (
+              <div className="flex items-center gap-1">
+                <FaExternalLinkAlt />
+                <Link
+                  href={`https://news.ycombinator.com/item?id=${storyId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  Original Post
+                </Link>
+              </div>
+            )}
             {wasEdited() && (
               <span className="px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded">edited</span>
             )}
@@ -150,18 +179,6 @@ export default async function DetailsPage({
               <DetailsBookmark itemId={storyId} />
             </span>
           </div>
-
-          {story.url && (
-            <Link
-              href={story.url}
-              target="_blank"
-              className="text-blue-600 hover:underline mb-4 inline-block"
-            >
-              <span className="flex items-center gap-1">
-                <FaLink /> {story.url}
-              </span>
-            </Link>
-          )}
 
           {story.text && (
             <div
@@ -171,8 +188,8 @@ export default async function DetailsPage({
           )}
         </div>
 
-        <div className="flex mt-3 mb-4">
-          <LikeButton itemId={storyId} itemType="story" initialPoints={story.points || 0} />
+        <div className="flex items-center gap-2 mt-3 mb-4 flex-wrap">
+          <LikeButton itemId={storyId} itemType="story" initialPoints={likeCount} />
           <CommentEditor comment="Comment" storyId={storyId} />
         </div>
 

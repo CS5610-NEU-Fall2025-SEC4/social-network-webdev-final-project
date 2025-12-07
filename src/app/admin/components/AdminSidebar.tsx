@@ -40,7 +40,7 @@ export default function AdminSidebar() {
   return (
     <aside className="fixed top-0 left-0 h-screen w-64 bg-gray-900 text-white flex flex-col">
       <div className="p-6 border-b border-gray-700">
-        <h1 className="text-2xl font-bold text-orange-500">Admin Panel</h1>
+        <h1 className="text-2xl font-bold text-cyan-600">Admin Panel</h1>
         <p className="text-sm text-gray-400 mt-3">Hckrnws</p>
       </div>
 
@@ -56,7 +56,7 @@ export default function AdminSidebar() {
                   href={item.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     active
-                      ? 'bg-orange-600 text-white'
+                      ? 'bg-cyan-600 text-white'
                       : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                   }`}
                 >
