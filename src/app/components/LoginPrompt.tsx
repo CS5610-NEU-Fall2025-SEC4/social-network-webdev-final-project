@@ -23,7 +23,7 @@ export default function LoginPrompt({ open, onClose }: { open: boolean; onClose:
             className="px-3 py-2 rounded bg-cyan-600 text-white hover:bg-cyan-700"
             onClick={onClose}
           >
-            Go to Login
+            Login
           </Link>
         </div>
       </div>

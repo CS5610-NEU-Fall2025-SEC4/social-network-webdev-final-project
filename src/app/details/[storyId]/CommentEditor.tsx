@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
 import { useAuth } from '@/app/context/AuthContext'
+import LoginPrompt from '@/app/components/LoginPrompt'
 
 interface CommentEditorProps {
   comment: string
@@ -19,12 +20,21 @@ export default function CommentEditor({ comment, storyId, parentId }: CommentEdi
   const [commentText, setCommentText] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showLogin, setShowLogin] = useState(false)
   const { token, profile } = useAuth()
   const router = useRouter()
 
+  const handleCommentClick = () => {
+    if (!token || !profile) {
+      setShowLogin(true)
+      return
+    }
+    setIsEditorOpen(!isEditorOpen)
+  }
+
   const handleSubmit = async () => {
     if (!token || !profile) {
-      setError('You must be logged in to comment')
+      setShowLogin(true)
       return
     }
 
@@ -76,18 +86,9 @@ export default function CommentEditor({ comment, storyId, parentId }: CommentEdi
     setIsEditorOpen(false)
   }
 
-  if (!profile) {
-    return (
-      <Button variant="ghost" onClick={() => router.push('/logIn')} className="gap-2">
-        <FaRegCommentAlt />
-        Log in to comment
-      </Button>
-    )
-  }
-
   return (
-    <div>
-      <Button variant="ghost" onClick={() => setIsEditorOpen(!isEditorOpen)} className="gap-2">
+    <>
+      <Button variant="ghost" onClick={handleCommentClick} className="gap-2">
         {isEditorOpen ? <FaCommentAlt /> : <FaRegCommentAlt />}
         {comment}
       </Button>
@@ -116,6 +117,7 @@ export default function CommentEditor({ comment, storyId, parentId }: CommentEdi
           </div>
         </Card>
       )}
-    </div>
+      <LoginPrompt open={showLogin} onClose={() => setShowLogin(false)} />
+    </>
   )
 }

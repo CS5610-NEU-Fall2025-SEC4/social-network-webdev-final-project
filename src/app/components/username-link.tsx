@@ -5,6 +5,7 @@ import { HNApiService } from '@/app/services/algoliaAPI'
 import { getUserIdByUsername } from '@/app/services/authAPI'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import ExternalLinkPrompt from './ExternalLinkPrompt'
 
 interface UsernameLinkProps {
   username: string
@@ -15,6 +16,7 @@ const userCache = new Map<string, { isHN: boolean; internalId: string | null }>(
 
 export default function UsernameLink({ username, className }: UsernameLinkProps) {
   const [isResolving, setIsResolving] = useState(false)
+  const [showExternalPrompt, setShowExternalPrompt] = useState(false)
   const router = useRouter()
 
   const handleClick = async (e: React.MouseEvent) => {
@@ -28,7 +30,7 @@ export default function UsernameLink({ username, className }: UsernameLinkProps)
       if (userCache.has(username)) {
         const cached = userCache.get(username)!
         if (cached.isHN) {
-          window.open(`https://news.ycombinator.com/user?id=${username}`, '_blank')
+          setShowExternalPrompt(true)
         } else if (cached.internalId) {
           router.push(`/profile/${cached.internalId}`)
         } else {
@@ -38,6 +40,29 @@ export default function UsernameLink({ username, className }: UsernameLinkProps)
         return
       }
 
+      let id: string | null = null
+      try {
+        id = await getUserIdByUsername(username)
+      } catch (error) {
+        id = null
+      }
+
+      if (id) {
+        userCache.set(username, { isHN: false, internalId: id })
+        router.push(`/profile/${id}`)
+      } else {
+        setShowExternalPrompt(true)
+      }
+    } finally {
+      setIsResolving(false)
+    }
+  }
+
+  const handleConfirmExternal = async () => {
+    setShowExternalPrompt(false)
+    setIsResolving(true)
+
+    try {
       let hnExists = false
       try {
         hnExists = await HNApiService.doesUserExist(username)
@@ -45,33 +70,33 @@ export default function UsernameLink({ username, className }: UsernameLinkProps)
         hnExists = false
       }
 
-      let id: string | null = null
       if (hnExists) {
+        userCache.set(username, { isHN: true, internalId: null })
         window.open(`https://news.ycombinator.com/user?id=${username}`, '_blank')
       } else {
-        try {
-          id = await getUserIdByUsername(username)
-        } catch (error) {}
-        if (id) {
-          router.push(`/profile/${id}`)
-        } else {
-          console.warn(`User ${username} not found on HN or internally.`)
-        }
+        userCache.set(username, { isHN: false, internalId: null })
+        console.warn(`User ${username} not found on HN or internally.`)
       }
-
-      userCache.set(username, { isHN: hnExists, internalId: id })
     } finally {
       setIsResolving(false)
     }
   }
 
   return (
-    <span
-      className={cn('cursor-pointer', className, isResolving && 'opacity-70')}
-      onClick={handleClick}
-      title={isResolving ? `Resolving ${username}...` : `Click to view profile of ${username}`}
-    >
-      {isResolving ? `Resolving ${username}...` : username}
-    </span>
+    <>
+      <span
+        className={cn('cursor-pointer', className, isResolving && 'opacity-70')}
+        onClick={handleClick}
+        title={isResolving ? `Resolving ${username}...` : `Click to view profile of ${username}`}
+      >
+        {isResolving ? `Resolving ${username}...` : username}
+      </span>
+      <ExternalLinkPrompt
+        open={showExternalPrompt}
+        onClose={() => setShowExternalPrompt(false)}
+        onConfirm={handleConfirmExternal}
+        url={`https://news.ycombinator.com/user?id=${username}`}
+      />
+    </>
   )
 }

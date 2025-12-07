@@ -27,7 +27,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading admin panel...</p>
         </div>
       </div>
@@ -49,7 +49,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span className="text-sm text-gray-600">
                 Welcome, <span className="font-semibold text-gray-900">{profile?.username}</span>
               </span>
-              <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium">
+              <span className="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-full text-xs font-medium">
                 ADMIN
               </span>
             </div>

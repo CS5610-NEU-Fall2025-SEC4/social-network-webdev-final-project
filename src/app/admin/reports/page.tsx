@@ -184,7 +184,7 @@ export default function ReportsPage() {
       {loading && (
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600 mx-auto mb-4"></div>
             <p className="text-gray-600">Loading reports...</p>
           </div>
         </div>
@@ -312,7 +312,7 @@ export default function ReportsPage() {
                       onClick={() => handleAction(report, 'block-author')}
                       size="sm"
                       variant="outline"
-                      className="text-orange-600 hover:text-orange-700"
+                      className="text-cyan-600 hover:text-cyan-700"
                     >
                       <FaBan className="mr-1" />
                       Block Author
