@@ -7,6 +7,7 @@ import FollowButton from '@/app/components/FollowButton'
 import { useAuth } from '@/app/context/AuthContext'
 import Link from 'next/link'
 import FollowList from '../components/FollowList'
+import UserContent from '@/app/home/UserContent'
 import Image from 'next/image'
 
 export default function PublicProfilePage() {
@@ -218,6 +219,13 @@ export default function PublicProfilePage() {
                   )}
                 </ul>
               </div>
+              {!data.isBlocked && data.username && (
+                <div className="rounded-lg bg-white shadow p-4">
+                  <UserContent username={data.username} />
+                </div>
+              )}
+            </div>
+            <div className="grid gap-4">
               <div className="rounded-lg bg-white shadow p-4">
                 <h3 className="text-lg font-medium mb-2">Stats</h3>
                 <dl className="grid grid-cols-2 gap-3 text-sm">
@@ -239,29 +247,27 @@ export default function PublicProfilePage() {
                   </div>
                 </dl>
               </div>
-            </div>
-            <div className="grid gap-4">
               <FollowList
                 title="Following"
                 items={data.following || []}
                 emptyMessage="Not following anyone yet."
                 seeAllHref={
-                  data.following && data.following.length > 8
+                  data.following && data.following.length > 5
                     ? `/profile/${data.id}/following`
                     : undefined
                 }
-                limit={8}
+                limit={5}
               />
               <FollowList
                 title="Followers"
                 items={data.followers || []}
                 emptyMessage="No followers yet."
                 seeAllHref={
-                  data.followers && data.followers.length > 8
+                  data.followers && data.followers.length > 5
                     ? `/profile/${data.id}/followers`
                     : undefined
                 }
-                limit={8}
+                limit={5}
               />
             </div>
           </div>
