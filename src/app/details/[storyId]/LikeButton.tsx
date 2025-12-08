@@ -72,12 +72,14 @@ export default function LikeButton({
     <>
       <Button variant="ghost" onClick={handleLikeClick} disabled={loading} className="gap-2">
         {isLiked ? (
-          <span>
-            <BiSolidLike className="text-blue-600" /> Like
+          <span className="flex items-center gap-1">
+            <BiSolidLike className="text-blue-600" />
+            <span>Like</span>
           </span>
         ) : (
-          <span>
-            <BiLike /> Like
+          <span className="flex items-center gap-1">
+            <BiLike />
+            <span>Like</span>
           </span>
         )}
       </Button>

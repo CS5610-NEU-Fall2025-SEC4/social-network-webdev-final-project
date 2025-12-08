@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { HNStory, HNStoryItem } from '../../types/types'
-import CommentEditor from './CommentEditor'
 import EditCommentButton from './EditCommentButton'
 import DeleteCommentButton from './DeleteCommentButton'
 import CommentEditForm from './CommentEditForm'
@@ -12,7 +11,9 @@ import UsernameLink from '@/app/components/username-link'
 import BookmarkIcon from '@/app/components/BookmarkIcon'
 import { useSelector } from 'react-redux'
 import type { ProfileState as StoreProfileState } from '@/app/store/profileSlice'
-import LikeButton from './LikeButton'
+import InteractionButtons from './InteractionButtons'
+import { FaUser, FaStar } from 'react-icons/fa'
+import { FaRegClock } from 'react-icons/fa6'
 
 interface CommentProps {
   comment: HNStoryItem | HNStory
@@ -61,20 +62,31 @@ export default function Comment({ comment, storyId, depth = 0 }: CommentProps) {
 
   return (
     <Card className="border-l-4 border-l-cyan-400 mb-3">
-      <CardContent className="py-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3 text-sm text-gray-600">
-            <UsernameLink username={comment.author} className="font-semibold text-cyan-600" />
-            <span>•</span>
-            <span>{formatDate(comment.created_at)}</span>
-            <span>•</span>
-            <span>{comment.points} points</span>
+      <CardContent className="py-3 sm:py-4 px-3 sm:px-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 mb-3">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-1 sm:gap-3 text-xs sm:text-sm text-gray-600">
+            <span className="flex items-center gap-1">
+              <FaUser className="shrink-0" />
+              <UsernameLink username={comment.author} className="font-semibold text-cyan-600" />
+            </span>
+
+            <span className="flex items-center gap-1">
+              <FaRegClock className="shrink-0" />
+              <span className="truncate">{formatDate(comment.created_at)}</span>
+            </span>
+
+            <span className="flex items-center gap-1">
+              <FaStar className="shrink-0" />
+              <span>{comment.points} points</span>
+            </span>
+
             {wasEdited() && (
-              <span className="px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded">edited</span>
+              <span className="px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded flex-shrink-0">
+                edited
+              </span>
             )}
           </div>
-
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <EditCommentButton authorUsername={comment.author} onEditClick={handleEditClick} />
             <DeleteCommentButton
               commentId={comment.id}
@@ -101,23 +113,24 @@ export default function Comment({ comment, storyId, depth = 0 }: CommentProps) {
           <>
             {comment.text && (
               <div
-                className="prose prose-sm max-w-none text-gray-700 mb-3"
+                className="prose prose-sm sm:prose max-w-none text-gray-700 mb-3"
                 dangerouslySetInnerHTML={{ __html: comment.text }}
               />
             )}
-            <div className="flex items-center gap-2">
-              <LikeButton
-                itemId={comment.id}
-                itemType="comment"
-                initialPoints={comment.points || 0}
-              />
-              <CommentEditor comment="Reply" storyId={storyId} parentId={comment.id} />
-            </div>
+
+            <InteractionButtons
+              itemId={comment.id}
+              itemType="comment"
+              initialPoints={comment.points || 0}
+              storyId={storyId}
+              parentId={comment.id}
+              depth={depth}
+              isStoryLevel={false}
+            />
           </>
         )}
-
         {hasNestedChildren(comment) && depth < 1 && (
-          <div className="ml-6 mt-4 space-y-3 border-l-2 border-gray-200 pl-4">
+          <div className="ml-3 sm:ml-6 mt-3 sm:mt-4 space-y-3 border-l-2 border-gray-200 pl-3 sm:pl-4">
             {comment.children.map((child) => (
               <Comment key={child.id} comment={child} storyId={storyId} depth={depth + 1} />
             ))}
