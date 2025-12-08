@@ -116,7 +116,7 @@ export default function Comment({ comment, storyId, depth = 0 }: CommentProps) {
           </>
         )}
 
-        {hasNestedChildren(comment) && depth < 6 && (
+        {hasNestedChildren(comment) && depth < 1 && (
           <div className="ml-6 mt-4 space-y-3 border-l-2 border-gray-200 pl-4">
             {comment.children.map((child) => (
               <Comment key={child.id} comment={child} storyId={storyId} depth={depth + 1} />

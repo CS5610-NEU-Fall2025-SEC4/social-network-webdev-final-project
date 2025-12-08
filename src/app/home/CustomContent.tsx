@@ -7,17 +7,21 @@ import { FaClock, FaCommentAlt, FaStar, FaPlus } from 'react-icons/fa'
 import { HNStory } from '../types/types'
 
 export default function CustomContent() {
-  const { profile } = useAuth()
+  const { profile, loading: authLoading } = useAuth()
   const username = profile?.username
   const [stories, setStories] = useState<HNStory[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchUserStories = async () => {
+      if (authLoading) return
+
       if (!username) {
         setLoading(false)
         return
       }
+
+      setLoading(true)
 
       try {
         const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
@@ -42,7 +46,7 @@ export default function CustomContent() {
     }
 
     fetchUserStories()
-  }, [username])
+  }, [username, authLoading])
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000)
@@ -67,11 +71,11 @@ export default function CustomContent() {
   if (stories.length === 0) {
     return (
       <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-        <FaPlus className="text-cyan-600 text-4xl mx-auto mb-4" />
+        <FaPlus className="text-gray-900 text-4xl mx-auto mb-4" />
         <h3 className="text-xl font-semibold mb-2">No posts yet</h3>
         <p className="text-gray-600 mb-4">Start sharing with the community!</p>
         <Link href="/story">
-          <button className="px-6 py-3  bg-cyan-600 text-white rounded-md hover:bg-cyan-700">
+          <button className="px-6 py-3 bg-gray-900 text-white rounded-md hover:bg-cyan-700">
             Create Your First Post
           </button>
         </Link>

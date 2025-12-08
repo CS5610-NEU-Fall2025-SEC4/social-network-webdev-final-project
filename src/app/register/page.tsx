@@ -236,7 +236,7 @@ export default function Register() {
     >
       <Card className="w-full max-w-3xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl">Hello, Welcome to the Family.</CardTitle>
+          <CardTitle className="text-3xl">Welcome to the HckrNws Family.</CardTitle>
           <CardDescription className="text-lg">
             Please enter details below to register.
           </CardDescription>
@@ -246,7 +246,7 @@ export default function Register() {
           <form onSubmit={handleRegister} className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
               <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:whitespace-nowrap">
-                Enter your First Name:
+                First Name
               </label>
               <div className="flex-1 sm:flex-initial sm:w-[600px]">
                 {fieldErrors.firstName && (
@@ -268,7 +268,7 @@ export default function Register() {
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
               <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:whitespace-nowrap">
-                Enter your Last Name:
+                Last Name
               </label>
               <div className="flex-1 sm:flex-initial sm:w-[600px]">
                 {fieldErrors.lastName && (
@@ -290,7 +290,7 @@ export default function Register() {
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
               <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:whitespace-nowrap">
-                Enter your E-mail:
+                E-mail
               </label>
               <div className="flex-1 sm:flex-initial sm:w-[600px]">
                 {fieldErrors.email && (
@@ -312,7 +312,7 @@ export default function Register() {
 
             <div className="flex flex-col sm:flex-row sm:items-start sm:gap-4">
               <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:mt-3 sm:whitespace-nowrap">
-                Enter your Username:
+                Username:
               </label>
               <div className="flex-1 sm:flex-initial sm:w-[600px]">
                 <div className="relative">
@@ -375,7 +375,7 @@ export default function Register() {
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
               <label className="text-gray-800 mb-2 sm:mb-0 sm:w-48 text-left sm:text-right sm:whitespace-nowrap">
-                Enter your Password:
+                Password:
               </label>
               <div className="relative flex-1 sm:flex-initial sm:w-[600px]">
                 {fieldErrors.password && (
@@ -460,7 +460,12 @@ export default function Register() {
             </div>
 
             <div className="flex justify-center pt-4">
-              <Button type="submit" size="lg" className="w-64" disabled={isCheckingUsername}>
+              <Button
+                type="submit"
+                size="lg"
+                className="w-64 bg-gray-900 hover:bg-gray-800"
+                disabled={isCheckingUsername}
+              >
                 {isCheckingUsername ? 'Checking...' : 'Register'}
               </Button>
             </div>
@@ -469,12 +474,12 @@ export default function Register() {
           <div className="text-center mt-8 space-y-2">
             <div>
               <Link href="./logIn" className="text-blue-600 hover:underline text-sm font-medium">
-                Already have an account? Log In here!
+                Have an account? Log In!
               </Link>
             </div>
             <div>
               <Link href="./home" className="text-gray-600 hover:underline text-sm font-medium">
-                Changed your mind? No worries, Continue as Guest.
+                Continue as Guest
               </Link>
             </div>
           </div>

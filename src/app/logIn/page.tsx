@@ -85,8 +85,8 @@ export default function LogIn() {
     >
       <Card className="w-full max-w-2xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl">Hello, Welcome Back!!</CardTitle>
-          <CardDescription className="text-lg">Please log in to continue</CardDescription>
+          <CardTitle className="text-3xl">Welcome Back!!</CardTitle>
+          <CardDescription className="text-lg">Log in to continue</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -159,7 +159,7 @@ export default function LogIn() {
             </div>
 
             <div className="flex justify-center pt-4">
-              <Button type="submit" size="lg" className="w-64">
+              <Button type="submit" size="lg" className="w-64 bg-gray-900 hover:bg-gray-800">
                 Log In
               </Button>
             </div>
@@ -167,7 +167,7 @@ export default function LogIn() {
           <div className="text-center mt-8 space-y-2">
             <div>
               <Link href="./register" className="text-blue-600 hover:underline text-sm font-medium">
-                New user? Register here for FREE!
+                New User? Register Here!
               </Link>
             </div>
             <div>

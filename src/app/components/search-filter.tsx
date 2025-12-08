@@ -56,7 +56,7 @@ export default function SearchBarWithFilters() {
     searchParams.get('hitsPerPage')
 
   return (
-    <div className="mb-8 p-4 rounded-lg shadow-sm">
+    <div className="mb-8 p-6 md:p-4 rounded-lg">
       <form onSubmit={handleSubmit}>
         <div className="flex w-full items-center space-x-2 mb-4">
           <div className="relative w-full">
@@ -66,7 +66,7 @@ export default function SearchBarWithFilters() {
               placeholder="Search Hacker News stories, comments, and more..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="text-lg pl-10 py-6 rounded-full shadow-inner"
+              className="text-base md:text-lg pl-10 py-6 rounded-full shadow-inner"
             />
           </div>
           <Button type="submit" className="px-6 py-6 rounded-full">

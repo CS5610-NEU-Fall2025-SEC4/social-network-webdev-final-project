@@ -29,7 +29,7 @@ export function CreatePostButton() {
 
   return (
     <>
-      <Button onClick={handleClick} className="gap-2">
+      <Button onClick={handleClick} className="gap-2 bg-gray-900 hover:bg-gray-800">
         <FaPlus /> Create Post
       </Button>
       <LoginPrompt open={showLogin} onClose={() => setShowLogin(false)} />

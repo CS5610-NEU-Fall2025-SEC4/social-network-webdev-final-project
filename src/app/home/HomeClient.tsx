@@ -15,11 +15,13 @@ export default function HomeClient({ topStories }: HomeClientProps) {
     <div className="p-4 md:p-6">
       {authenticated && (
         <>
-          <div className="flex justify-between items-center mb-3">
+          <div className="flex flex-col items-start md:flex-row md:justify-between md:items-center mb-3">
             <h2 className="text-2xl font-semibold mt-1 mb-3 text-gray-800 ps-3">
               Welcome Back! Here are your recent posts.
             </h2>
-            <CreatePostButton />
+            <div className="ps-3 md:ps-0">
+              <CreatePostButton />
+            </div>
           </div>
           <div className="mt-4">
             <CustomContent />
@@ -28,11 +30,13 @@ export default function HomeClient({ topStories }: HomeClientProps) {
       )}
 
       {!authenticated && (
-        <div className="flex justify-between items-center mb-3">
+        <div className="flex flex-col items-start md:flex-row md:justify-between md:items-center mb-3">
           <h2 className="text-2xl font-semibold mt-8 mb-3 text-gray-800 ps-3">
             Explore trending posts and the most discussed topics from the Community.
           </h2>
-          <CreatePostButton />
+          <div className="ps-3 md:ps-0">
+            <CreatePostButton />
+          </div>
         </div>
       )}
 
