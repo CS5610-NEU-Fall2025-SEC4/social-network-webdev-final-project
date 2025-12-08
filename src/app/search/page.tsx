@@ -49,24 +49,26 @@ export default async function SearchPage({
   const results = await HNApiService.search(processedParams)
 
   return (
-    <div className="container mx-auto py-8">
-      <SearchFilter />
-      {results.hits.length === 0 ? (
-        <div className="text-center text-muted-foreground py-10 border border-gray-200 rounded-lg bg-gray-50 mt-8">
-          <h4 className="text-xl font-semibold mb-2">No results found</h4>
-          <p className="text-base">Try adjusting your search or filters</p>
-        </div>
-      ) : (
-        <>
-          <div className="text-muted-foreground mb-4 text-sm">
-            {results.nbHits.toLocaleString()} results ({results.processingTimeMS}
-            ms)
+    <div className="py-8 px-4 md:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <SearchFilter />
+        {results.hits.length === 0 ? (
+          <div className="text-center text-muted-foreground py-10 border border-gray-200 rounded-lg bg-gray-50 mt-8">
+            <h4 className="text-xl font-semibold mb-2">No results found</h4>
+            <p className="text-base">Try adjusting your search or filters</p>
           </div>
-          <Suspense fallback={<div>Loading...</div>}>
-            <SearchResults stories={results.hits} />
-          </Suspense>
-        </>
-      )}
+        ) : (
+          <>
+            <div className="text-muted-foreground mb-4 text-sm">
+              {results.nbHits.toLocaleString()} results ({results.processingTimeMS}
+              ms)
+            </div>
+            <Suspense fallback={<div>Loading...</div>}>
+              <SearchResults stories={results.hits} />
+            </Suspense>
+          </>
+        )}
+      </div>
     </div>
   )
 }

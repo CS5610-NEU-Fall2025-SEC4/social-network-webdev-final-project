@@ -17,7 +17,7 @@ export default function Footer() {
           <Link href="/search" className="hover:text-cyan-300 transition-colors">
             Search
           </Link>
-          <Link href="/aboutUs" className="hover:text-cyan-300 transition-colors">
+          <Link href="/" className="hover:text-cyan-300 transition-colors">
             About Us
           </Link>
           <a href="mailto:contact@hckrnws.com" className="hover:text-cyan-300 transition-colors">
