@@ -140,12 +140,12 @@ export default function ProfilePage() {
           </div>
         )}
 
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-black to-cyan-700 p-6 text-white shadow-md mb-4">
-          <div className="flex items-center justify-between gap-4">
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-black to-cyan-700 p-4 sm:p-6 text-white shadow-md mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <button
               type="button"
               onClick={() => setShowPhotoModal(true)}
-              className="w-16 h-16 rounded-full ring-2 ring-white/50 overflow-hidden bg-white/20 backdrop-blur flex items-center justify-center text-2xl font-semibold"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full ring-2 ring-white/50 overflow-hidden bg-white/20 backdrop-blur flex items-center justify-center text-2xl font-semibold"
             >
               {photoUrl ? (
                 <Image
@@ -160,17 +160,17 @@ export default function ProfilePage() {
               )}
             </button>
             <div className="flex-1">
-              <h2 className="text-2xl md:text-3xl font-semibold leading-tight">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold leading-tight">
                 {user?.firstName} {user?.lastName}
               </h2>
-              <p className="text-white/80 mb-1">@{user?.username}</p>
+              <p className="text-white/80 mb-1 text-sm sm:text-base">@{user?.username}</p>
               {user?.joined && (
                 <span className="inline-block text-xs px-2 py-1 rounded-full bg-white/15 text-white/80 backdrop-blur-sm">
                   Member since {new Date(user.joined).toLocaleDateString()}
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {user?.id && (
                 <Link
                   href={`/profile/${encodeURIComponent(user.id)}`}

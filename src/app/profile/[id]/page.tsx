@@ -74,9 +74,9 @@ export default function PublicProfilePage() {
         </Link>
       </div>
       <div className="max-w-5xl mx-auto">
-        <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-black to-cyan-700 p-6 text-white shadow-md mb-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="w-16 h-16 rounded-full ring-2 ring-white/50 overflow-hidden bg-white/20 backdrop-blur flex items-center justify-center text-2xl font-semibold">
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-black to-cyan-700 p-4 sm:p-6 text-white shadow-md mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full ring-2 ring-white/50 overflow-hidden bg-white/20 backdrop-blur flex items-center justify-center text-2xl font-semibold">
               {data.isBlocked ? (
                 'U'
               ) : photoUrl ? (
@@ -92,14 +92,14 @@ export default function PublicProfilePage() {
               )}
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-semibold leading-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold leading-tight">
                 {data.isBlocked
                   ? 'Deleted User'
                   : data.firstName || data.lastName
                     ? `${data.firstName || ''} ${data.lastName || ''}`.trim()
                     : 'Name Hidden'}
               </h1>
-              <p className="text-white/80 mb-1">
+              <p className="text-white/80 mb-1 text-sm sm:text-base">
                 @{data.isBlocked ? 'hckrnws_user' : data.username}
               </p>
               {data.isBlocked ? (
@@ -117,7 +117,9 @@ export default function PublicProfilePage() {
               )}
             </div>
             {!isSelf && !data.isBlocked && (
-              <FollowButton targetUserId={data.id} targetUsername={data.username} />
+              <div className="flex flex-wrap">
+                <FollowButton targetUserId={data.id} targetUsername={data.username} />
+              </div>
             )}
           </div>
         </div>
