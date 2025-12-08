@@ -167,7 +167,7 @@ export default function EditProfilePage() {
           </div>
         </div>
         <div>
-          <label className="block text-sm text-gray-700">Email</label>
+          <label className="block text-sm text-gray-700">Email (Private to you)</label>
           <input
             name="email"
             type="email"

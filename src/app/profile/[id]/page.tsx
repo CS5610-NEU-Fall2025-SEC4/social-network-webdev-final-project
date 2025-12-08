@@ -227,8 +227,16 @@ export default function PublicProfilePage() {
             </div>
             <div className="grid gap-4">
               <div className="rounded-lg bg-white shadow p-4">
-                <h3 className="text-lg font-medium mb-2">Stats</h3>
+                <h3 className="text-lg font-medium mb-3">Stats</h3>
                 <dl className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <dt className="text-gray-500">Posts</dt>
+                    <dd className="font-semibold">{data.stats?.posts ?? 0}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-500">Comments</dt>
+                    <dd className="font-semibold">{data.stats?.comments ?? 0}</dd>
+                  </div>
                   <div>
                     <dt className="text-gray-500">Followers</dt>
                     <dd className="font-semibold">{(data.followers || []).length}</dd>
@@ -238,12 +246,10 @@ export default function PublicProfilePage() {
                     <dd className="font-semibold">{(data.following || []).length}</dd>
                   </div>
                   <div>
-                    <dt className="text-gray-500">Posts</dt>
-                    <dd className="font-semibold">{data.stats?.posts ?? 0}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-gray-500">Comments</dt>
-                    <dd className="font-semibold">{data.stats?.comments ?? 0}</dd>
+                    <dt className="text-gray-500">Joined</dt>
+                    <dd className="font-semibold">
+                      {data.createdAt ? new Date(String(data.createdAt)).toLocaleDateString() : '—'}
+                    </dd>
                   </div>
                 </dl>
               </div>
@@ -257,6 +263,7 @@ export default function PublicProfilePage() {
                     : undefined
                 }
                 limit={5}
+                linkClassName="text-blue-700 hover:underline"
               />
               <FollowList
                 title="Followers"
