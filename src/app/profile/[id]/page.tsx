@@ -7,6 +7,7 @@ import FollowButton from '@/app/components/FollowButton'
 import { useAuth } from '@/app/context/AuthContext'
 import Link from 'next/link'
 import FollowList from '../components/FollowList'
+import UserContent from '@/app/home/UserContent'
 import Image from 'next/image'
 
 export default function PublicProfilePage() {
@@ -67,7 +68,7 @@ export default function PublicProfilePage() {
       <div className="mb-2 max-w-5xl mx-auto">
         <Link
           href="/profile"
-          className="inline-flex items-center gap-1 text-gray-700 hover:text-blue-700 !no-underline text-sm"
+          className="inline-flex items-center gap-1 text-gray-700 hover:text-cyan-700 !no-underline text-sm"
         >
           &lt; Back
         </Link>
@@ -127,7 +128,7 @@ export default function PublicProfilePage() {
           </div>
         )}
         {!data.isBlocked && (
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3 items-start">
             <div className="md:col-span-2 grid gap-4">
               <div className="rounded-lg bg-white shadow p-4">
                 <h3 className="text-lg font-medium mb-2">About</h3>
@@ -142,9 +143,22 @@ export default function PublicProfilePage() {
                 <ul className="text-gray-700 text-sm space-y-1">
                   <li>
                     <span className="font-medium">Website:</span>{' '}
-                    {data.website === null || data.website === undefined
-                      ? 'Website hidden'
-                      : data.website || 'Not provided'}
+                    {data.website === null || data.website === undefined ? (
+                      'Website hidden'
+                    ) : data.website ? (
+                      <a
+                        href={
+                          data.website.startsWith('http') ? data.website : `https://${data.website}`
+                        }
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-cyan-700 hover:underline"
+                      >
+                        {data.website}
+                      </a>
+                    ) : (
+                      'Not provided'
+                    )}
                   </li>
                   <li>
                     <span className="font-medium">Location:</span>{' '}
@@ -218,9 +232,32 @@ export default function PublicProfilePage() {
                   )}
                 </ul>
               </div>
+              {!data.isBlocked && data.username && (
+                <div className="rounded-lg bg-white shadow p-4">
+                  <UserContent username={data.username} />
+                  <div className="mt-3 flex justify-end">
+                    <Link
+                      href={`/profile/${encodeURIComponent(data.id)}/posts`}
+                      className="text-xs text-cyan-700 hover:underline"
+                    >
+                      See all
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="grid gap-4">
               <div className="rounded-lg bg-white shadow p-4">
-                <h3 className="text-lg font-medium mb-2">Stats</h3>
+                <h3 className="text-lg font-medium mb-3">Stats</h3>
                 <dl className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <dt className="text-gray-500">Posts</dt>
+                    <dd className="font-semibold">{data.stats?.posts ?? 0}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-500">Comments</dt>
+                    <dd className="font-semibold">{data.stats?.comments ?? 0}</dd>
+                  </div>
                   <div>
                     <dt className="text-gray-500">Followers</dt>
                     <dd className="font-semibold">{(data.followers || []).length}</dd>
@@ -230,38 +267,35 @@ export default function PublicProfilePage() {
                     <dd className="font-semibold">{(data.following || []).length}</dd>
                   </div>
                   <div>
-                    <dt className="text-gray-500">Posts</dt>
-                    <dd className="font-semibold">{data.stats?.posts ?? 0}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-gray-500">Comments</dt>
-                    <dd className="font-semibold">{data.stats?.comments ?? 0}</dd>
+                    <dt className="text-gray-500">Joined</dt>
+                    <dd className="font-semibold">
+                      {data.createdAt ? new Date(String(data.createdAt)).toLocaleDateString() : '—'}
+                    </dd>
                   </div>
                 </dl>
               </div>
-            </div>
-            <div className="grid gap-4">
               <FollowList
                 title="Following"
                 items={data.following || []}
                 emptyMessage="Not following anyone yet."
                 seeAllHref={
-                  data.following && data.following.length > 8
+                  data.following && data.following.length > 5
                     ? `/profile/${data.id}/following`
                     : undefined
                 }
-                limit={8}
+                limit={5}
+                linkClassName="text-cyan-700 hover:underline"
               />
               <FollowList
                 title="Followers"
                 items={data.followers || []}
                 emptyMessage="No followers yet."
                 seeAllHref={
-                  data.followers && data.followers.length > 8
+                  data.followers && data.followers.length > 5
                     ? `/profile/${data.id}/followers`
                     : undefined
                 }
-                limit={8}
+                limit={5}
               />
             </div>
           </div>

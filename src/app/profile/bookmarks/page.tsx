@@ -15,13 +15,16 @@ export default function AllBookmarksPage() {
   return (
     <div className="p-4 md:p-8 bg-gray-50 min-h-[calc(100vh-4rem)]">
       <div className="mb-2 max-w-3xl mx-auto">
-        <Link href="/profile" className="text-sm text-gray-700 hover:text-blue-700">
+        <Link href="/profile" className="text-sm text-gray-700 hover:text-cyan-700">
           &lt; Back
         </Link>
       </div>
       <div className="max-w-3xl mx-auto rounded-lg bg-white shadow p-4">
         <h2 className="text-xl font-semibold mb-3">All Bookmarks</h2>
-        <div className="space-y-2 max-h-[70vh] overflow-auto">
+        <div
+          className="space-y-2 max-h-[70vh] overflow-auto pr-2 md:pr-3"
+          style={{ scrollbarGutter: 'stable' }}
+        >
           {ordered.length ? (
             ordered.map((id) => <BookmarkTitle key={id} id={id} />)
           ) : (

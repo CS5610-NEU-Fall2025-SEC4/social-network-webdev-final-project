@@ -117,7 +117,7 @@ export default function EditProfilePage() {
       <div className="mb-4 max-w-4xl mx-auto flex items-center justify-between">
         <Link
           href="/profile"
-          className="inline-flex items-center gap-1 text-gray-700 hover:text-blue-700 !no-underline text-sm"
+          className="inline-flex items-center gap-1 text-gray-700 hover:text-cyan-700 !no-underline text-sm"
         >
           &lt; Back to Profile
         </Link>
@@ -167,7 +167,7 @@ export default function EditProfilePage() {
           </div>
         </div>
         <div>
-          <label className="block text-sm text-gray-700">Email</label>
+          <label className="block text-sm text-gray-700">Email (Private to you)</label>
           <input
             name="email"
             type="email"

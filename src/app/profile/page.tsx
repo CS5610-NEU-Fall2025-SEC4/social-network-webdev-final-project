@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import FollowList from './components/FollowList'
 import ProfilePhotoModal from './components/ProfilePhotoModal'
+import CustomContent from '../home/CustomContent'
 import Image from 'next/image'
 import BookmarkTitle from './BookmarkTitle'
 import { useRequireAuth } from '../hooks/useRequireAuth'
@@ -121,7 +122,7 @@ export default function ProfilePage() {
       <div className="mb-2 max-w-5xl mx-auto">
         <Link
           href="/home"
-          className="inline-flex items-center gap-1 text-gray-600 hover:text-blue-700 !no-underline text-sm"
+          className="inline-flex items-center gap-1 text-gray-600 hover:text-cyan-700 !no-underline text-sm"
         >
           &lt; Back
         </Link>
@@ -259,7 +260,7 @@ export default function ProfilePage() {
             </div>
             <div className="rounded-lg bg-white shadow p-4">
               <h3 className="text-lg font-medium mb-2">Social</h3>
-              <ul className="text-sm text-blue-700 space-y-1">
+              <ul className="text-sm text-cyan-700 space-y-1">
                 {user?.social?.twitter && (
                   <li>
                     <a
@@ -301,29 +302,19 @@ export default function ProfilePage() {
                 )}
               </ul>
             </div>
-          </div>
-
-          <div className="grid gap-4">
             <div className="rounded-lg bg-white shadow p-4">
-              <h3 className="text-lg font-medium mb-2">Bookmarks</h3>
-              <div className="space-y-2">
-                {user?.bookmarks && user.bookmarks.length > 0 ? (
-                  [...user.bookmarks]
-                    .reverse()
-                    .slice(0, 5)
-                    .map((id) => <BookmarkTitle key={id} id={id} />)
-                ) : (
-                  <p className="text-sm text-gray-600">No bookmarks yet.</p>
-                )}
-              </div>
-              {user?.bookmarks && user.bookmarks.length > 5 && (
+              <CustomContent />
+              {user?.id && (
                 <div className="mt-3 flex justify-end">
-                  <Link href="/profile/bookmarks" className="text-xs text-cyan-700 hover:underline">
+                  <Link href={`/profile/posts`} className="text-xs text-cyan-700 hover:underline">
                     See all
                   </Link>
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="grid gap-4">
             <div className="rounded-lg bg-white shadow p-4">
               <h3 className="text-lg font-medium mb-3">Stats</h3>
               <dl className="grid grid-cols-2 gap-3 text-sm">
@@ -365,7 +356,7 @@ export default function ProfilePage() {
                   : undefined
               }
               limit={5}
-              linkClassName="text-blue-700 hover:underline"
+              linkClassName="text-cyan-700 hover:underline"
             />
             <FollowList
               title="Followers"
@@ -378,6 +369,26 @@ export default function ProfilePage() {
               }
               limit={5}
             />
+            <div className="rounded-lg bg-white shadow p-4">
+              <h3 className="text-lg font-medium mb-2">Bookmarks</h3>
+              <div className="space-y-2">
+                {user?.bookmarks && user.bookmarks.length > 0 ? (
+                  [...user.bookmarks]
+                    .reverse()
+                    .slice(0, 5)
+                    .map((id) => <BookmarkTitle key={id} id={id} />)
+                ) : (
+                  <p className="text-sm text-gray-600">No bookmarks yet.</p>
+                )}
+              </div>
+              {user?.bookmarks && user.bookmarks.length > 5 && (
+                <div className="mt-3 flex justify-end">
+                  <Link href="/profile/bookmarks" className="text-xs text-cyan-700 hover:underline">
+                    See all
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
