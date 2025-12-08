@@ -2,7 +2,7 @@ import { HNApiService } from '../../services/algoliaAPI'
 import type { HNStoryItem } from '@/app/types/types'
 import 'server-only'
 import Link from 'next/link'
-import { FaUser, FaStar, FaCommentAlt } from 'react-icons/fa'
+import { FaUser, FaStar, FaCommentAlt, FaTag } from 'react-icons/fa'
 import { FaRegClock } from 'react-icons/fa6'
 import { FaExternalLinkAlt } from 'react-icons/fa'
 import Comment from './comment'
@@ -87,10 +87,13 @@ export default async function DetailsPage({
       </div>
     )
   }
+
   const likeCount = await getLikeCount(storyId)
+
   const formatDate = (timestamp: number) => {
     return new Date(timestamp * 1000).toLocaleString()
   }
+
   const wasEdited = () => {
     if (!story.editedAt) return false
     const createdTime = story.created_at_i * 1000
@@ -98,13 +101,38 @@ export default async function DetailsPage({
     return editedTime - createdTime > 60000
   }
 
-  const tags = tagsQuery ? tagsQuery.split(',') : []
-  console.log(tags)
-  const filteredTags = tags.filter((tag) =>
-    ['story', 'ask_hn', 'show_hn', 'job', 'comment'].includes(tag),
-  )
-  console.log(filteredTags)
+  const allTags: string[] = []
+
+  if (tagsQuery) {
+    allTags.push(...tagsQuery.split(','))
+  }
+
+  if (story._tags && Array.isArray(story._tags)) {
+    allTags.push(...story._tags)
+  }
+
+  if (story.type) {
+    allTags.push(story.type)
+  }
+
+  const validTags = ['story', 'ask_hn', 'show_hn', 'job', 'comment']
+  const filteredTags = [...new Set(allTags)]
+    .filter((tag) => validTags.includes(tag))
+    .map((tag) => tag.toLowerCase())
+
+  const formatTagName = (tag: string): string => {
+    const tagMap: Record<string, string> = {
+      story: 'Story',
+      ask_hn: 'Ask HN',
+      show_hn: 'Show HN',
+      job: 'Job',
+      comment: 'Comment',
+    }
+    return tagMap[tag] || tag
+  }
+
   const isExternal = !isNaN(Number(storyId))
+
   return (
     <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -135,10 +163,14 @@ export default async function DetailsPage({
           </div>
 
           {filteredTags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-4 items-center">
+              <FaTag className="text-gray-400 text-sm" />
               {filteredTags.map((tag) => (
-                <span key={tag} className="px-2 py-1 bg-gray-100 rounded text-xs sm:text-sm">
-                  {tag}
+                <span
+                  key={tag}
+                  className="px-3 py-1 bg-cyan-50 text-cyan-700 border border-cyan-200 rounded-full text-xs sm:text-sm font-medium"
+                >
+                  {formatTagName(tag)}
                 </span>
               ))}
             </div>
