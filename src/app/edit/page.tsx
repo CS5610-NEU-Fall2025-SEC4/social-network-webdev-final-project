@@ -114,20 +114,22 @@ export default function EditProfilePage() {
 
   return (
     <div className="p-4 md:p-8 bg-gray-50 min-h-[calc(100vh-4rem)]">
-      <div className="mb-4 max-w-4xl mx-auto flex items-center justify-between">
+      <div className="mb-4 max-w-4xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <Link
           href="/profile"
           className="inline-flex items-center gap-1 text-gray-700 hover:text-cyan-700 !no-underline text-sm"
         >
           &lt; Back to Profile
         </Link>
-        <button
-          onClick={handleSave}
-          disabled={saving || !form}
-          className="px-3 py-2 rounded bg-cyan-600 text-white hover:bg-cyan-700 disabled:opacity-50"
-        >
-          {saving ? 'Saving…' : 'Save Changes'}
-        </button>
+        <div className="w-full sm:w-auto">
+          <button
+            onClick={handleSave}
+            disabled={saving || !form}
+            className="w-full sm:w-auto px-3 py-2 rounded bg-cyan-600 text-white hover:bg-cyan-700 disabled:opacity-50"
+          >
+            {saving ? 'Saving…' : 'Save Changes'}
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -136,7 +138,7 @@ export default function EditProfilePage() {
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto rounded-lg bg-white shadow p-4 grid gap-4">
+      <div className="max-w-4xl mx-auto rounded-lg bg-white shadow p-4 sm:p-6 grid gap-4">
         <div>
           <label className="block text-sm text-gray-700">Username</label>
           <input
@@ -146,7 +148,7 @@ export default function EditProfilePage() {
             className="mt-1 w-full border rounded px-3 py-2"
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm text-gray-700">First Name</label>
             <input
@@ -186,7 +188,7 @@ export default function EditProfilePage() {
             rows={4}
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm text-gray-700">Website</label>
             <input
@@ -220,7 +222,7 @@ export default function EditProfilePage() {
             className="mt-1 w-full border rounded px-3 py-2"
           />
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm text-gray-700">Twitter</label>
             <input
