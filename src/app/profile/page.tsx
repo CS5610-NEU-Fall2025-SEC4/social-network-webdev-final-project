@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import FollowList from './components/FollowList'
 import ProfilePhotoModal from './components/ProfilePhotoModal'
+import CustomContent from '../home/CustomContent'
 import Image from 'next/image'
 import BookmarkTitle from './BookmarkTitle'
 import { useRequireAuth } from '../hooks/useRequireAuth'
@@ -301,29 +302,12 @@ export default function ProfilePage() {
                 )}
               </ul>
             </div>
+            <div className="rounded-lg bg-white shadow p-4">
+              <CustomContent />
+            </div>
           </div>
 
           <div className="grid gap-4">
-            <div className="rounded-lg bg-white shadow p-4">
-              <h3 className="text-lg font-medium mb-2">Bookmarks</h3>
-              <div className="space-y-2">
-                {user?.bookmarks && user.bookmarks.length > 0 ? (
-                  [...user.bookmarks]
-                    .reverse()
-                    .slice(0, 5)
-                    .map((id) => <BookmarkTitle key={id} id={id} />)
-                ) : (
-                  <p className="text-sm text-gray-600">No bookmarks yet.</p>
-                )}
-              </div>
-              {user?.bookmarks && user.bookmarks.length > 5 && (
-                <div className="mt-3 flex justify-end">
-                  <Link href="/profile/bookmarks" className="text-xs text-cyan-700 hover:underline">
-                    See all
-                  </Link>
-                </div>
-              )}
-            </div>
             <div className="rounded-lg bg-white shadow p-4">
               <h3 className="text-lg font-medium mb-3">Stats</h3>
               <dl className="grid grid-cols-2 gap-3 text-sm">
@@ -378,6 +362,26 @@ export default function ProfilePage() {
               }
               limit={5}
             />
+            <div className="rounded-lg bg-white shadow p-4">
+              <h3 className="text-lg font-medium mb-2">Bookmarks</h3>
+              <div className="space-y-2">
+                {user?.bookmarks && user.bookmarks.length > 0 ? (
+                  [...user.bookmarks]
+                    .reverse()
+                    .slice(0, 5)
+                    .map((id) => <BookmarkTitle key={id} id={id} />)
+                ) : (
+                  <p className="text-sm text-gray-600">No bookmarks yet.</p>
+                )}
+              </div>
+              {user?.bookmarks && user.bookmarks.length > 5 && (
+                <div className="mt-3 flex justify-end">
+                  <Link href="/profile/bookmarks" className="text-xs text-cyan-700 hover:underline">
+                    See all
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
