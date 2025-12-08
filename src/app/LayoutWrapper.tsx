@@ -19,14 +19,11 @@ export default function LayoutWrapper({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex items-center justify-between p-4 bg-blue-100 md:hidden">
-        <button
-          onClick={() => setOpen(!open)}
-          className="text-2xl text-gray-800 hover:text-blue-600"
-        >
+      <div className="flex items-center justify-between p-4 bg-gray-900 md:hidden">
+        <button onClick={() => setOpen(!open)} className="text-2xl text-white hover:text-cyan-400">
           <GiHamburgerMenu />
         </button>
-        <h1 className="font-semibold text-lg">HckrNws</h1>
+        <h1 className="font-semibold text-lg text-white">HckrNws</h1>
       </div>
 
       <Navigation open={open} setOpen={setOpen} />

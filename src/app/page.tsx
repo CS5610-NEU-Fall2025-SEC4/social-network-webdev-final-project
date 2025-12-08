@@ -47,10 +47,10 @@ export default function Home() {
             />
           </Link>
           <div className="flex items-center gap-3">
-            <Link href="/home" className="!no-underline">
+            <Link href="/home" className="!no-underline hidden md:flex">
               <button className="btn-cyan-outline text-sm">Explore Stories</button>
             </Link>
-            <Link href="/logIn" className="!no-underline">
+            <Link href="/logIn" className="!no-underline hidden md:flex">
               <button className="btn-cyan text-sm">Join Conversation</button>
             </Link>
           </div>

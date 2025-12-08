@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../context/AuthContext'
-import { MdAdminPanelSettings } from "react-icons/md";
+import { MdAdminPanelSettings } from 'react-icons/md'
 
 function RoleBadge({ role }: { role: string }) {
   const colors = {
@@ -46,7 +46,7 @@ export default function Navigation({
   return (
     <>
       <nav
-        className="hidden md:flex fixed top-0 left-0 right-0 h-16 bg-gradient-to-r from-white via-white/90 to-black backdrop-blur items-center justify-between px-8 shadow-md z-20 border-b border-white/10"
+        className="hidden md:flex fixed top-0 left-0 right-0 h-16 bg-gray-900 backdrop-blur items-center justify-between px-8 shadow-md z-20 border-b border-gray-700"
         id="wd-hckrnws-navigation"
       >
         <Link href="/home" className="flex items-center !no-underline group">
@@ -73,7 +73,7 @@ export default function Navigation({
       </nav>
 
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-white to-black backdrop-blur-md shadow-lg border-r border-white/10 transform transition-transform duration-300 z-30 md:hidden
+        className={`fixed top-0 left-0 h-full w-64 bg-gray-900 backdrop-blur-md shadow-lg border-r border-white/10 transform transition-transform duration-300 z-30 md:hidden
         ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex justify-between items-center p-4 border-b">
@@ -106,7 +106,7 @@ export default function Navigation({
       </div>
       {open && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-25 md:hidden z-20"
+          className="fixed inset-0 bg-black/15 md:hidden z-20"
           onClick={() => setOpen && setOpen(false)}
         />
       )}
@@ -131,11 +131,11 @@ function NavLinks({
         <>
           <Link
             href="/profile"
-            className="flex items-center space-x-1 text-white hover:text-cyan-400 !no-underline"
+            className="flex items-center space-x-1 text-gray-300 hover:text-cyan-400 !no-underline"
           >
             <FaRegCircleUser className="text-2xl" />
             <div className="flex flex-col items-start -space-y-0.5">
-              <span className="text-sm font-medium">{username || 'Profile'}</span>
+              <span className="text-md font-medium">{username || 'Profile'}</span>
               {userRole && <RoleBadge role={userRole} />}
             </div>
           </Link>
@@ -145,7 +145,7 @@ function NavLinks({
               className="flex items-center space-x-1 text-yellow-300 hover:text-yellow-400 !no-underline font-semibold"
             >
               <MdAdminPanelSettings className="text-xl" />
-              <span className="text-sm">Admin</span>
+              <span className="text-md">Admin</span>
             </Link>
           )}
         </>
@@ -156,7 +156,7 @@ function NavLinks({
         className="flex items-center space-x-1 text-white hover:text-cyan-400 !no-underline"
       >
         <IoHomeOutline className="text-2xl" />
-        <span className="text-sm font-medium">Home</span>
+        <span className="text-md font-medium">Home</span>
       </Link>
 
       <Link
@@ -164,7 +164,7 @@ function NavLinks({
         className="flex items-center space-x-1 text-white hover:text-cyan-400 !no-underline"
       >
         <CiSearch className="text-2xl" />
-        <span className="text-sm font-medium">Search</span>
+        <span className="text-md font-medium">Search</span>
       </Link>
 
       {!isAuthenticated && (
@@ -173,7 +173,7 @@ function NavLinks({
           className="flex items-center space-x-1 text-white hover:text-cyan-400 !no-underline"
         >
           <CiLogin className="text-2xl" />
-          <span className="text-sm font-medium">Log In</span>
+          <span className="text-md font-medium">Log In</span>
         </Link>
       )}
 
@@ -183,7 +183,7 @@ function NavLinks({
           className="flex items-center space-x-1 text-white hover:text-red-500"
         >
           <CiLogout className="text-2xl" />
-          <span className="text-sm font-medium">Logout</span>
+          <span className="text-md font-medium">Logout</span>
         </button>
       )}
     </>
@@ -211,7 +211,7 @@ function MobileNavLinks({
           >
             <FaRegCircleUser className="text-2xl" />
             <div className="flex flex-col items-start -space-y-0.5">
-              <span className="text-base">{username || 'Profile'}</span>
+              <span className="text-md">{username || 'Profile'}</span>
               {userRole && <RoleBadge role={userRole} />}
             </div>
           </Link>
@@ -222,7 +222,7 @@ function MobileNavLinks({
               className="flex items-center space-x-3 text-yellow-300 hover:text-yellow-400 !no-underline py-2 font-semibold"
             >
               <MdAdminPanelSettings className="text-2xl" />
-              <span className="text-base">Admin Dashboard</span>
+              <span className="text-md">Admin Dashboard</span>
             </Link>
           )}
         </>
