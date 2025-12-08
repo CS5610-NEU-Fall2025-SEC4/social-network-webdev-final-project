@@ -11,9 +11,9 @@ import { MdAdminPanelSettings } from 'react-icons/md'
 
 function RoleBadge({ role }: { role: string }) {
   const colors = {
-    USER: 'bg-blue-500 text-white',
-    EMPLOYER: 'bg-green-500 text-white',
-    ADMIN: 'bg-red-500 text-white',
+    USER: 'bg-cyan-600 text-black',
+    EMPLOYER: 'bg-cyan-600 text-black',
+    ADMIN: 'bg-cyan-600 text-black',
   }
 
   return (

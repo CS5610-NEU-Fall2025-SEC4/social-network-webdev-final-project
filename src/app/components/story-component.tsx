@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import UsernameLink from '@/app/components/username-link'
 import BookmarkClient from './BookmarkClient'
 import { useEffect, useState } from 'react'
+import { FaUser, FaStar } from 'react-icons/fa'
+import { FaRegClock } from 'react-icons/fa6'
 
 export default function StoryComponent({ story }: { story: HNStory }) {
   const [likeCount, setLikeCount] = useState<number>(0)
@@ -53,46 +55,49 @@ export default function StoryComponent({ story }: { story: HNStory }) {
 
   return (
     <Card className="shadow-sm mb-4 animate-fade-in">
-      <CardHeader>
-        <CardTitle className="mb-2 text-lg font-semibold">
-          {isComment ? (
-            <div
-              dangerouslySetInnerHTML={{ __html: story.comment_text ?? '' }}
-              className="text-gray-800"
-            />
-          ) : (
-            <Link href={`/details/${itemId}`} className="text-gray-800 hover:underline">
-              {story.title}
-            </Link>
-          )}
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base sm:text-lg font-semibold">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              {isComment ? (
+                <div
+                  dangerouslySetInnerHTML={{ __html: story.comment_text ?? '' }}
+                  className="text-gray-800"
+                />
+              ) : (
+                <Link
+                  href={`/details/${itemId}`}
+                  className="text-gray-800 hover:text-cyan-600 hover:underline transition-colors"
+                >
+                  {story.title}
+                </Link>
+              )}
+            </div>
 
-          {isComment && (
-            <div className="mt-2">
+            <div className="flex-shrink-0">
               <BookmarkClient itemId={itemId} />
             </div>
-          )}
+          </div>
         </CardTitle>
       </CardHeader>
+      <CardContent className="pt-0">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
+          <div className="flex items-center gap-1">
+            <FaStar className="shrink-0" />
+            <span className="font-semibold">{loading ? '...' : likeCount}</span>
+            <span>points</span>
+          </div>
 
-      <CardContent>
-        <div className="flex items-center space-x-4 text-sm text-gray-600">
-          <div>
-            <span className="font-bold">{loading ? '...' : likeCount}</span> points
+          <div className="flex items-center gap-1">
+            <FaUser className="shrink-0" />
+            <span>by</span>
+            <UsernameLink username={story.author} />
           </div>
-          <span>•</span>
-          <div>
-            by <UsernameLink username={story.author} />
+
+          <div className="flex items-center gap-1">
+            <FaRegClock className="shrink-0" />
+            <span>{getRelativeTime(story.created_at_i)}</span>
           </div>
-          <span>•</span>
-          <div>{getRelativeTime(story.created_at_i)}</div>
-          {!isComment && (
-            <>
-              <span>•</span>
-              <div className="flex items-center">
-                <BookmarkClient itemId={itemId} />
-              </div>
-            </>
-          )}
         </div>
       </CardContent>
     </Card>

@@ -6,8 +6,7 @@ import { FaUser, FaStar, FaCommentAlt } from 'react-icons/fa'
 import { FaRegClock } from 'react-icons/fa6'
 import { FaExternalLinkAlt } from 'react-icons/fa'
 import Comment from './comment'
-import LikeButton from './LikeButton'
-import CommentEditor from './CommentEditor'
+import InteractionButtons from './InteractionButtons'
 import UsernameLink from '@/app/components/username-link'
 import EditButton from './EditButton'
 import DeleteButton from './DeleteButton'
@@ -107,15 +106,15 @@ export default async function DetailsPage({
   console.log(filteredTags)
   const isExternal = !isNaN(Number(storyId))
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="w-full px-2 sm:px-4 lg:px-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
-            <h1 className="text-3xl font-bold text-gray-900 flex-1 min-w-0">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex-1 min-w-0 break-words">
               {story.title ||
                 (story.text ? stripHtml(story.text).slice(0, 80) : `Story ${storyId}`)}
             </h1>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 sm:flex-nowrap">
               <ShareButton
                 storyId={storyId}
                 title={story.title || (story.text ? stripHtml(story.text).slice(0, 80) : '')}
@@ -129,77 +128,84 @@ export default async function DetailsPage({
                   story.title || (story.text ? stripHtml(story.text).slice(0, 80) : 'Untitled')
                 }
               />
+
               <ReportButton storyId={storyId} contentType="story" authorUsername={story.author} />
+              <DetailsBookmark itemId={storyId} />
             </div>
           </div>
 
           {filteredTags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
               {filteredTags.map((tag) => (
-                <span key={tag} className="px-2 py-1 bg-gray-100 rounded text-sm">
+                <span key={tag} className="px-2 py-1 bg-gray-100 rounded text-xs sm:text-sm">
                   {tag}
                 </span>
               ))}
             </div>
           )}
 
-          <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4 items-center">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 text-sm text-gray-600 mb-4">
             <span className="flex items-center gap-1">
-              <FaUser /> <UsernameLink username={story.author} />
+              <FaUser className="shrink-0" /> <UsernameLink username={story.author} />
             </span>
             <span className="flex items-center gap-1">
-              <FaStar /> {likeCount} points
+              <FaStar className="shrink-0" /> {likeCount} points
             </span>
             <span className="flex items-center gap-1">
-              <FaRegClock /> {formatDate(story.created_at_i)}
+              <FaRegClock className="shrink-0" /> {formatDate(story.created_at_i)}
             </span>
             {story.commentCount !== undefined && (
               <span className="flex items-center gap-1">
-                <FaCommentAlt />
+                <FaCommentAlt className="shrink-0" />
                 {story.commentCount} comment{story.commentCount !== 1 ? 's' : ''}
               </span>
             )}
             {isExternal && (
               <div className="flex items-center gap-1">
-                <FaExternalLinkAlt />
+                <FaExternalLinkAlt className="flex-shrink-0" />
                 <Link
                   href={`https://news.ycombinator.com/item?id=${storyId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
+                  className="text-blue-600 hover:underline truncate"
                 >
                   Original Post
                 </Link>
               </div>
             )}
             {wasEdited() && (
-              <span className="px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded">edited</span>
+              <span className="px-2 py-0.5 bg-gray-200 text-gray-600 text-xs rounded flex-shrink-0">
+                edited
+              </span>
             )}
-            <span className="flex items-center">
-              <DetailsBookmark itemId={storyId} />
-            </span>
           </div>
 
           {story.text && (
             <div
-              className="mt-6 pt-6 border-t prose max-w-none"
+              className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t prose prose-sm sm:prose max-w-none"
               dangerouslySetInnerHTML={{ __html: story.text }}
             />
           )}
         </div>
 
-        <div className="flex items-center gap-2 mt-3 mb-4 flex-wrap">
-          <LikeButton itemId={storyId} itemType="story" initialPoints={likeCount} />
-          <CommentEditor comment="Comment" storyId={storyId} />
+        <div className="mt-3 mb-4">
+          <InteractionButtons
+            itemId={storyId}
+            itemType="story"
+            initialPoints={story.points || 0}
+            storyId={storyId}
+            depth={0}
+            isStoryLevel={true}
+          />
         </div>
 
         {story.children && story.children.length > 0 && (
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+          <div className="mt-6 sm:mt-8">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-2">
               <FaCommentAlt /> Comments
             </h2>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {[...story.children]
                 .sort((a, b) => (b.created_at_i || 0) - (a.created_at_i || 0))
                 .map((comment) => (
@@ -210,7 +216,7 @@ export default async function DetailsPage({
         )}
 
         {(!story.children || story.children.length === 0) && (
-          <div className="mt-8 bg-white rounded-lg shadow-sm p-6 text-center text-gray-500">
+          <div className="mt-6 sm:mt-8 bg-white rounded-lg shadow-sm p-6 text-center text-gray-500">
             No comments yet
           </div>
         )}
