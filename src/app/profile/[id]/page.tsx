@@ -68,7 +68,7 @@ export default function PublicProfilePage() {
       <div className="mb-2 max-w-5xl mx-auto">
         <Link
           href="/profile"
-          className="inline-flex items-center gap-1 text-gray-700 hover:text-blue-700 !no-underline text-sm"
+          className="inline-flex items-center gap-1 text-gray-700 hover:text-cyan-700 !no-underline text-sm"
         >
           &lt; Back
         </Link>
@@ -143,9 +143,22 @@ export default function PublicProfilePage() {
                 <ul className="text-gray-700 text-sm space-y-1">
                   <li>
                     <span className="font-medium">Website:</span>{' '}
-                    {data.website === null || data.website === undefined
-                      ? 'Website hidden'
-                      : data.website || 'Not provided'}
+                    {data.website === null || data.website === undefined ? (
+                      'Website hidden'
+                    ) : data.website ? (
+                      <a
+                        href={
+                          data.website.startsWith('http') ? data.website : `https://${data.website}`
+                        }
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-cyan-700 hover:underline"
+                      >
+                        {data.website}
+                      </a>
+                    ) : (
+                      'Not provided'
+                    )}
                   </li>
                   <li>
                     <span className="font-medium">Location:</span>{' '}
@@ -222,6 +235,14 @@ export default function PublicProfilePage() {
               {!data.isBlocked && data.username && (
                 <div className="rounded-lg bg-white shadow p-4">
                   <UserContent username={data.username} />
+                  <div className="mt-3 flex justify-end">
+                    <Link
+                      href={`/profile/${encodeURIComponent(data.id)}/posts`}
+                      className="text-xs text-cyan-700 hover:underline"
+                    >
+                      See all
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
@@ -263,7 +284,7 @@ export default function PublicProfilePage() {
                     : undefined
                 }
                 limit={5}
-                linkClassName="text-blue-700 hover:underline"
+                linkClassName="text-cyan-700 hover:underline"
               />
               <FollowList
                 title="Followers"

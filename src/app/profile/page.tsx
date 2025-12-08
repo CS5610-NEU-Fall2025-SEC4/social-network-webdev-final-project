@@ -122,7 +122,7 @@ export default function ProfilePage() {
       <div className="mb-2 max-w-5xl mx-auto">
         <Link
           href="/home"
-          className="inline-flex items-center gap-1 text-gray-600 hover:text-blue-700 !no-underline text-sm"
+          className="inline-flex items-center gap-1 text-gray-600 hover:text-cyan-700 !no-underline text-sm"
         >
           &lt; Back
         </Link>
@@ -260,7 +260,7 @@ export default function ProfilePage() {
             </div>
             <div className="rounded-lg bg-white shadow p-4">
               <h3 className="text-lg font-medium mb-2">Social</h3>
-              <ul className="text-sm text-blue-700 space-y-1">
+              <ul className="text-sm text-cyan-700 space-y-1">
                 {user?.social?.twitter && (
                   <li>
                     <a
@@ -304,6 +304,13 @@ export default function ProfilePage() {
             </div>
             <div className="rounded-lg bg-white shadow p-4">
               <CustomContent />
+              {user?.id && (
+                <div className="mt-3 flex justify-end">
+                  <Link href={`/profile/posts`} className="text-xs text-cyan-700 hover:underline">
+                    See all
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
 
@@ -349,7 +356,7 @@ export default function ProfilePage() {
                   : undefined
               }
               limit={5}
-              linkClassName="text-blue-700 hover:underline"
+              linkClassName="text-cyan-700 hover:underline"
             />
             <FollowList
               title="Followers"
