@@ -146,7 +146,7 @@ export default function PublicProfilePage() {
                   <li>
                     <span className="font-medium">Website:</span>{' '}
                     {data.website === null || data.website === undefined ? (
-                      'Website hidden'
+                      'NA'
                     ) : data.website ? (
                       <a
                         href={
@@ -165,7 +165,7 @@ export default function PublicProfilePage() {
                   <li>
                     <span className="font-medium">Location:</span>{' '}
                     {data.location === null || data.location === undefined
-                      ? 'Location hidden'
+                      ? 'NA'
                       : data.location || 'Not provided'}
                   </li>
                 </ul>
