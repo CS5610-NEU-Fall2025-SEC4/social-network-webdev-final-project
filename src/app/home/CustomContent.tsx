@@ -75,7 +75,7 @@ export default function CustomContent() {
         <h3 className="text-xl font-semibold mb-2">No posts yet</h3>
         <p className="text-gray-600 mb-4">Start sharing with the community!</p>
         <Link href="/story">
-          <button className="px-6 py-3 bg-gray-900 text-white rounded-md hover:bg-cyan-700">
+          <button className="px-6 py-3 bg-gray-900 text-white rounded-md hover:bg-gray-700">
             Create Your First Post
           </button>
         </Link>
